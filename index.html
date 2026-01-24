@@ -106,15 +106,15 @@
     <section id="streamSection">
         <h2><i class="fas fa-play-circle"></i> Multi-Streaming</h2>
         <div class="row">
-            <div class="card" onclick="window.open('https://www.netflix.com', '_blank')">
+            <div class="card" onclick="openFull('https://www.netflix.com')">
                 <img src="images/netflix.png" onerror="this.src='https://via.placeholder.com/140x200?text=Netflix'">
                 <div class="card-info">Netflix</div>
             </div>
-            <div class="card" onclick="window.open('https://www.primevideo.com', '_blank')">
+            <div class="card" onclick="openFull('https://www.primevideo.com')">
                 <img src="images/primevideo.png" onerror="this.src='https://via.placeholder.com/140x200?text=Prime+Video'">
                 <div class="card-info">Prime Video</div>
             </div>
-            <div class="card" onclick="window.open('https://www.disneyplus.com', '_blank')">
+            <div class="card" onclick="openFull('https://www.disneyplus.com')">
                 <img src="images/disneyplus.png" onerror="this.src='https://via.placeholder.com/140x200?text=Disney+'">
                 <div class="card-info">Disney Plus</div>
             </div>
@@ -211,7 +211,7 @@ function getResetTime() {
 
 function render(id, items, isShort) {
     document.getElementById(id).innerHTML = items.map((i, idx) => `
-        <div class="card" onclick="${isShort ? `openShortsFeed(${idx})` : `play('${i.id}','${i.t.replace(/'/g," ")}','${i.img}','',true)`}">
+        <div class="card" onclick="${isShort ? `openShortsFeed(${idx})` : `play('${i.id}','${i.t.replace(/'/g," ")}','${i.img}','${i.url || ''}',${i.yt})`}">
             <img src="${i.img}" loading="lazy"><div class="card-info">${i.t}</div>
         </div>`).join('');
 }
@@ -234,7 +234,6 @@ function openShortsFeed(idx) {
             </div>
         </div>`).join('');
 
-    // --- LOGIQUE ANTI-SUPERPOSITION SONORE ---
     if(shortsObserver) shortsObserver.disconnect();
     shortsObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -243,7 +242,7 @@ function openShortsFeed(idx) {
             if(entry.isIntersecting) {
                 iframe.src = `https://www.youtube.com/embed/${vId}?autoplay=1&rel=0&modestbranding=1&loop=1&playlist=${vId}`;
             } else {
-                iframe.src = ""; // Coupe le son et la vidéo dès qu'on défile
+                iframe.src = ""; 
             }
         });
     }, { threshold: 0.7 });
@@ -325,5 +324,4 @@ function setActive(el) { document.querySelectorAll('.nav-item').forEach(n => n.c
 function onYouTubeIframeAPIReady() { ytPlayer = new YT.Player('ytContainer', { height:'100%', width:'100%', playerVars: {'autoplay': 1} }); }
 </script>
 </body>
-                    </html>
-        
+</html>
