@@ -41,13 +41,21 @@
         .card-info { padding: 10px 5px; font-size: 0.7rem; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; color: #ddd; }
         .badge { position: absolute; top: 8px; left: 8px; background: var(--red); color: white; font-size: 0.55rem; padding: 3px 6px; border-radius: 4px; font-weight: 900; z-index: 2; }
 
+        /* Erreur Quota Overlay */
+        .quota-error { position: absolute; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; color: var(--red); font-size: 0.6rem; text-align: center; padding: 5px; font-weight: bold; z-index: 5; }
+
         /* --- LECTEUR SHORTS VERTICAL --- */
         #mainPlayer { display: none; position: fixed; inset: 0; background: #000; z-index: 2000; }
-        #shortsFeed { height: 100vh; width: 100vw; overflow-y: scroll; scroll-snap-type: y mandatory; display: none; background: #000; }
-        .short-slide { height: 100vh; width: 100vw; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; background: #000; }
+        #shortsFeed { height: 100vh; width: 100vw; overflow-y: scroll; scroll-snap-type: y mandatory; display: none; background: #000; scrollbar-width: none; }
+        .short-slide { height: 100vh; width: 100vw; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; background: #000; position: relative; }
         .short-slide iframe { height: 100%; width: 100%; max-width: 500px; border: none; }
+        
+        /* Interaction UI pour Shorts */
+        .short-actions { position: absolute; right: 15px; bottom: 100px; display: flex; flex-direction: column; gap: 20px; align-items: center; z-index: 10; }
+        .action-btn { display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; gap: 5px; }
+        .action-btn i { font-size: 1.5rem; }
 
-        .btn-close { background: var(--red); color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: bold; position: fixed; top: 20px; left: 20px; z-index: 2100; }
+        .btn-close { background: var(--red); color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: bold; position: fixed; top: 20px; left: 20px; z-index: 2100; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
         iframe, #ytContainer { width: 100%; height: 100%; border: none; }
     </style>
 </head>
@@ -56,7 +64,7 @@
 <header>
     <div class="top-bar">
         <div class="logo">FILMANGSTREAM</div>
-        <div class="search-box"><input id="search" placeholder="Rechercher..."></div>
+        <div class="search-box"><input id="search" type="text" placeholder="Rechercher sur YouTube..."></div>
     </div>
     <nav>
         <div class="nav-item active" onclick="setActive(this); window.scrollTo(0,0)">Accueil</div>
@@ -102,23 +110,23 @@
         <h2><i class="fas fa-play-circle"></i> Multi-Streaming</h2>
         <div class="row">
             <div class="card" onclick="window.open('https://www.netflix.com', '_blank')">
-                <img src="images/netflix.png" onerror="this.src='https://via.placeholder.com/140x200?text=Netflix'">
+                <img src="https://via.placeholder.com/140x200?text=Netflix">
                 <div class="card-info">Netflix</div>
             </div>
             <div class="card" onclick="window.open('https://www.primevideo.com', '_blank')">
-                <img src="images/primevideo.png" onerror="this.src='https://via.placeholder.com/140x200?text=Prime+Video'">
+                <img src="https://via.placeholder.com/140x200?text=Prime+Video">
                 <div class="card-info">Prime Video</div>
             </div>
             <div class="card" onclick="window.open('https://www.disneyplus.com', '_blank')">
-                <img src="images/disneyplus.png" onerror="this.src='https://via.placeholder.com/140x200?text=Disney+'">
+                <img src="https://via.placeholder.com/140x200?text=Disney+">
                 <div class="card-info">Disney Plus</div>
             </div>
             <div class="card" onclick="openFull('https://www.crunchyroll.com')">
-                <img src="images/crunchyroll.png" onerror="this.src='https://via.placeholder.com/140x200?text=Crunchyroll'">
+                <img src="https://via.placeholder.com/140x200?text=Crunchyroll">
                 <div class="card-info">Crunchyroll</div>
             </div>
             <div class="card" onclick="openFull('https://anime-sama.store/')">
-                <img src="images/animesama.png" onerror="this.src='https://via.placeholder.com/140x200?text=AnimeSama'">
+                <img src="https://via.placeholder.com/140x200?text=AnimeSama">
                 <div class="card-info">Anime Sama</div>
             </div>
         </div>
@@ -139,10 +147,16 @@
 
 <script src="https://www.youtube.com/iframe_api" async></script>
 <script>
-const YT_KEYS = ["AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc", "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY"];
-let currentKeyIdx = 0, ytPlayer, heroIdx = 0, currentShortsList = [];
+// --- CONFIGURATION CLÉS API ---
+const YT_KEYS = [
+    "AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc", 
+    "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY", 
+    "AIzaSyBEos5Lzr0WbleEdtP_Gi7kMHcxaL9hhR0"
+];
+let currentKeyIdx = 0;
+let ytPlayer, heroIdx = 0, currentShortsList = [], currentVideoList = [];
 
-const fetchT = (url) => Promise.race([fetch(url), new Promise((_, r) => setTimeout(() => r(new Error('Timeout')), 2500))]);
+const fetchT = (url) => Promise.race([fetch(url), new Promise((_, r) => setTimeout(() => r(new Error('Timeout')), 5000))]);
 
 window.onload = () => {
     loadTV(); 
@@ -150,62 +164,116 @@ window.onload = () => {
     loadTMDB('filmRow', 'movie');
     loadTMDB('seriesRow', 'tv');
     loadKitsu();
-    fetchYT('videoRow', 'film complet français live 3 heures documentaire', false); 
-    fetchYT('shortsRow', 'funny shorts trend viral', true);
+    initYouTubeSearch();
+    refreshYouTubeContent('film complet français live 3 heures documentaire');
 };
 
-function loadTV() {
-    const tvChannels = [
-        {n:"TF1", f:"TF1.png"}, {n:"France 2", f:"France2.png"}, {n:"M6", f:"M6.png"}, 
-        {n:"Canal+ Sport", f:"Canal+ Sport.png"}, {n:"Canal+ Family", f:"Canal+ Family.png"}, 
-        {n:"Eurosport", f:"Eurosport.png"}, {n:"Nickelodeon", f:"Nickelodeon.png"}, 
-        {n:"Disney Channel", f:"DisneyChannel.png"}, {n:"SyFy", f:"SyFy.png"}, 
-        {n:"Warner TV", f:"WarnerTV.png"}, {n:"J-One", f:"J-One.png"}, {n:"Mangas", f:"Mangas.png"}
-    ];
-    document.getElementById('tvRow').innerHTML = tvChannels.map(t => `
-        <div class="card" onclick="openFull('https://vavoo.to')">
-            <span class="badge">LIVE</span>
-            <img src="images/${t.f}" onerror="this.src='https://via.placeholder.com/140x200/111/e50914?text=${encodeURIComponent(t.n)}'">
-            <div class="card-info">${t.n}</div>
-        </div>`).join('');
+function initYouTubeSearch() {
+    const searchInput = document.getElementById('search');
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const query = searchInput.value.trim();
+            if (query) refreshYouTubeContent(query);
+            jump('shortsSection');
+        }
+    });
 }
 
+function refreshYouTubeContent(query) {
+    fetchYT('videoRow', query, false); 
+    fetchYT('shortsRow', query + " #shorts", true);
+}
+
+// --- LOGIQUE ROTATION CLÉ ET QUOTA ---
 async function fetchYT(id, q, isShort) {
+    if (currentKeyIdx >= YT_KEYS.length) {
+        showQuotaMessage(id);
+        return;
+    }
+
     try {
         const durationParam = isShort ? "" : "&videoDuration=long";
         const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=15${durationParam}&key=${YT_KEYS[currentKeyIdx]}`;
-        const r = await fetchT(url);
+        
+        const r = await fetch(url);
+        
+        if (r.status === 403) { // Quota épuisé
+            console.warn(`Clé ${currentKeyIdx + 1} épuisée. Passage à la suivante...`);
+            currentKeyIdx++;
+            fetchYT(id, q, isShort); // Réessaie avec la clé suivante
+            return;
+        }
+
         const d = await r.json();
         if(d.items) {
             const items = d.items.map(v => ({ id: v.id.videoId, t: v.snippet.title, img: v.snippet.thumbnails.high.url, yt: true }));
             if(isShort) currentShortsList = items;
+            else currentVideoList = items;
             render(id, items, isShort);
         }
-    } catch(e) {}
+    } catch(e) {
+        console.error("Erreur YouTube:", e);
+    }
+}
+
+function getTimeUntilReset() {
+    const now = new Date();
+    // Le quota YouTube se réinitialise à Minuit Pacifique (environ 08:00 UTC)
+    // Pour simplifier, on calcule jusqu'au prochain minuit local
+    const reset = new Date();
+    reset.setHours(24, 0, 0, 0);
+    const diff = reset - now;
+    const hours = Math.floor(diff / 36e5);
+    const minutes = Math.floor((diff % 36e5) / 6e4);
+    return `${hours}h ${minutes}m`;
+}
+
+function showQuotaMessage(id) {
+    const row = document.getElementById(id);
+    const time = getTimeUntilReset();
+    const cards = row.querySelectorAll('.card');
+    
+    cards.forEach(card => {
+        if (!card.querySelector('.quota-error')) {
+            const div = document.createElement('div');
+            div.className = 'quota-error';
+            div.innerHTML = `VOTRE QUOTA QUOTIDIEN EST ÉPUISÉ.<br>DISPONIBLE DANS : ${time}`;
+            card.appendChild(div);
+        }
+    });
 }
 
 function render(id, items, isShort) {
     document.getElementById(id).innerHTML = items.map((i, idx) => `
-        <div class="card" onclick="${isShort ? `openShortsFeed(${idx})` : `play('${i.id}','${i.t.replace(/'/g," ")}','${i.img}','${i.url || ''}',${i.yt})`}">
+        <div class="card" onclick="${isShort ? `openShortsFeed(${idx})` : `play('${i.id}','${i.t.replace(/'/g," ")}','${i.img}','',true)`}">
             <img src="${i.img}" loading="lazy"><div class="card-info">${i.t}</div>
         </div>`).join('');
 }
 
+// --- PLAYER SHORTS STYLE YOUTUBE ---
 function openShortsFeed(idx) {
     const f = document.getElementById('shortsFeed');
-    document.getElementById('mainPlayer').style.display='block';
-    document.getElementById('ifr').style.display='none';
-    document.getElementById('ytContainer').style.display='none';
-    f.style.display='block';
+    const player = document.getElementById('mainPlayer');
+    player.style.display = 'block';
+    document.getElementById('ifr').style.display = 'none';
+    document.getElementById('ytContainer').style.display = 'none';
+    f.style.display = 'block';
     
     f.innerHTML = currentShortsList.map(s => `
         <div class="short-slide">
-            <iframe src="https://www.youtube.com/embed/${s.id}?autoplay=1&rel=0&modestbranding=1" allow="autoplay; fullscreen"></iframe>
+            <iframe src="https://www.youtube.com/embed/${s.id}?autoplay=1&rel=0&modestbranding=1&loop=1&playlist=${s.id}" allow="autoplay; fullscreen"></iframe>
+            <div class="short-actions">
+                <div class="action-btn"><i class="fas fa-thumbs-up"></i><span>Like</span></div>
+                <div class="action-btn"><i class="fas fa-comment"></i><span>1.2k</span></div>
+                <div class="action-btn"><i class="fas fa-share"></i><span>Partager</span></div>
+                <div class="action-btn"><i class="fas fa-plus-square"></i><span>S'abonner</span></div>
+            </div>
         </div>`).join('');
     
-    // Positionne sur le short cliqué
     f.children[idx].scrollIntoView();
 }
+
+function play(id, t, img, url, yt) { openFull(url, yt, id); }
 
 function openFull(url, isYT, ytId) {
     const player = document.getElementById('mainPlayer');
@@ -214,7 +282,11 @@ function openFull(url, isYT, ytId) {
     if(isYT) {
         document.getElementById('ifr').style.display = 'none';
         document.getElementById('ytContainer').style.display = 'block';
-        if(ytPlayer) ytPlayer.loadVideoById(ytId);
+        if(ytPlayer && ytPlayer.loadVideoById) {
+            ytPlayer.loadVideoById(ytId);
+        } else {
+            document.getElementById('ytContainer').innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1" allow="autoplay; fullscreen"></iframe>`;
+        }
     } else {
         document.getElementById('ytContainer').style.display = 'none';
         document.getElementById('ifr').style.display = 'block';
@@ -226,9 +298,10 @@ function closePlayer() {
     document.getElementById('mainPlayer').style.display='none'; 
     document.getElementById('ifr').src=''; 
     document.getElementById('shortsFeed').innerHTML=''; 
-    if(ytPlayer) ytPlayer.stopVideo(); 
+    if(ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo(); 
 }
 
+// --- AUTRES CHARGEMENTS ---
 async function loadHero() {
     try {
         const r = await fetchT(`https://api.themoviedb.org/3/movie/now_playing?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`);
@@ -258,10 +331,24 @@ async function loadKitsu() {
     } catch(e) {}
 }
 
-function play(id, t, img, url, yt) { openFull(url, yt, id); }
+function loadTV() {
+    const tvChannels = [
+        {n:"TF1", f:"TF1.png"}, {n:"France 2", f:"France2.png"}, {n:"M6", f:"M6.png"}, 
+        {n:"Canal+ Sport", f:"Canal+ Sport.png"}, {n:"Eurosport", f:"Eurosport.png"}, {n:"Nickelodeon", f:"Nickelodeon.png"}, 
+        {n:"Disney Channel", f:"DisneyChannel.png"}, {n:"SyFy", f:"SyFy.png"}, {n:"Mangas", f:"Mangas.png"}
+    ];
+    document.getElementById('tvRow').innerHTML = tvChannels.map(t => `
+        <div class="card" onclick="openFull('https://vavoo.to')">
+            <span class="badge">LIVE</span>
+            <img src="https://via.placeholder.com/140x200/111/e50914?text=${encodeURIComponent(t.n)}">
+            <div class="card-info">${t.n}</div>
+        </div>`).join('');
+}
+
 function jump(id) { window.scrollTo({top: document.getElementById(id).offsetTop - 160, behavior: 'smooth'}); }
 function setActive(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
 function onYouTubeIframeAPIReady() { ytPlayer = new YT.Player('ytContainer', { height:'100%', width:'100%', playerVars: {'autoplay': 1} }); }
 </script>
 </body>
-</html>
+    </html>
+    
