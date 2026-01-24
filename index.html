@@ -3,263 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FilmangStream - Version Premium Intégrale</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>FilmangStream Pro - Version Intégrale</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://image.tmdb.org">
+    <link rel="preconnect" href="https://i.ytimg.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <style>
-        :root{ --red:#e50914; --dark:#141414; --text:#fff; --card-radius:8px; --transition:all 0.3s ease; }
-        *{box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
-        body{background:var(--dark); color:var(--text); min-height:100vh; padding-bottom:80px; overflow-x:hidden;}
+        :root { --red: #e50914; --black: #0a0a0a; --gray: #1a1a1a; --text: #ffffff; --radius: 10px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+        body { background: var(--black); color: var(--text); font-family: 'Montserrat', sans-serif; padding-top: 130px; padding-bottom: 50px; }
+
+        header { position: fixed; top: 0; width: 100%; background: #0a0a0a; z-index: 1000; border-bottom: 1px solid #222; }
+        .top-bar { display: flex; align-items: center; padding: 10px 20px; gap: 15px; }
+        .logo { font-size: 1.1rem; font-weight: 900; color: var(--red); text-transform: uppercase; letter-spacing: 1px; }
+        .search-box { position: relative; flex-grow: 1; }
+        #search { width: 100%; background: var(--gray); border: none; padding: 10px 15px 10px 35px; border-radius: 20px; color: white; outline: none; transition: 0.3s; }
         
-        header{position:sticky; top:0; background:#111; padding:15px 20px; z-index:100; border-bottom:2px solid var(--red); display:flex; flex-direction:column; gap:10px;}
-        .logo{font-size:1.8rem; font-weight:900; background:linear-gradient(135deg,var(--red) 0%,#ff0a16 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent;}
-        #search{width:100%; padding:12px 20px; border-radius:25px; border:none; background:#222; color:#fff; outline:none; transition: 0.3s;}
-        #search:focus{box-shadow: 0 0 10px rgba(229, 9, 20, 0.5);}
+        nav { display: flex; justify-content: center; gap: 8px; padding: 10px; overflow-x: auto; scrollbar-width: none; }
+        .nav-item { padding: 8px 16px; background: #1a1a1a; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; color: #aaa; transition: 0.3s; border: 1px solid transparent; }
+        .nav-item.active { background: var(--red); color: white; border-color: var(--red); }
 
-        section{padding:20px 0 0 20px;}
-        section h2{margin-bottom:15px; font-size:1.2rem; display:flex; align-items:center; gap:10px; color: #eee;}
-        section h2::before{content:''; width:4px; height:20px; background:var(--red); border-radius:2px;}
+        section { padding: 20px 0 0 20px; scroll-margin-top: 150px; }
+        h2 { font-size: 1rem; margin-bottom: 15px; text-transform: uppercase; color: #eee; display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--red); padding-left: 10px; }
+        .row { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 20px; min-height: 220px; scrollbar-width: none; }
         
-        .row{display:flex; gap:15px; overflow-x:auto; padding-bottom:15px; scroll-behavior:smooth; scrollbar-width: none;}
-        .row::-webkit-scrollbar{display: none;}
+        .card { min-width: 140px; width: 140px; border-radius: var(--radius); overflow: hidden; background: #111; cursor: pointer; position: relative; transition: 0.3s; flex-shrink: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.3); contain: content; }
+        .card:hover { transform: translateY(-5px) scale(1.02); z-index: 10; box-shadow: 0 10px 20px rgba(0,0,0,0.6); }
+        .card img { width: 100%; height: 200px; object-fit: cover; display: block; background: #222; }
+        .card-info { padding: 10px 5px; font-size: 0.7rem; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; color: #ddd; }
+        .badge { position: absolute; top: 8px; left: 8px; background: var(--red); color: white; font-size: 0.55rem; padding: 3px 6px; border-radius: 4px; font-weight: 900; z-index: 2; }
 
-        .card{min-width:140px; width:140px; cursor:pointer; position:relative; transition:var(--transition); border-radius:var(--card-radius); overflow:hidden; background:#1a1a1a; flex-shrink:0;}
-        .card:hover{transform:scale(1.05); z-index:10; box-shadow: 0 10px 20px rgba(0,0,0,0.5);}
-        .card img{width:100%; height:210px; object-fit:cover; display:block;}
-        .card p{text-align:center; padding:8px; font-size:0.8rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#fff;}
+        .yt-actions { position: absolute; top: 8px; right: 8px; display: flex; flex-direction: column; gap: 5px; z-index: 5; opacity: 0; transition: 0.3s; }
+        .card:hover .yt-actions { opacity: 1; }
+        .btn-act { width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(0,0,0,0.8); color: white; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; }
+
+        .overlay { display: none; position: fixed; inset: 0; background: var(--black); z-index: 1500; padding-top: 100px; overflow-y: auto; }
+        #mainPlayer { display: none; position: fixed; inset: 0; background: #000; z-index: 2000; }
+        .btn-close { background: var(--red); color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: bold; font-family: 'Montserrat', sans-serif; display: flex; align-items: center; gap: 8px; }
+        .btn-clear { background: #333; color: #fff; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: bold; margin-left: 10px; font-size: 0.75rem; }
         
-        .play-overlay{position:absolute; top:0; left:0; width:100%; height:210px; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; opacity:0; transition:var(--transition);}
-        .card:hover .play-overlay{opacity:1;}
-        .play-overlay i{font-size:3rem; color:var(--red);}
-        .badge{position:absolute; top:8px; right:8px; background:var(--red); color:#fff; padding:2px 6px; font-size:0.65rem; border-radius:4px; font-weight:bold; z-index:2;}
-
-        /* LECTEUR PLEIN ÉCRAN UNIFIÉ */
-        #mainPlayer{display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:2000; background:#000;}
-        #contentFrame{width:100%; height:100%; border:none;}
-        #ytContainer{width:100%; height:100%; display:none;}
-        .back-btn{position:absolute; top:20px; left:20px; z-index:2001; background:var(--red); border:none; color:white; padding:12px 25px; border-radius:30px; cursor:pointer; font-weight:bold; display:flex; align-items:center; gap:10px; box-shadow: 0 4px 20px rgba(0,0,0,0.8); transition: 0.2s;}
-        .back-btn:active{transform: scale(0.9);}
-
-        /* TOAST API */
-        #apiToast{visibility:hidden; min-width:280px; background-color:#222; color:#fff; text-align:center; border-radius:8px; padding:16px; position:fixed; z-index:3000; left:50%; bottom:100px; transform:translateX(-50%); border:1px solid var(--red); font-weight: bold;}
-        #apiToast.show{visibility:visible; animation:fadein 0.5s, fadeout 0.5s 2.5s;}
-
-        nav{position:fixed; bottom:0; width:100%; background:#111; display:flex; justify-content:space-around; padding:12px 0; border-top:2px solid var(--red); z-index:1000;}
-        nav div{text-align:center; color:#666; font-size:0.7rem; cursor:pointer;}
-        nav div.active{color:var(--red);}
-        nav i{display:block; font-size:1.4rem; margin-bottom:4px;}
-
-        @keyframes fadein{from{bottom:0; opacity:0;} to{bottom:100px; opacity:1;}}
-        @keyframes fadeout{from{bottom:100px; opacity:1;} to{bottom:0; opacity:0;}}
+        iframe, #ytContainer { width: 100%; height: 100%; border: none; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; padding: 20px; }
+        #apiToast { visibility: hidden; min-width: 250px; background: #222; color: #fff; text-align: center; border-radius: 30px; padding: 12px; position: fixed; z-index: 3000; left: 50%; bottom: 40px; transform: translateX(-50%); border: 1px solid var(--red); font-size: 0.85rem; }
+        #apiToast.show { visibility: visible; animation: fadein 0.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 40px; opacity: 1;} }
     </style>
 </head>
 <body>
 
-<header id="siteHeader">
-    <div class="logo">FILMANGSTREAM</div>
-    <input id="search" placeholder="Films, Séries, Musique, Shorts...">
+<header>
+    <div class="top-bar">
+        <div class="logo">FILMANGSTREAM</div>
+        <div class="search-box"><input id="search" placeholder="Rechercher Films, TV, Musique..."></div>
+    </div>
+    <nav>
+        <div class="nav-item active" onclick="closeOverlays(); setActive(this); window.scrollTo(0,0)">Accueil</div>
+        <div class="nav-item" onclick="jump('tvSection'); setActive(this)">Direct TV</div>
+        <div class="nav-item" onclick="jump('streamSection'); setActive(this)">Streaming</div>
+        <div class="nav-item" onclick="jump('filmSection'); setActive(this)">Films</div>
+        <div class="nav-item" onclick="jump('musicSection'); setActive(this)">Musique</div>
+        <div class="nav-item" onclick="openPage('favPage'); setActive(this)">⭐ Ma Liste</div>
+        <div class="nav-item" onclick="openPage('histPage'); setActive(this)">🕒 Historique</div>
+    </nav>
 </header>
 
-<div id="homeContent">
-    <section>
-        <h2>📡 TV DIRECT & PREMIUM</h2>
-        <div class="row" id="tvDirect"></div>
+<main id="main">
+    <section id="tvSection">
+        <h2><i class="fas fa-tv"></i> Direct TV Premium</h2>
+        <div class="row" id="tvRow"></div>
     </section>
-    
-    <section>
-        <h2>🚀 Multi-Streaming</h2>
+
+    <section id="streamSection">
+        <h2><i class="fas fa-play-circle"></i> Multi-Streaming</h2>
         <div class="row">
-            <div class="card" onclick="openFull('https://www.netflix.com')"><img src="images/netflix.png" onerror="this.src='https://via.placeholder.com/140x210?text=Netflix'"><p>Netflix</p><span class="badge">VOD</span></div>
-            <div class="card" onclick="openFull('https://www.crunchyroll.com')"><img src="images/crunchyroll.png" onerror="this.src='https://via.placeholder.com/140x210?text=Crunchyroll'"><p>Crunchyroll</p><span class="badge">ANIME</span></div>
-            <div class="card" onclick="openFull('https://www.primevideo.com')"><img src="images/primevideo.png" onerror="this.src='https://via.placeholder.com/140x210?text=Prime'"><p>Prime Video</p><span class="badge">VOD</span></div>
-            <div class="card" onclick="openFull('https://anime-sama.store/')"><img src="images/animesama.png" onerror="this.src='https://via.placeholder.com/140x210?text=AnimeSama'"><p>Anime Sama</p><span class="badge">FREE</span></div>
+            <div class="card" onclick="openFull('https://www.netflix.com')">
+                <span class="badge">VOD</span>
+                <img src="images/netflix.png" loading="lazy" onerror="this.src='https://via.placeholder.com/140x200?text=Netflix'">
+                <div class="card-info">Netflix</div>
+            </div>
+            <div class="card" onclick="openFull('https://www.crunchyroll.com')">
+                <span class="badge">ANIME</span>
+                <img src="images/crunchyroll.png" loading="lazy" onerror="this.src='https://via.placeholder.com/140x200?text=Crunchyroll'">
+                <div class="card-info">Crunchyroll</div>
+            </div>
+            <div class="card" onclick="openFull('https://www.primevideo.com')">
+                <span class="badge">VOD</span>
+                <img src="images/primevideo.png" loading="lazy" onerror="this.src='https://via.placeholder.com/140x200?text=Prime+Video'">
+                <div class="card-info">Prime Video</div>
+            </div>
+            <div class="card" onclick="openFull('https://anime-sama.store/')">
+                <span class="badge">FREE</span>
+                <img src="images/animesama.png" loading="lazy" onerror="this.src='https://via.placeholder.com/140x200?text=AnimeSama'">
+                <div class="card-info">Anime Sama</div>
+            </div>
         </div>
     </section>
 
-    <section><h2>🎬 Films Populaires (TMDB)</h2><div class="row" id="filmsRow"></div></section>
-    <section><h2>📺 Séries Populaires (TMDB)</h2><div class="row" id="seriesRow"></div></section>
-    <section><h2>🔥 Anime & Mangas (Kitsu)</h2><div class="row" id="animeRow"></div></section>
-    
-    <section><h2>🎵 Musique Tendance</h2><div class="row" id="musicRow"></div></section>
-    
-    <section><h2>📱 Shorts Infini (YouTube)</h2><div class="row" id="shortsRow"></div></section>
+    <section id="filmSection"><h2><i class="fas fa-film"></i> Films (TMDB)</h2><div class="row" id="filmRow"></div></section>
+    <section id="seriesSection"><h2><i class="fas fa-video"></i> Séries (TMDB)</h2><div class="row" id="seriesRow"></div></section>
+    <section id="animeSection"><h2><i class="fas fa-dragon"></i> Animes & Mangas</h2><div class="row" id="animeRow"></div></section>
+    <section id="musicSection"><h2><i class="fas fa-music"></i> Musique Tendance</h2><div class="row" id="musicRow"></div></section>
+    <section id="shortsSection"><h2><i class="fas fa-bolt"></i> YouTube Shorts</h2><div class="row" id="shortsRow"></div></section>
+</main>
+
+<div id="histPage" class="overlay">
+    <div style="padding:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap; gap: 10px;">
+        <h2><i class="fas fa-history"></i> Mon Historique</h2>
+        <div>
+            <button onclick="clearHistory()" class="btn-clear"><i class="fas fa-trash"></i> Effacer tout</button>
+            <button onclick="closeOverlays()" class="btn-close"><i class="fas fa-arrow-left"></i> Retour</button>
+        </div>
+    </div>
+    <div class="grid" id="histGrid"></div>
+</div>
+
+<div id="favPage" class="overlay">
+    <div style="padding:20px; display:flex; justify-content:space-between; align-items:center;">
+        <h2><i class="fas fa-star"></i> Ma Liste</h2>
+        <button onclick="closeOverlays()" class="btn-close"><i class="fas fa-arrow-left"></i> Retour</button>
+    </div>
+    <div class="grid" id="favGrid"></div>
 </div>
 
 <div id="mainPlayer">
-    <button class="back-btn" onclick="closeFull()"><i class="fas fa-arrow-left"></i> RETOUR À L'ACCUEIL</button>
-    <iframe id="contentFrame" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+    <button class="btn-close" onclick="closePlayer()" style="position:absolute; top:20px; left:20px; z-index:2001;"><i class="fas fa-times"></i> QUITTER</button>
+    <iframe id="ifr" allow="autoplay; encrypted-media; fullscreen" allowfullscreen loading="lazy"></iframe>
     <div id="ytContainer"></div>
 </div>
 
-<div id="apiToast">Bascule vers la clé API YouTube suivante...</div>
+<div id="apiToast">Rotation de la clé API...</div>
 
-<nav id="siteNav">
-    <div class="active"><i class="fa fa-home"></i>Accueil</div>
-    <div><i class="fa fa-fire"></i>Tendance</div>
-    <div><i class="fa fa-heart"></i>Favoris</div>
-    <div><i class="fa fa-history"></i>Historique</div>
-</nav>
-
-<script src="https://www.youtube.com/iframe_api"></script>
+<script src="https://www.youtube.com/iframe_api" async></script>
 <script>
-// CONFIGURATION DES 3 CLÉS API
-const YT_KEYS = [
-    "AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc", 
-    "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY", 
-    "AIzaSyBEos5Lzr0WbleEdtP_Gi7kMHcxaL9hhR0"
-];
-let currentKeyIdx = 0;
-const TMDB_KEY = "1073e4d36ef71f912da093a5eb38f091";
-let ytPlayer;
+const YT_KEYS = ["AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc", "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY", "AIzaSyBEos5Lzr0WbleEdtP_Gi7kMHcxaL9hhR0"];
+let currentKeyIdx = 0, ytPlayer;
+let history = JSON.parse(localStorage.getItem('h')) || [];
+let favs = JSON.parse(localStorage.getItem('f')) || [];
 
-// Liste des chaînes TV issue du 2ème code
-const TV_CHANNELS = [
-    { name: "TF1" }, { name: "France 2" }, { name: "M6" }, 
-    { name: "Canal+ Sport" }, { name: "Canal+ Family" }, { name: "Eurosport" },
-    { name: "Nickelodeon" }, { name: "Disney Channel" }, { name: "SyFy" }, 
-    { name: "Warner TV" }, { name: "J-One" }, { name: "Mangas" }
-];
+window.onload = () => {
+    requestAnimationFrame(loadTV);
+    setTimeout(() => {
+        loadTMDB('filmRow', 'movie');
+        loadTMDB('seriesRow', 'tv');
+        loadKitsu();
+        fetchYT('musicRow', 'Hits Musique 2026');
+        fetchYT('shortsRow', 'Shorts viral tendance');
+    }, 50); 
+};
 
-// Initialisation Lecteur YouTube
-function onYouTubeIframeAPIReady() {
-    ytPlayer = new YT.Player('ytContainer', {
-        height: '100%', width: '100%',
-        playerVars: { 'autoplay': 1, 'modestbranding': 1, 'rel': 0 }
-    });
-}
-
-// FONCTION PLEIN ÉCRAN (Inspirée du 2ème code)
-function requestFullScreen(element) {
-    if (element.requestFullscreen) { element.requestFullscreen(); }
-    else if (element.webkitRequestFullscreen) { element.webkitRequestFullscreen(); }
-    else if (element.mozRequestFullScreen) { element.mozRequestFullScreen(); }
-    else if (element.msRequestFullscreen) { element.msRequestFullscreen(); }
-}
-
-// FONCTION D'OUVERTURE PLEIN ÉCRAN
-function openFull(url, isYT = false, ytId = "") {
-    document.getElementById('mainPlayer').style.display = 'block';
-    document.body.style.overflow = 'hidden'; 
-    const frame = document.getElementById('contentFrame');
-    const ytDiv = document.getElementById('ytContainer');
-
-    if (isYT) {
-        frame.style.display = 'none';
-        ytDiv.style.display = 'block';
-        ytPlayer.loadVideoById(ytId);
-    } else {
-        ytDiv.style.display = 'none';
-        frame.style.display = 'block';
-        // Transformation URL Youtube si nécessaire
-        let finalUrl = url;
-        if(url.includes("youtube.com/watch?v=")) finalUrl = url.replace("watch?v=", "embed/") + "?autoplay=1";
-        frame.src = finalUrl;
-        
-        // Auto-fullscreen après un court délai pour laisser l'iframe charger
-        setTimeout(() => requestFullScreen(frame), 1000);
-    }
-}
-
-function closeFull() {
-    document.getElementById('mainPlayer').style.display = 'none';
-    document.body.style.overflow = 'auto';
-    document.getElementById('contentFrame').src = "";
-    if(ytPlayer) ytPlayer.stopVideo();
-    if (document.fullscreenElement) { document.exitFullscreen(); }
-}
-
-// CHARGEMENT YOUTUBE (MUSIQUE & SHORTS)
-async function fetchYT(id, q, append=false) {
-    const row = document.getElementById(id);
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=10&key=${YT_KEYS[currentKeyIdx]}`;
-    
-    try {
-        const res = await fetch(url);
-        const data = await res.json();
-        
-        if(data.error && data.error.code === 403 && currentKeyIdx < YT_KEYS.length - 1) {
-            currentKeyIdx++;
-            document.getElementById("apiToast").className = "show";
-            setTimeout(() => { document.getElementById("apiToast").className = ""; }, 3000);
-            return fetchYT(id, q, append);
-        }
-        
-        const html = data.items.map(v => `
-            <div class="card" onclick="openFull('', true, '${v.id.videoId}')">
-                <img src="${v.snippet.thumbnails.high.url}">
-                <div class="play-overlay"><i class="fas fa-play"></i></div>
-                <p>${v.snippet.title}</p>
-            </div>`).join('');
-        if(append) row.innerHTML += html; else row.innerHTML = html;
-    } catch(e) {}
-}
-
-// CHARGEMENT TMDB (FILMS & SÉRIES)
-async function loadTMDB(id, type) {
-    const row = document.getElementById(id);
-    const url = `https://api.themoviedb.org/3/${type}/popular?api_key=${TMDB_KEY}&language=fr-FR`;
-    try {
-        const res = await fetch(url);
-        const data = await res.json();
-        row.innerHTML = data.results.slice(0,12).map(m => `
-            <div class="card" onclick="openFull('https://www.themoviedb.org/${type}/${m.id}')">
-                <img src="https://image.tmdb.org/t/p/w500${m.poster_path}">
-                <div class="play-overlay"><i class="fas fa-eye"></i></div>
-                <p>${m.title || m.name}</p>
-            </div>`).join('');
-    } catch(e) {}
-}
-
-// CHARGEMENT KITSU (MANGAS)
-async function loadKitsu() {
-    const row = document.getElementById('animeRow');
-    const res = await fetch("https://kitsu.io/api/edge/anime?page[limit]=12&sort=-favoritesCount");
-    const data = await res.json();
-    row.innerHTML = data.data.map(a => `
-        <div class="card" onclick="openFull('https://kitsu.io/anime/${a.id}')">
-            <img src="${a.attributes.posterImage.medium}">
-            <div class="play-overlay"><i class="fas fa-book-open"></i></div>
-            <p>${a.attributes.canonicalTitle}</p>
+// --- LOGIQUE TV CORRIGÉE (Noms avec + et espaces) ---
+function loadTV() {
+    const tvChannels = [
+        {n:"TF1", f:"TF1.png"}, {n:"France 2", f:"France2.png"}, {n:"M6", f:"M6.png"}, 
+        {n:"Canal+ Sport", f:"Canal+ Sport.png"}, 
+        {n:"Canal+ Family", f:"Canal+ Family.png"}, 
+        {n:"Eurosport", f:"Eurosport.png"}, {n:"Nickelodeon", f:"Nickelodeon.png"}, 
+        {n:"Disney Channel", f:"DisneyChannel.png"}, {n:"SyFy", f:"SyFy.png"}, 
+        {n:"Warner TV", f:"WarnerTV.png"}, {n:"J-One", f:"J-One.png"}, {n:"Mangas", f:"Mangas.png"}
+    ];
+    document.getElementById('tvRow').innerHTML = tvChannels.map(t => `
+        <div class="card" onclick="play('tv_${t.n.replace(/\s+/g, '')}','${t.n}','','https://vavoo.to',false)">
+            <span class="badge">LIVE</span>
+            <img src="images/${t.f}" loading="lazy" onerror="this.src='https://via.placeholder.com/140x200/111/e50914?text=${encodeURIComponent(t.n)}'">
+            <div class="card-info">${t.n}</div>
         </div>`).join('');
 }
 
-// CHARGEMENT TV (Inspiré de ton 2ème code)
-function loadTV() {
-    const container = document.getElementById('tvDirect');
-    container.innerHTML = TV_CHANNELS.map(ch => {
-        const fileName = ch.name.replace(/\s+/g, '');
-        return `
-            <div class="card" onclick="openFull('https://vavoo.to')">
-                <img src="images/${fileName}.png" onerror="this.src='https://via.placeholder.com/140x210?text=${ch.name}'">
-                <div class="play-overlay"><i class="fas fa-tv"></i></div>
-                <p>${ch.name}</p><span class="badge">LIVE</span>
-            </div>`;
-    }).join("");
+// --- LOGIQUE HISTORIQUE ---
+function clearHistory() {
+    if(confirm("Voulez-vous supprimer tout votre historique ?")) {
+        history = [];
+        localStorage.setItem('h', JSON.stringify(history));
+        openPage('histPage'); // Rafraîchir l'affichage
+    }
 }
 
-// INFINITE SCROLL POUR LES SHORTS
-document.getElementById('shortsRow').onscroll = function() {
-    if(this.scrollLeft + this.clientWidth >= this.scrollWidth - 50) {
-        fetchYT('shortsRow', 'Shorts tendance viral', true);
-    }
-};
+// --- LOGIQUE API ---
+async function loadTMDB(id, type) {
+    const r = await fetch(`https://api.themoviedb.org/3/${type}/popular?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`);
+    const d = await r.json();
+    const items = d.results.slice(0,10).map(m => ({ id: m.id, t: m.title||m.name, img: `https://image.tmdb.org/t/p/w300${m.poster_path}`, url: `https://www.themoviedb.org/${type}/${m.id}`, yt: false }));
+    render(id, items, false);
+}
 
-// RECHERCHE UNIFIÉE
-document.getElementById('search').addEventListener('keypress', (e) => {
-    if(e.key === 'Enter') {
-        const q = e.target.value;
-        fetchYT('musicRow', q + " music");
-        fetchYT('shortsRow', q + " shorts");
-    }
-});
+async function loadKitsu() {
+    const r = await fetch("https://kitsu.io/api/edge/anime?page[limit]=10&sort=-favoritesCount");
+    const d = await r.json();
+    const items = d.data.map(a => ({ id: a.id, t: a.attributes.canonicalTitle, img: a.attributes.posterImage.medium, url: `https://kitsu.io/anime/${a.id}`, yt: false }));
+    render('animeRow', items, false);
+}
 
-window.onload = () => {
-    loadTV();
-    loadTMDB('filmsRow', 'movie');
-    loadTMDB('seriesRow', 'tv');
-    loadKitsu();
-    fetchYT('musicRow', 'Hits Musique 2026');
-    fetchYT('shortsRow', 'Shorts viral tendance');
-};
+async function fetchYT(id, q) {
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=10&key=${YT_KEYS[currentKeyIdx]}`;
+    try {
+        const r = await fetch(url);
+        const d = await r.json();
+        if(d.error && d.error.code === 403 && currentKeyIdx < YT_KEYS.length - 1) {
+            currentKeyIdx++; showToast(); return fetchYT(id, q);
+        }
+        if(d.items) {
+            const items = d.items.map(v => ({ id: v.id.videoId, t: v.snippet.title, img: v.snippet.thumbnails.high.url, yt: true }));
+            render(id, items, true);
+        }
+    } catch(e) {}
+}
+
+function render(id, items, isYT) {
+    document.getElementById(id).innerHTML = items.map(i => `
+        <div class="card">
+            ${isYT ? `<div class="yt-actions"><button class="btn-act" onclick="saveFav('${i.id}','${i.t.replace(/'/g," ")}','${i.img}')"><i class="fas fa-star"></i></button></div>` : ''}
+            <div onclick="play('${i.id}','${i.t.replace(/'/g," ")}','${i.img}','${i.url || ''}',${i.yt})">
+                <img src="${i.img}" loading="lazy" alt="${i.t}">
+                <div class="card-info">${i.t}</div>
+            </div>
+        </div>`).join('');
+}
+
+function play(id, t, img, url, yt) {
+    history = [{id, t, img, url, yt}, ...history.filter(x => x.id !== id)].slice(0,30);
+    localStorage.setItem('h', JSON.stringify(history));
+    openFull(url, yt, id);
+}
+
+function openFull(url, isYT, ytId) {
+    document.getElementById('mainPlayer').style.display = 'block';
+    if(isYT) {
+        document.getElementById('ifr').style.display='none';
+        document.getElementById('ytContainer').style.display='block';
+        if(ytPlayer) ytPlayer.loadVideoById(ytId);
+    } else {
+        document.getElementById('ytContainer').style.display='none';
+        document.getElementById('ifr').style.display='block';
+        document.getElementById('ifr').src = url;
+    }
+}
+
+function closePlayer() { document.getElementById('mainPlayer').style.display='none'; document.getElementById('ifr').src=''; if(ytPlayer) ytPlayer.stopVideo(); }
+function saveFav(id, t, img) {
+    favs = [{id, t, img, yt:true}, ...favs.filter(x => x.id !== id)];
+    localStorage.setItem('f', JSON.stringify(favs));
+    alert("Ajouté à la liste !");
+}
+function closeOverlays() { document.querySelectorAll('.overlay').forEach(o => o.style.display='none'); }
+function openPage(id) { 
+    closeOverlays(); document.getElementById(id).style.display='block'; 
+    const target = id === 'histPage' ? 'histGrid' : 'favGrid';
+    const data = id === 'histPage' ? history : favs;
+    document.getElementById(target).innerHTML = data.length ? data.map(i => `<div class="card" onclick="play('${i.id}','${i.t.replace(/'/g," ")}','${i.img}','${i.url}',${i.yt})"><img src="${i.img}"><div class="card-info">${i.t}</div></div>`).join('') : '<p style="padding:20px; color:#888;">Vide...</p>';
+}
+function jump(id) { closeOverlays(); window.scrollTo({top: document.getElementById(id).offsetTop - 160, behavior: 'smooth'}); }
+function setActive(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
+function showToast() { const t = document.getElementById("apiToast"); t.className = "show"; setTimeout(() => t.className = "", 3000); }
+function onYouTubeIframeAPIReady() { ytPlayer = new YT.Player('ytContainer', { height:'100%', width:'100%', playerVars: {'autoplay': 1, 'rel': 0} }); }
+
+document.getElementById('search').addEventListener('keypress', (e) => { if(e.key === 'Enter') { fetchYT('musicRow', e.target.value); jump('musicSection'); } });
 </script>
 </body>
 </html>
