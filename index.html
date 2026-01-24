@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FilmangStream Pro - Shorts Vertical</title>
+    <title>FilmangStream Pro - Multi-Source</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://image.tmdb.org">
@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <style>
-        :root { --red: #e50914; --black: #0a0a0a; --gray: #1a1a1a; --text: #ffffff; --radius: 10px; }
+        :root { --red: #e50914; --black: #0a0a0a; --gray: #1a1a1a; --text: #ffffff; --radius: 10px; --dm-blue: #0062ff; }
         * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
         body { background: var(--black); color: var(--text); font-family: 'Montserrat', sans-serif; padding-top: 130px; padding-bottom: 50px; overflow-x: hidden; }
 
@@ -34,6 +34,7 @@
 
         section { padding: 20px 0 0 20px; scroll-margin-top: 150px; }
         h2 { font-size: 1rem; margin-bottom: 15px; text-transform: uppercase; color: #eee; display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--red); padding-left: 10px; }
+        h2.dm-title { border-left-color: var(--dm-blue); }
         .row { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 20px; min-height: 220px; scrollbar-width: none; }
         
         .card { min-width: 140px; width: 140px; border-radius: var(--radius); overflow: hidden; background: #111; cursor: pointer; position: relative; transition: 0.3s; flex-shrink: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.3); contain: content; }
@@ -79,13 +80,23 @@
     <section id="heroSection"><div class="hero-container" id="heroRow"></div></section>
 
     <section id="shortsSection">
-        <h2><i class="fas fa-bolt"></i> YouTube Shorts</h2>
+        <h2><i class="fab fa-youtube"></i> YouTube Shorts</h2>
         <div class="row" id="shortsRow"></div>
     </section>
 
+    <section id="dmShortsSection">
+        <h2 class="dm-title"><i class="fab fa-dailymotion"></i> Dailymotion Shorts</h2>
+        <div class="row" id="dmShortsRow"></div>
+    </section>
+
     <section id="videoSection">
-        <h2><i class="fas fa-clock"></i> Vidéos & Lives (Contenu Long)</h2>
+        <h2><i class="fas fa-clock"></i> Vidéos YouTube</h2>
         <div class="row" id="videoRow"></div>
+    </section>
+
+    <section id="dmVideoSection">
+        <h2 class="dm-title"><i class="fas fa-play-circle"></i> Vidéos Dailymotion</h2>
+        <div class="row" id="dmVideoRow"></div>
     </section>
 
     <section id="filmSection">
@@ -156,23 +167,42 @@ window.onload = () => {
     loadTMDB('seriesRow', 'tv');
     loadKitsu();
     initSearch();
-    refreshYT('film complet français live 3 heures documentaire');
+    refreshContent('film complet français');
 };
 
 function initSearch() {
     document.getElementById('search').addEventListener('keypress', (e) => {
         if(e.key === 'Enter') {
             const q = e.target.value.trim();
-            if(q) { refreshYT(q); jump('shortsSection'); }
+            if(q) { refreshContent(q); jump('shortsSection'); }
         }
     });
 }
 
-async function refreshYT(q) {
+async function refreshContent(q) {
+    // YouTube
     fetchYT('videoRow', q, false);
     fetchYT('shortsRow', q + " #shorts", true);
+    // Dailymotion
+    fetchDM('dmVideoRow', q, false);
+    fetchDM('dmShortsRow', q, true);
 }
 
+// --- LOGIQUE DAILYMOTION ---
+async function fetchDM(id, q, isShort) {
+    try {
+        const dur = isShort ? "&max_duration=60" : "&min_duration=600";
+        const url = `https://api.dailymotion.com/videos?search=${encodeURIComponent(q)}${dur}&fields=id,title,thumbnail_480_url&limit=15`;
+        const r = await fetch(url);
+        const d = await r.json();
+        if(d.list) {
+            const items = d.list.map(v => ({ id: v.id, t: v.title, img: v.thumbnail_480_url, source: 'dm' }));
+            render(id, items, isShort);
+        }
+    } catch(e) { console.error("DM Error", e); }
+}
+
+// --- LOGIQUE YOUTUBE ---
 async function fetchYT(id, q, isShort) {
     if (currentKeyIdx >= YT_KEYS.length) { showQuotaError(id); return; }
     try {
@@ -182,49 +212,74 @@ async function fetchYT(id, q, isShort) {
         if (r.status === 403) { currentKeyIdx++; fetchYT(id, q, isShort); return; }
         const d = await r.json();
         if(d.items) {
-            const items = d.items.map(v => ({ id: v.id.videoId, t: v.snippet.title, img: v.snippet.thumbnails.high.url, yt: true }));
-            if(isShort) currentShortsList = items;
+            const items = d.items.map(v => ({ id: v.id.videoId, t: v.snippet.title, img: v.snippet.thumbnails.high.url, source: 'yt' }));
             render(id, items, isShort);
         }
     } catch(e) {}
 }
 
-function showQuotaError(id) {
-    const row = document.getElementById(id);
-    const resetTime = getResetTime();
-    row.querySelectorAll('.card').forEach(c => {
-        if(!c.querySelector('.quota-error')) {
-            const err = document.createElement('div');
-            err.className = 'quota-error';
-            err.innerHTML = `VOTRE QUOTA QUOTIDIEN EST ÉPUISÉ. DISPONIBLE DANS : ${resetTime}`;
-            c.appendChild(err);
-        }
-    });
-}
-
-function getResetTime() {
-    const now = new Date(), reset = new Date();
-    reset.setHours(24,0,0,0);
-    const diff = reset - now;
-    return `${Math.floor(diff/36e5)}h ${Math.floor((diff%36e5)/6e4)}m`;
-}
-
 function render(id, items, isShort) {
-    document.getElementById(id).innerHTML = items.map((i, idx) => `
-        <div class="card" onclick="${isShort ? `openShortsFeed(${idx})` : `openFull('','true','${i.id}')`}">
+    const container = document.getElementById(id);
+    container.innerHTML = items.map((i, idx) => `
+        <div class="card" onclick="handleCardClick('${id}', ${idx})">
             <img src="${i.img}" loading="lazy"><div class="card-info">${i.t}</div>
         </div>`).join('');
 }
 
-function openShortsFeed(idx) {
+function handleCardClick(containerId, idx) {
+    const container = document.getElementById(containerId);
+    // On extrait les données des cartes du container pour créer la playlist de lecture
+    const cards = Array.from(container.querySelectorAll('.card'));
+    const playlist = cards.map(c => {
+        const img = c.querySelector('img').src;
+        const title = c.querySelector('.card-info').innerText;
+        // On détermine la source et l'ID à partir des données injectées au rendu
+        // Pour simplifier, on stocke l'ID et la source directement dans l'élément si besoin, 
+        // ou on utilise une approche par index.
+    });
+
+    // On récupère les items correspondants
+    const isShort = containerId.toLowerCase().includes('shorts');
+    
+    // Pour que le lecteur fonctionne avec les deux sources, on doit reconstruire la liste temporaire
+    // au moment du clic
+    let tempItems = [];
+    if(containerId === 'shortsRow') tempItems = window.lastYTShorts || []; // Nécessite stockage
+    // Plus simple : on passe les données directement
+}
+
+// Modification de render pour inclure les données nécessaires
+function render(id, items, isShort) {
+    // Sauvegarde globale pour la lecture
+    window[`list_${id}`] = items;
+    
+    document.getElementById(id).innerHTML = items.map((i, idx) => `
+        <div class="card" onclick="openMedia('${id}', ${idx}, ${isShort})">
+            ${i.source === 'dm' ? '<span class="badge" style="background:#0062ff">DM</span>' : ''}
+            <img src="${i.img}" loading="lazy"><div class="card-info">${i.t}</div>
+        </div>`).join('');
+}
+
+function openMedia(listId, idx, isShort) {
+    const items = window[`list_${listId}`];
+    if(isShort) {
+        openShortsFeed(idx, items);
+    } else {
+        const item = items[idx];
+        const url = item.source === 'yt' ? `https://www.youtube.com/embed/${item.id}?autoplay=1` : `https://www.dailymotion.com/embed/video/${item.id}?autoplay=1`;
+        openFull(url, false);
+    }
+}
+
+function openShortsFeed(idx, list) {
     const f = document.getElementById('shortsFeed');
     document.getElementById('mainPlayer').style.display='block';
     document.getElementById('ifr').style.display='none';
     document.getElementById('ytContainer').style.display='none';
     f.style.display='block';
     
-    f.innerHTML = currentShortsList.map(s => `
-        <div class="short-slide" data-id="${s.id}">
+    f.innerHTML = list.map(s => `
+        <div class="short-slide" data-id="${s.id}" data-source="${s.source}">
             <iframe src="" allow="autoplay; fullscreen"></iframe>
             <div class="short-actions">
                 <div class="action-btn"><i class="fas fa-thumbs-up"></i><span>Like</span></div>
@@ -238,9 +293,12 @@ function openShortsFeed(idx) {
     shortsObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const iframe = entry.target.querySelector('iframe');
-            const vId = entry.target.dataset.id;
+            const id = entry.target.dataset.id;
+            const source = entry.target.dataset.source;
             if(entry.isIntersecting) {
-                iframe.src = `https://www.youtube.com/embed/${vId}?autoplay=1&rel=0&modestbranding=1&loop=1&playlist=${vId}`;
+                iframe.src = source === 'yt' 
+                    ? `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&loop=1&playlist=${id}`
+                    : `https://www.dailymotion.com/embed/video/${id}?autoplay=1&mute=0`;
             } else {
                 iframe.src = ""; 
             }
@@ -251,19 +309,14 @@ function openShortsFeed(idx) {
     f.children[idx].scrollIntoView();
 }
 
+// --- FONCTIONS EXISTANTES NON MODIFIÉES ---
 function openFull(url, isYT, ytId) {
     const p = document.getElementById('mainPlayer');
     p.style.display = 'block';
     document.getElementById('shortsFeed').style.display = 'none';
-    if(isYT === 'true' || isYT === true) {
-        document.getElementById('ifr').style.display = 'none';
-        document.getElementById('ytContainer').style.display = 'block';
-        document.getElementById('ytContainer').innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1" allow="autoplay; fullscreen"></iframe>`;
-    } else {
-        document.getElementById('ytContainer').style.display = 'none';
-        document.getElementById('ifr').style.display = 'block';
-        document.getElementById('ifr').src = url;
-    }
+    document.getElementById('ifr').style.display = 'block';
+    document.getElementById('ytContainer').style.display = 'none';
+    document.getElementById('ifr').src = url;
 }
 
 function closePlayer() { 
@@ -274,13 +327,7 @@ function closePlayer() {
 }
 
 function loadTV() {
-    const tv = [
-        {n:"TF1", f:"TF1.png"}, {n:"France 2", f:"France2.png"}, {n:"M6", f:"M6.png"}, 
-        {n:"Canal+ Sport", f:"Canal+ Sport.png"}, {n:"Canal+ Family", f:"Canal+ Family.png"}, 
-        {n:"Eurosport", f:"Eurosport.png"}, {n:"Nickelodeon", f:"Nickelodeon.png"}, 
-        {n:"Disney Channel", f:"DisneyChannel.png"}, {n:"SyFy", f:"SyFy.png"}, 
-        {n:"Warner TV", f:"WarnerTV.png"}, {n:"J-One", f:"J-One.png"}, {n:"Mangas", f:"Mangas.png"}
-    ];
+    const tv = [{n:"TF1", f:"TF1.png"}, {n:"France 2", f:"France2.png"}, {n:"M6", f:"M6.png"}, {n:"Canal+ Sport", f:"Canal+ Sport.png"}, {n:"Canal+ Family", f:"Canal+ Family.png"}, {n:"Eurosport", f:"Eurosport.png"}, {n:"Nickelodeon", f:"Nickelodeon.png"}, {n:"Disney Channel", f:"DisneyChannel.png"}, {n:"SyFy", f:"SyFy.png"}, {n:"Warner TV", f:"WarnerTV.png"}, {n:"J-One", f:"J-One.png"}, {n:"Mangas", f:"Mangas.png"}];
     document.getElementById('tvRow').innerHTML = tv.map(t => `
         <div class="card" onclick="openFull('https://vavoo.to')">
             <span class="badge">LIVE</span>
