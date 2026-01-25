@@ -8,21 +8,49 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         :root { --red: #e50914; --black: #0a0a0a; --gray: #1a1a1a; --text: #ffffff; --radius: 10px; --dm-blue: #0062ff; }
         * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
         body { background: var(--black); color: var(--text); font-family: 'Montserrat', sans-serif; padding-top: 130px; overflow-x: hidden; }
+
+        /* --- INTERFACE DE CONNEXION PREMIUM --- */
+        #authOverlay {
+            position: fixed; inset: 0; background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+            z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        .auth-card {
+            background: rgba(26, 26, 26, 0.95); width: 100%; max-width: 420px; padding: 40px;
+            border-radius: 20px; border: 1px solid #333; text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+        }
+        .auth-card h1 { font-weight: 900; color: var(--red); font-size: 1.5rem; margin-bottom: 10px; }
+        .auth-card p { color: #888; font-size: 0.9rem; margin-bottom: 30px; }
+        
+        .auth-input {
+            width: 100%; background: #0a0a0a; border: 1px solid #333; padding: 15px;
+            border-radius: 12px; color: white; margin-bottom: 20px; outline: none; transition: 0.3s;
+        }
+        .auth-input:focus { border-color: var(--red); }
+
+        .btn-pro {
+            width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: 700;
+            cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-main { background: var(--red); color: white; margin-bottom: 15px; }
+        .btn-main:hover { background: #ff0f1b; transform: translateY(-2px); }
+        .btn-google-pro { background: white; color: #000; margin-top: 10px; }
+        
+        #mainContent { display: none; } /* Caché par défaut */
+        /* --- FIN INTERFACE AUTH --- */
 
         header { position: fixed; top: 0; width: 100%; background: #0a0a0a; z-index: 1000; border-bottom: 1px solid #222; }
         .top-bar { display: flex; align-items: center; padding: 10px 20px; gap: 15px; }
         .logo { font-size: 1.1rem; font-weight: 900; color: var(--red); text-transform: uppercase; cursor: pointer; }
         .search-box { position: relative; flex-grow: 1; display: flex; align-items: center; gap: 10px; }
         #search { width: 100%; background: var(--gray); border: none; padding: 10px 15px 10px 35px; border-radius: 20px; color: white; outline: none; }
-
-        /* Style pour le bouton Google */
+        
         .btn-auth { background: white; color: black; border: none; padding: 8px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
-        .btn-auth i { color: #4285F4; font-size: 0.9rem; }
+        .btn-auth i { font-size: 0.9rem; }
 
         nav { display: flex; justify-content: center; gap: 8px; padding: 10px; overflow-x: auto; scrollbar-width: none; }
         .nav-item { padding: 8px 16px; background: #1a1a1a; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; color: #aaa; transition: 0.3s; }
@@ -36,9 +64,9 @@
         .hero-title { font-size: 1.6rem; font-weight: 900; }
 
         section { padding: 20px 0 0 20px; }
-        h2 { font-size: 1rem; margin-bottom: 15px; text-transform: uppercase; border-left: 4px solid var(--red); }
+        h2 { font-size: 1rem; margin-bottom: 15px; text-transform: uppercase; border-left: 4px solid var(--red); padding-left: 10px; }
         .row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 20px; scrollbar-width: none; }
-
+        
         .card { min-width: 140px; width: 140px; border-radius: var(--radius); overflow: hidden; background: #111; cursor: pointer; position: relative; transition: 0.3s; flex-shrink: 0; }
         .card img { width: 100%; height: 200px; object-fit: cover; display: block; background: #222; }
         .card-info { padding: 8px 5px; font-size: 0.7rem; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #ddd; }
@@ -48,57 +76,81 @@
         #shortsFeed { height: 100dvh; width: 100vw; overflow-y: scroll; scroll-snap-type: y mandatory; display: none; scrollbar-width: none; }
         .short-slide { height: 100dvh; width: 100vw; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; position: relative; background: #000; }
         .short-slide iframe { height: 100%; width: 100%; max-width: 500px; border: none; }
-
+        
         .btn-close { background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; position: fixed; top: 20px; left: 20px; z-index: 2100; font-weight: bold; }
         #ifr { width: 100vw; height: 100dvh; border: none; display: none; }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="top-bar">
-        <div class="logo" onclick="location.reload()">FILMANGSTREAM</div>
-        <div class="search-box">
-            <input id="search" type="text" placeholder="Rechercher...">
-            <button class="btn-auth" id="loginBtn" onclick="loginWithGoogle()">
-                <i class="fab fa-google"></i> Connexion
-            </button>
-        </div>
-    </div>
-    <nav>
-        <div class="nav-item active" onclick="setActive(this); window.scrollTo(0,0)">Accueil</div>
-        <div class="nav-item" onclick="jump('shortsSection'); setActive(this)">Shorts</div>
-        <div class="nav-item" onclick="jump('videoSection'); setActive(this)">Vidéos</div>
-        <div class="nav-item" onclick="jump('filmSection'); setActive(this)">Films</div>
-        <div class="nav-item" onclick="jump('seriesSection'); setActive(this)">Séries</div>
-        <div class="nav-item" onclick="jump('animeSection'); setActive(this)">Animes</div>
-        <div class="nav-item" onclick="jump('streamSection'); setActive(this)">Streaming</div>
-        <div class="nav-item" onclick="jump('tvSection'); setActive(this)">TV</div>
-    </nav>
-</header>
+<div id="authOverlay">
+    <div class="auth-card">
+        <h1>FILMANGSTREAM</h1>
+        <p>Connectez-vous pour débloquer l'accès Premium</p>
+        
+        <input type="email" id="emailInput" class="auth-input" placeholder="Votre adresse e-mail">
+        
+        <button class="btn-pro btn-main" onclick="handleEmailLogin()">
+            Accéder au site
+        </button>
 
-<main id="main">
-    <!-- TOUTES TES SECTIONS EXISTANTES ICI -->
-    <section id="heroSection"><div class="hero-container" id="heroRow"></div></section>
-    <section id="shortsSection"><h2><i class="fab fa-youtube" style="color:red"></i> YouTube Shorts</h2><div class="row" id="shortsRow"></div></section>
-    <section id="dmShortsSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fab fa-dailymotion" style="color:var(--dm-blue)"></i> Dailymotion Shorts</h2><div class="row" id="dmShortsRow"></div></section>
-    <section id="videoSection"><h2><i class="fas fa-play-circle"></i> Vidéos YouTube</h2><div class="row" id="videoRow"></div></section>
-    <section id="dmVideoSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fas fa-video"></i> Vidéos Dailymotion</h2><div class="row" id="dmVideoRow"></div></section>
-    <section id="filmSection"><h2><i class="fas fa-film"></i> Films Populaires</h2><div class="row" id="filmRow"></div></section>
-    <section id="seriesSection"><h2><i class="fas fa-video"></i> Séries TV</h2><div class="row" id="seriesRow"></div></section>
-    <section id="animeSection"><h2><i class="fas fa-dragon"></i> Animes & Mangas</h2><div class="row" id="animeRow"></div></section>
-    <section id="streamSection">
-        <h2><i class="fas fa-layer-group"></i> Multi-Streaming</h2>
-        <div class="row">
-            <div class="card" onclick="window.open('https://www.netflix.com', '_blank')"><img src="images/netflix.png" onerror="this.src='https://via.placeholder.com/140x200/e50914/fff?text=Netflix'"><div class="card-info">Netflix</div></div>
-            <div class="card" onclick="window.open('https://www.primevideo.com', '_blank')"><img src="images/primevideo.png" onerror="this.src='https://via.placeholder.com/140x200/00a8e1/fff?text=Prime+Video'"><div class="card-info">Prime Video</div></div>
-            <div class="card" onclick="openInternal('https://www.disneyplus.com')"><img src="images/disneyplus.png" onerror="this.src='https://via.placeholder.com/140x200/0063be/fff?text=Disney+'"><div class="card-info">Disney Plus</div></div>
-            <div class="card" onclick="openInternal('https://www.crunchyroll.com')"><img src="images/crunchyroll.png" onerror="this.src='https://via.placeholder.com/140x200/f47521/fff?text=Crunchyroll'"><div class="card-info">Crunchyroll</div></div>
-            <div class="card" onclick="openInternal('https://anime-sama.store/')"><img src="images/animesama.png" onerror="this.src='https://via.placeholder.com/140x200/333/fff?text=AnimeSama'"><div class="card-info">Anime Sama</div></div>
+        <div style="margin: 20px 0; color: #444; font-size: 0.8rem;">OU</div>
+
+        <button class="btn-pro btn-google-pro" onclick="loginWithGoogle()">
+            <i class="fab fa-google" style="color: #4285F4;"></i> Continuer avec Google
+        </button>
+        
+        <p style="margin-top: 25px; font-size: 0.65rem; color: #555;">
+            En continuant, vous acceptez nos conditions d'utilisation.<br>Vérification sécurisée par reCAPTCHA v3.
+        </p>
+    </div>
+</div>
+
+<div id="mainContent">
+    <header>
+        <div class="top-bar">
+            <div class="logo" onclick="location.reload()">FILMANGSTREAM</div>
+            <div class="search-box">
+                <input id="search" type="text" placeholder="Rechercher...">
+                <button class="btn-auth" id="loginBtn" onclick="logoutUser()">
+                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                </button>
+            </div>
         </div>
-    </section>
-    <section id="tvSection"><h2><i class="fas fa-broadcast-tower"></i> Direct TV Premium</h2><div class="row" id="tvRow"></div></section>
-</main>
+        <nav>
+            <div class="nav-item active" onclick="setActive(this); window.scrollTo(0,0)">Accueil</div>
+            <div class="nav-item" onclick="jump('shortsSection'); setActive(this)">Shorts</div>
+            <div class="nav-item" onclick="jump('videoSection'); setActive(this)">Vidéos</div>
+            <div class="nav-item" onclick="jump('filmSection'); setActive(this)">Films</div>
+            <div class="nav-item" onclick="jump('seriesSection'); setActive(this)">Séries</div>
+            <div class="nav-item" onclick="jump('animeSection'); setActive(this)">Animes</div>
+            <div class="nav-item" onclick="jump('streamSection'); setActive(this)">Streaming</div>
+            <div class="nav-item" onclick="jump('tvSection'); setActive(this)">TV</div>
+        </nav>
+    </header>
+
+    <main id="main">
+        <section id="heroSection"><div class="hero-container" id="heroRow"></div></section>
+        <section id="shortsSection"><h2><i class="fab fa-youtube" style="color:red"></i> YouTube Shorts</h2><div class="row" id="shortsRow"></div></section>
+        <section id="dmShortsSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fab fa-dailymotion" style="color:var(--dm-blue)"></i> Dailymotion Shorts</h2><div class="row" id="dmShortsRow"></div></section>
+        <section id="videoSection"><h2><i class="fas fa-play-circle"></i> Vidéos YouTube</h2><div class="row" id="videoRow"></div></section>
+        <section id="dmVideoSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fas fa-video"></i> Vidéos Dailymotion</h2><div class="row" id="dmVideoRow"></div></section>
+        <section id="filmSection"><h2><i class="fas fa-film"></i> Films Populaires</h2><div class="row" id="filmRow"></div></section>
+        <section id="seriesSection"><h2><i class="fas fa-video"></i> Séries TV</h2><div class="row" id="seriesRow"></div></section>
+        <section id="animeSection"><h2><i class="fas fa-dragon"></i> Animes & Mangas</h2><div class="row" id="animeRow"></div></section>
+        <section id="streamSection">
+            <h2><i class="fas fa-layer-group"></i> Multi-Streaming</h2>
+            <div class="row">
+                <div class="card" onclick="window.open('https://www.netflix.com', '_blank')"><img src="images/netflix.png" onerror="this.src='https://via.placeholder.com/140x200/e50914/fff?text=Netflix'"><div class="card-info">Netflix</div></div>
+                <div class="card" onclick="window.open('https://www.primevideo.com', '_blank')"><img src="images/primevideo.png" onerror="this.src='https://via.placeholder.com/140x200/00a8e1/fff?text=Prime+Video'"><div class="card-info">Prime Video</div></div>
+                <div class="card" onclick="openInternal('https://www.disneyplus.com')"><img src="images/disneyplus.png" onerror="this.src='https://via.placeholder.com/140x200/0063be/fff?text=Disney+'"><div class="card-info">Disney Plus</div></div>
+                <div class="card" onclick="openInternal('https://www.crunchyroll.com')"><img src="images/crunchyroll.png" onerror="this.src='https://via.placeholder.com/140x200/f47521/fff?text=Crunchyroll'"><div class="card-info">Crunchyroll</div></div>
+                <div class="card" onclick="openInternal('https://anime-sama.store/')"><img src="images/animesama.png" onerror="this.src='https://via.placeholder.com/140x200/333/fff?text=AnimeSama'"><div class="card-info">Anime Sama</div></div>
+            </div>
+        </section>
+        <section id="tvSection"><h2><i class="fas fa-broadcast-tower"></i> Direct TV Premium</h2><div class="row" id="tvRow"></div></section>
+    </main>
+</div>
 
 <div id="mainPlayer">
     <button class="btn-close" onclick="closePlayer()">✕</button>
@@ -106,9 +158,11 @@
     <div id="shortsFeed"></div>
 </div>
 
+<script src="https://www.google.com/recaptcha/api.js?render=6Lf1CVYsAAAAAJV-_MtXBBUBGfwClRkE2x75adLI"></script>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check.js";
 
     const firebaseConfig = {
@@ -124,50 +178,152 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    // App Check
-    self.appCheck = initializeAppCheck(app, {
+    initializeAppCheck(app, {
         provider: new ReCaptchaV3Provider('6Lf1CVYsAAAAAJV-_MtXBBUBGfwClRkE2x75adLI'),
         isTokenAutoRefreshEnabled: true
     });
 
-    // Fonction de connexion globale avec CAPTCHA
-    window.loginWithGoogle = function() {
-        signInWithPopup(auth, provider)
-            .then((result) => {
-                const userName = result.user.displayName.split(' ')[0];
+    // Gestion de la session
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            document.getElementById('authOverlay').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('loginBtn').innerHTML = `<i class="fas fa-sign-out-alt"></i> Quitter (${user.displayName || 'Compte'})`;
+        } else {
+            document.getElementById('authOverlay').style.display = 'flex';
+            document.getElementById('mainContent').style.display = 'none';
+        }
+    });
 
-                if(!document.getElementById('captcha-container')) {
-                    const captchaDiv = document.createElement('div');
-                    captchaDiv.id = 'captcha-container';
-                    captchaDiv.style.cssText = 'margin-top:20px; text-align:center;';
-                    captchaDiv.innerHTML = `
-                        <div class="g-recaptcha" data-sitekey="6Lf1CVYsAAAAAJV-_MtXBBUBGfwClRkE2x75adLI"></div>
-                        <button id="verifyCaptchaBtn" style="margin-top:10px;padding:8px 15px;border:none;border-radius:10px;background:var(--red);color:#fff;font-weight:700;cursor:pointer;">Valider</button>
-                    `;
-                    document.querySelector('.top-bar').appendChild(captchaDiv);
-                    grecaptcha.render(captchaDiv.querySelector('.g-recaptcha'));
-                    document.getElementById('verifyCaptchaBtn').addEventListener('click', () => {
-                        const response = grecaptcha.getResponse();
-                        if(response.length === 0){
-                            alert("Veuillez vérifier que vous n’êtes pas un robot.");
-                        } else {
-                            alert(`Connexion réussie ! Bienvenue, ${userName}.`);
-                            document.getElementById('loginBtn').innerHTML = `<i class="fas fa-user-circle"></i> ${userName}`;
-                            captchaDiv.remove();
-                        }
-                    });
-                }
-            })
-            .catch((error) => {
-                console.error(error);
-                alert("Erreur de connexion. Vérifiez votre configuration Firebase.");
+    window.loginWithGoogle = () => signInWithPopup(auth, provider);
+
+    window.logoutUser = () => signOut(auth).then(() => location.reload());
+
+    window.handleEmailLogin = () => {
+        const mail = document.getElementById('emailInput').value;
+        if(!mail.includes('@')) return alert("Email invalide");
+        
+        grecaptcha.ready(() => {
+            grecaptcha.execute('6Lf1CVYsAAAAAJV-_MtXBBUBGfwClRkE2x75adLI', {action: 'login'}).then((token) => {
+                // Simulation de validation token reCAPTCHA
+                document.getElementById('authOverlay').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                document.getElementById('loginBtn').innerHTML = `<i class="fas fa-sign-out-alt"></i> Quitter (${mail.split('@')[0]})`;
             });
+        });
     };
 </script>
 
 <script>
-// --- TON CODE EXISTANT POUR LE CONTENU (YT, TMDB, TV, ETC) ---
-/* ... Tout ton code existant pour refreshContent, fetchYT, fetchDM, openInternal, loadTMDB, loadHero, loadKitsu, jump, setActive ... */
-</script>
-</body>
-</html>
+// --- LE RESTE DE TON CODE ORIGINAL (CONTENU) ---
+const YT_KEYS = ["AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc", "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY"];
+let currentKeyIdx = 0, heroIdx = 0, shortsObserver;
+
+window.onload = () => {
+    loadTV(); loadHero(); loadTMDB('filmRow', 'movie'); loadTMDB('seriesRow', 'tv'); loadKitsu();
+    refreshContent('film complet 2025');
+    document.getElementById('search').addEventListener('keypress', (e) => { if(e.key === 'Enter') refreshContent(e.target.value); });
+};
+
+async function refreshContent(q) {
+    fetchYT('videoRow', q, false);
+    fetchYT('shortsRow', q + " #shorts", true);
+    fetchDM('dmVideoRow', q, false);
+    fetchDM('dmShortsRow', q + " shorts", true);
+}
+
+function openInternal(url) {
+    const player = document.getElementById('mainPlayer');
+    player.style.display = 'block';
+    if (player.requestFullscreen) player.requestFullscreen();
+    const ifr = document.getElementById('ifr');
+    ifr.style.display = 'block';
+    ifr.src = url;
+    document.getElementById('shortsFeed').style.display = 'none';
+}
+
+async function fetchYT(id, q, isShort) {
+    try {
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=12&key=${YT_KEYS[currentKeyIdx]}`;
+        const r = await fetch(url);
+        const d = await r.json();
+        if(d.items) render(id, d.items.map(v => ({ id: v.id.videoId, t: v.snippet.title, img: v.snippet.thumbnails.high.url, source: 'yt' })), isShort);
+        else if(d.error && currentKeyIdx < YT_KEYS.length - 1) { currentKeyIdx++; fetchYT(id, q, isShort); }
+    } catch(e) {}
+}
+
+async function fetchDM(id, q, isShort) {
+    try {
+        const url = `https://api.dailymotion.com/videos?search=${encodeURIComponent(q)}&fields=id,title,thumbnail_480_url&limit=12`;
+        const r = await fetch(url);
+        const d = await r.json();
+        if(d.list) render(id, d.list.map(v => ({ id: v.id, t: v.title, img: v.thumbnail_480_url, source: 'dm' })), isShort);
+    } catch(e) {}
+}
+
+function render(id, items, isShort) {
+    window[`list_${id}`] = items;
+    document.getElementById(id).innerHTML = items.map((i, idx) => `
+        <div class="card" onclick="openMedia('${id}', ${idx}, ${isShort})">
+            <span class="badge" style="background:${i.source==='dm'?'var(--dm-blue)':'red'}">${i.source.toUpperCase()}</span>
+            <img src="${i.img}"><div class="card-info">${i.t}</div>
+        </div>`).join('');
+}
+
+function openMedia(listId, idx, isShort) {
+    const items = window[`list_${listId}`];
+    openInternal("");
+    if(isShort) openShortsFeed(idx, items);
+    else {
+        const item = items[idx];
+        const url = item.source === 'yt' ? `https://www.youtube.com/embed/${item.id}?autoplay=1` : `https://www.dailymotion.com/embed/video/${item.id}?autoplay=1`;
+        document.getElementById('ifr').src = url;
+    }
+}
+
+function openShortsFeed(idx, list) {
+    const f = document.getElementById('shortsFeed');
+    document.getElementById('ifr').style.display='none';
+    f.style.display='block';
+    f.innerHTML = list.map(s => `
+        <div class="short-slide" data-id="${s.id}" data-source="${s.source}">
+            <iframe src="" allow="autoplay; fullscreen"></iframe>
+        </div>`).join('');
+
+    if(shortsObserver) shortsObserver.disconnect();
+    shortsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const iframe = entry.target.querySelector('iframe');
+            if(entry.isIntersecting) {
+                const {id, source} = entry.target.dataset;
+                iframe.src = source === 'yt' ? `https://www.youtube.com/embed/${id}?autoplay=1&playlist=${id}&loop=1` : `https://www.dailymotion.com/embed/video/${id}?autoplay=1`;
+            } else { iframe.src = ""; }
+        });
+    }, { threshold: 0.8 });
+    document.querySelectorAll('.short-slide').forEach(s => shortsObserver.observe(s));
+    setTimeout(() => f.children[idx].scrollIntoView(), 100);
+}
+
+function closePlayer() {
+    if (document.fullscreenElement) document.exitFullscreen();
+    document.getElementById('mainPlayer').style.display='none';
+    document.getElementById('ifr').src='';
+    document.getElementById('shortsFeed').innerHTML='';
+}
+
+function loadTV() {
+    const tv = [{n:"TF1", f:"TF1.png"}, {n:"France 2", f:"France2.png"}, {n:"M6", f:"M6.png"}, {n:"Canal+ Sport", f:"Canal+ Sport.png"}, {n:"Canal+ Family", f:"Canal+ Family.png"}, {n:"Eurosport", f:"Eurosport.png"}, {n:"Nickelodeon", f:"Nickelodeon.png"}, {n:"Disney Channel", f:"DisneyChannel.png"}, {n:"SyFy", f:"SyFy.png"}, {n:"Warner TV", f:"WarnerTV.png"}, {n:"J-One", f:"J-One.png"}, {n:"Mangas", f:"Mangas.png"}];
+    document.getElementById('tvRow').innerHTML = tv.map(t => `<div class="card" onclick="openInternal('https://vavoo.to')"><span class="badge">LIVE</span><img src="images/${t.f}" onerror="this.src='https://via.placeholder.com/140x200/111/red?text=${t.n}'"><div class="card-info">${t.n}</div></div>`).join('');
+}
+
+async function loadTMDB(id, type) {
+    const r = await fetch(`https://api.themoviedb.org/3/${type}/popular?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`);
+    const d = await r.json();
+    document.getElementById(id).innerHTML = d.results.slice(0,12).map(m => `<div class="card" onclick="openInternal('https://www.themoviedb.org/${type}/${m.id}')"><img src="https://image.tmdb.org/t/p/w300${m.poster_path}"><div class="card-info">${m.title||m.name}</div></div>`).join('');
+}
+
+async function loadHero() {
+    const r = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`);
+    const d = await r.json();
+    document.getElementById('heroRow').innerHTML = d.results.slice(0, 5).map(m => `<div class="hero-item"><img src="https://image.tmdb.org/t/p/original${m.backdrop_path}"><div class="hero-info"><div class="hero-title">${m.title}</div></div></div>`).join('');
+    setInterval(() => { heroIdx = (heroIdx + 1) % 5; document.getElementById('heroRow').style.transform = `translateX(-${heroIdx * 100
