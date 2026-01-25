@@ -1,71 +1,68 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>FilmangStream Pro - Premium</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-:root { --red: #e50914; --black: #0a0a0a; --gray: #1a1a1a; --text: #ffffff; --radius: 10px; --dm-blue: #0062ff; }
-* { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
-body { background: var(--black); color: var(--text); font-family: 'Montserrat', sans-serif; padding-top: 130px; overflow-x: hidden; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FilmangStream Pro - Premium</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+        :root { --red: #e50914; --black: #0a0a0a; --gray: #1a1a1a; --text: #ffffff; --radius: 10px; --dm-blue: #0062ff; }
+        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--black); color: var(--text); font-family: 'Montserrat', sans-serif; padding-top: 130px; overflow-x: hidden; }
 
-header { position: fixed; top: 0; width: 100%; background: #0a0a0a; z-index: 1000; border-bottom: 1px solid #222; }
-.top-bar { display: flex; align-items: center; padding: 10px 20px; gap: 15px; }
-.logo { font-size: 1.1rem; font-weight: 900; color: var(--red); text-transform: uppercase; cursor: pointer; }
-.search-box { position: relative; flex-grow: 1; display: flex; align-items: center; gap: 10px; }
-#search { width: 100%; background: var(--gray); border: none; padding: 10px 15px 10px 35px; border-radius: 20px; color: white; outline: none; }
+        header { position: fixed; top: 0; width: 100%; background: #0a0a0a; z-index: 1000; border-bottom: 1px solid #222; }
+        .top-bar { display: flex; align-items: center; padding: 10px 20px; gap: 15px; }
+        .logo { font-size: 1.1rem; font-weight: 900; color: var(--red); text-transform: uppercase; cursor: pointer; }
+        .search-box { position: relative; flex-grow: 1; display: flex; align-items: center; gap: 10px; }
+        #search { width: 100%; background: var(--gray); border: none; padding: 10px 15px 10px 35px; border-radius: 20px; color: white; outline: none; }
 
-nav { display: flex; justify-content: center; gap: 8px; padding: 10px; overflow-x: auto; scrollbar-width: none; }
-.nav-item { padding: 8px 16px; background: #1a1a1a; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; color: #aaa; transition: 0.3s; }
-.nav-item.active { background: var(--red); color: white; }
+        /* Style pour le bouton Google */
+        .btn-auth { background: white; color: black; border: none; padding: 8px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+        .btn-auth i { color: #4285F4; font-size: 0.9rem; }
 
-#heroSection { width: 100%; height: 380px; position: relative; overflow: hidden; background: #111; }
-.hero-container { display: flex; transition: transform 0.6s ease; height: 100%; }
-.hero-item { min-width: 100%; height: 100%; position: relative; }
-.hero-item img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
-.hero-info { position: absolute; bottom: 30px; left: 20px; z-index: 10; }
-.hero-title { font-size: 1.6rem; font-weight: 900; }
+        nav { display: flex; justify-content: center; gap: 8px; padding: 10px; overflow-x: auto; scrollbar-width: none; }
+        .nav-item { padding: 8px 16px; background: #1a1a1a; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; color: #aaa; transition: 0.3s; }
+        .nav-item.active { background: var(--red); color: white; }
 
-section { padding: 20px 0 0 20px; }
-h2 { font-size: 1rem; margin-bottom: 15px; text-transform: uppercase; border-left: 4px solid var(--red); padding-left: 10px; }
-.row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 20px; scrollbar-width: none; }
+        #heroSection { width: 100%; height: 380px; position: relative; overflow: hidden; background: #111; }
+        .hero-container { display: flex; transition: transform 0.6s ease; height: 100%; }
+        .hero-item { min-width: 100%; height: 100%; position: relative; }
+        .hero-item img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
+        .hero-info { position: absolute; bottom: 30px; left: 20px; z-index: 10; }
+        .hero-title { font-size: 1.6rem; font-weight: 900; }
 
-.card { min-width: 140px; width: 140px; border-radius: var(--radius); overflow: hidden; background: #111; cursor: pointer; position: relative; transition: 0.3s; flex-shrink: 0; }
-.card img { width: 100%; height: 200px; object-fit: cover; display: block; background: #222; }
-.card-info { padding: 8px 5px; font-size: 0.7rem; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #ddd; }
-.badge { position: absolute; top: 8px; left: 8px; background: var(--red); color: white; font-size: 0.55rem; padding: 3px 6px; border-radius: 4px; font-weight: 900; z-index: 5; }
+        section { padding: 20px 0 0 20px; }
+        h2 { font-size: 1rem; margin-bottom: 15px; text-transform: uppercase; border-left: 4px solid var(--red); }
+        .row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 20px; scrollbar-width: none; }
 
-#mainPlayer { display: none; position: fixed; inset: 0; background: #000; z-index: 2000; }
-#shortsFeed { height: 100dvh; width: 100vw; overflow-y: scroll; scroll-snap-type: y mandatory; display: none; scrollbar-width: none; }
-.short-slide { height: 100dvh; width: 100vw; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; position: relative; background: #000; }
-.short-slide iframe { height: 100%; width: 100%; max-width: 500px; border: none; }
+        .card { min-width: 140px; width: 140px; border-radius: var(--radius); overflow: hidden; background: #111; cursor: pointer; position: relative; transition: 0.3s; flex-shrink: 0; }
+        .card img { width: 100%; height: 200px; object-fit: cover; display: block; background: #222; }
+        .card-info { padding: 8px 5px; font-size: 0.7rem; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #ddd; }
+        .badge { position: absolute; top: 8px; left: 8px; background: var(--red); color: white; font-size: 0.55rem; padding: 3px 6px; border-radius: 4px; font-weight: 900; z-index: 5; }
 
-.btn-close { background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; position: fixed; top: 20px; left: 20px; z-index: 2100; font-weight: bold; }
-#ifr { width: 100vw; height: 100dvh; border: none; display: none; }
+        #mainPlayer { display: none; position: fixed; inset: 0; background: #000; z-index: 2000; }
+        #shortsFeed { height: 100dvh; width: 100vw; overflow-y: scroll; scroll-snap-type: y mandatory; display: none; scrollbar-width: none; }
+        .short-slide { height: 100dvh; width: 100vw; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; position: relative; background: #000; }
+        .short-slide iframe { height: 100%; width: 100%; max-width: 500px; border: none; }
 
-#overlay { position: fixed; inset: 0; background: #000d; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; text-align: center; }
-#overlay h1 { margin-bottom: 20px; font-size: 1.5rem; }
-.btn-auth { background: white; color: black; border: none; padding: 10px 20px; border-radius: 25px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px; }
-.btn-auth i { color: #4285F4; font-size: 1.2rem; }
-</style>
+        .btn-close { background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; position: fixed; top: 20px; left: 20px; z-index: 2100; font-weight: bold; }
+        #ifr { width: 100vw; height: 100dvh; border: none; display: none; }
+    </style>
 </head>
 <body>
-
-<!-- Overlay Login -->
-<div id="overlay">
-<h1>Connexion obligatoire</h1>
-<button class="btn-auth" id="loginBtn"><i class="fab fa-google"></i> Connexion avec Google</button>
-</div>
 
 <header>
     <div class="top-bar">
         <div class="logo" onclick="location.reload()">FILMANGSTREAM</div>
         <div class="search-box">
             <input id="search" type="text" placeholder="Rechercher...">
+            <button class="btn-auth" id="loginBtn" onclick="loginWithGoogle()">
+                <i class="fab fa-google"></i> Connexion
+            </button>
         </div>
     </div>
     <nav>
@@ -80,8 +77,8 @@ h2 { font-size: 1rem; margin-bottom: 15px; text-transform: uppercase; border-lef
     </nav>
 </header>
 
-<main id="main" style="display:none;">
-    <!-- Tout ton contenu existant -->
+<main id="main">
+    <!-- TOUTES TES SECTIONS EXISTANTES ICI -->
     <section id="heroSection"><div class="hero-container" id="heroRow"></div></section>
     <section id="shortsSection"><h2><i class="fab fa-youtube" style="color:red"></i> YouTube Shorts</h2><div class="row" id="shortsRow"></div></section>
     <section id="dmShortsSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fab fa-dailymotion" style="color:var(--dm-blue)"></i> Dailymotion Shorts</h2><div class="row" id="dmShortsRow"></div></section>
@@ -110,46 +107,67 @@ h2 { font-size: 1rem; margin-bottom: 15px; text-transform: uppercase; border-lef
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyB82499194656e77beb301b",
-    authDomain: "filmangstream.firebaseapp.com",
-    projectId: "filmangstream",
-    storageBucket: "filmangstream.firebasestorage.app",
-    messagingSenderId: "887863323394",
-    appId: "1:887863323394:web:b82499194656e77beb301b"
-};
+    const firebaseConfig = {
+        apiKey: "AIzaSyB82499194656e77beb301b",
+        authDomain: "filmangstream.firebaseapp.com",
+        projectId: "filmangstream",
+        storageBucket: "filmangstream.firebasestorage.app",
+        messagingSenderId: "887863323394",
+        appId: "1:887863323394:web:b82499194656e77beb301b"
+    };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
-const loginBtn = document.getElementById('loginBtn');
-loginBtn.onclick = () => {
-    signInWithPopup(auth, provider)
-        .catch(err => alert("Erreur de connexion : " + err.message));
-};
+    // App Check
+    self.appCheck = initializeAppCheck(app, {
+        provider: new ReCaptchaV3Provider('6Lf1CVYsAAAAAJV-_MtXBBUBGfwClRkE2x75adLI'),
+        isTokenAutoRefreshEnabled: true
+    });
 
-onAuthStateChanged(auth, user => {
-    if(user){
-        document.getElementById('overlay').style.display = 'none';
-        document.getElementById('main').style.display = 'block';
-        loginBtn.innerHTML = `<i class="fas fa-user-circle"></i> ${user.displayName.split(' ')[0]}`;
-        console.log("Utilisateur connecté :", user.displayName);
-    } else {
-        document.getElementById('overlay').style.display = 'flex';
-        document.getElementById('main').style.display = 'none';
-        loginBtn.innerHTML = `<i class="fab fa-google"></i> Connexion avec Google`;
-    }
-});
+    // Fonction de connexion globale avec CAPTCHA
+    window.loginWithGoogle = function() {
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                const userName = result.user.displayName.split(' ')[0];
+
+                if(!document.getElementById('captcha-container')) {
+                    const captchaDiv = document.createElement('div');
+                    captchaDiv.id = 'captcha-container';
+                    captchaDiv.style.cssText = 'margin-top:20px; text-align:center;';
+                    captchaDiv.innerHTML = `
+                        <div class="g-recaptcha" data-sitekey="6Lf1CVYsAAAAAJV-_MtXBBUBGfwClRkE2x75adLI"></div>
+                        <button id="verifyCaptchaBtn" style="margin-top:10px;padding:8px 15px;border:none;border-radius:10px;background:var(--red);color:#fff;font-weight:700;cursor:pointer;">Valider</button>
+                    `;
+                    document.querySelector('.top-bar').appendChild(captchaDiv);
+                    grecaptcha.render(captchaDiv.querySelector('.g-recaptcha'));
+                    document.getElementById('verifyCaptchaBtn').addEventListener('click', () => {
+                        const response = grecaptcha.getResponse();
+                        if(response.length === 0){
+                            alert("Veuillez vérifier que vous n’êtes pas un robot.");
+                        } else {
+                            alert(`Connexion réussie ! Bienvenue, ${userName}.`);
+                            document.getElementById('loginBtn').innerHTML = `<i class="fas fa-user-circle"></i> ${userName}`;
+                            captchaDiv.remove();
+                        }
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                alert("Erreur de connexion. Vérifiez votre configuration Firebase.");
+            });
+    };
 </script>
 
 <script>
-// Ton code existant pour YouTube, Dailymotion, TMDB, Kitsu, etc.
-// Copie tout le code JS que tu avais pour fetchYT, fetchDM, render, openInternal, etc.
+// --- TON CODE EXISTANT POUR LE CONTENU (YT, TMDB, TV, ETC) ---
+/* ... Tout ton code existant pour refreshContent, fetchYT, fetchDM, openInternal, loadTMDB, loadHero, loadKitsu, jump, setActive ... */
 </script>
-
 </body>
 </html>
