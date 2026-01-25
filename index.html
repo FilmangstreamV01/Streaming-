@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FilmangStream Pro - Full Experience</title>
+    <title>FilmangStream Pro - Premium</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
@@ -15,12 +15,12 @@
 
         header { position: fixed; top: 0; width: 100%; background: #0a0a0a; z-index: 1000; border-bottom: 1px solid #222; }
         .top-bar { display: flex; align-items: center; padding: 10px 20px; gap: 15px; }
-        .logo { font-size: 1.1rem; font-weight: 900; color: var(--red); text-transform: uppercase; }
+        .logo { font-size: 1.1rem; font-weight: 900; color: var(--red); text-transform: uppercase; cursor: pointer; }
         .search-box { position: relative; flex-grow: 1; }
         #search { width: 100%; background: var(--gray); border: none; padding: 10px 15px 10px 35px; border-radius: 20px; color: white; outline: none; }
         
         nav { display: flex; justify-content: center; gap: 8px; padding: 10px; overflow-x: auto; scrollbar-width: none; }
-        .nav-item { padding: 8px 16px; background: #1a1a1a; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; color: #aaa; }
+        .nav-item { padding: 8px 16px; background: #1a1a1a; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; color: #aaa; transition: 0.3s; }
         .nav-item.active { background: var(--red); color: white; }
 
         #heroSection { width: 100%; height: 380px; position: relative; overflow: hidden; background: #111; }
@@ -39,10 +39,8 @@
         .card-info { padding: 8px 5px; font-size: 0.7rem; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #ddd; }
         .badge { position: absolute; top: 8px; left: 8px; background: var(--red); color: white; font-size: 0.55rem; padding: 3px 6px; border-radius: 4px; font-weight: 900; z-index: 5; }
 
-        /* PLAYER PLEIN ÉCRAN & SHORTS DÉFILABLES */
         #mainPlayer { display: none; position: fixed; inset: 0; background: #000; z-index: 2000; }
         #shortsFeed { height: 100dvh; width: 100vw; overflow-y: scroll; scroll-snap-type: y mandatory; display: none; scrollbar-width: none; }
-        #shortsFeed::-webkit-scrollbar { display: none; }
         .short-slide { height: 100dvh; width: 100vw; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; position: relative; background: #000; }
         .short-slide iframe { height: 100%; width: 100%; max-width: 500px; border: none; }
         
@@ -54,8 +52,8 @@
 
 <header>
     <div class="top-bar">
-        <div class="logo">FILMANGSTREAM</div>
-        <div class="search-box"><input id="search" type="text" placeholder="Rechercher sur YouTube et DM..."></div>
+        <div class="logo" onclick="location.reload()">FILMANGSTREAM</div>
+        <div class="search-box"><input id="search" type="text" placeholder="Rechercher..."></div>
     </div>
     <nav>
         <div class="nav-item active" onclick="setActive(this); window.scrollTo(0,0)">Accueil</div>
@@ -74,7 +72,6 @@
 
     <section id="shortsSection"><h2><i class="fab fa-youtube" style="color:red"></i> YouTube Shorts</h2><div class="row" id="shortsRow"></div></section>
     <section id="dmShortsSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fab fa-dailymotion" style="color:var(--dm-blue)"></i> Dailymotion Shorts</h2><div class="row" id="dmShortsRow"></div></section>
-    
     <section id="videoSection"><h2><i class="fas fa-play-circle"></i> Vidéos YouTube</h2><div class="row" id="videoRow"></div></section>
     <section id="dmVideoSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fas fa-video"></i> Vidéos Dailymotion</h2><div class="row" id="dmVideoRow"></div></section>
 
@@ -83,17 +80,17 @@
     <section id="animeSection"><h2><i class="fas fa-dragon"></i> Animes & Mangas</h2><div class="row" id="animeRow"></div></section>
 
     <section id="streamSection">
-        <h2><i class="fas fa-play-circle"></i> Multi-Streaming</h2>
+        <h2><i class="fas fa-layer-group"></i> Multi-Streaming</h2>
         <div class="row">
             <div class="card" onclick="window.open('https://www.netflix.com', '_blank')"><img src="images/netflix.png" onerror="this.src='https://via.placeholder.com/140x200/e50914/fff?text=Netflix'"><div class="card-info">Netflix</div></div>
             <div class="card" onclick="window.open('https://www.primevideo.com', '_blank')"><img src="images/primevideo.png" onerror="this.src='https://via.placeholder.com/140x200/00a8e1/fff?text=Prime+Video'"><div class="card-info">Prime Video</div></div>
-            <div class="card" onclick="window.open('https://www.disneyplus.com', '_blank')"><img src="images/disneyplus.png" onerror="this.src='https://via.placeholder.com/140x200/0063be/fff?text=Disney+'"><div class="card-info">Disney Plus</div></div>
-            <div class="card" onclick="window.open('https://www.crunchyroll.com', '_blank')"><img src="images/crunchyroll.png" onerror="this.src='https://via.placeholder.com/140x200/f47521/fff?text=Crunchyroll'"><div class="card-info">Crunchyroll</div></div>
-            <div class="card" onclick="window.open('https://anime-sama.store/', '_blank')"><img src="images/animesama.png" onerror="this.src='https://via.placeholder.com/140x200/333/fff?text=AnimeSama'"><div class="card-info">Anime Sama</div></div>
+            <div class="card" onclick="openInternal('https://www.disneyplus.com')"><img src="images/disneyplus.png" onerror="this.src='https://via.placeholder.com/140x200/0063be/fff?text=Disney+'"><div class="card-info">Disney Plus</div></div>
+            <div class="card" onclick="openInternal('https://www.crunchyroll.com')"><img src="images/crunchyroll.png" onerror="this.src='https://via.placeholder.com/140x200/f47521/fff?text=Crunchyroll'"><div class="card-info">Crunchyroll</div></div>
+            <div class="card" onclick="openInternal('https://anime-sama.store/')"><img src="images/animesama.png" onerror="this.src='https://via.placeholder.com/140x200/333/fff?text=AnimeSama'"><div class="card-info">Anime Sama</div></div>
         </div>
     </section>
 
-    <section id="tvSection"><h2><i class="fas fa-tv"></i> Direct TV Premium</h2><div class="row" id="tvRow"></div></section>
+    <section id="tvSection"><h2><i class="fas fa-broadcast-tower"></i> Direct TV Premium</h2><div class="row" id="tvRow"></div></section>
 </main>
 
 <div id="mainPlayer">
@@ -104,21 +101,34 @@
 
 <script>
 const YT_KEYS = ["AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc", "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY"];
-const DM_KEY = "09799763fa8a96936000";
 let currentKeyIdx = 0, heroIdx = 0, shortsObserver;
 
 window.onload = () => {
     loadTV(); loadHero(); loadTMDB('filmRow', 'movie'); loadTMDB('seriesRow', 'tv'); loadKitsu();
-    refreshContent('films complets 2025');
+    refreshContent('film complet 2025');
     document.getElementById('search').addEventListener('keypress', (e) => { if(e.key === 'Enter') refreshContent(e.target.value); });
 };
 
-// Affichage simultané YouTube et Dailymotion
 async function refreshContent(q) {
     fetchYT('videoRow', q, false);
     fetchYT('shortsRow', q + " #shorts", true);
     fetchDM('dmVideoRow', q, false);
-    fetchDM('dmShortsRow', q + " vertical shorts", true);
+    fetchDM('dmShortsRow', q + " shorts", true);
+}
+
+// Fonction pour ouvrir les sites de streaming à l'intérieur du site en plein écran
+function openInternal(url) {
+    const player = document.getElementById('mainPlayer');
+    player.style.display = 'block';
+
+    // Activation du plein écran natif
+    if (player.requestFullscreen) player.requestFullscreen();
+    else if (player.webkitRequestFullscreen) player.webkitRequestFullscreen();
+
+    const ifr = document.getElementById('ifr');
+    ifr.style.display = 'block';
+    ifr.src = url;
+    document.getElementById('shortsFeed').style.display = 'none';
 }
 
 async function fetchYT(id, q, isShort) {
@@ -127,7 +137,7 @@ async function fetchYT(id, q, isShort) {
         const r = await fetch(url);
         const d = await r.json();
         if(d.items) render(id, d.items.map(v => ({ id: v.id.videoId, t: v.snippet.title, img: v.snippet.thumbnails.high.url, source: 'yt' })), isShort);
-        else if(d.error && currentKeyIdx < YT_KEYS.length -1) { currentKeyIdx++; fetchYT(id, q, isShort); }
+        else if(d.error && currentKeyIdx < YT_KEYS.length - 1) { currentKeyIdx++; fetchYT(id, q, isShort); }
     } catch(e) {}
 }
 
@@ -149,24 +159,14 @@ function render(id, items, isShort) {
         </div>`).join('');
 }
 
-// GESTION DU PLEIN ÉCRAN
 function openMedia(listId, idx, isShort) {
     const items = window[`list_${listId}`];
-    const player = document.getElementById('mainPlayer');
-    player.style.display = 'block';
-
-    // Demande de plein écran natif
-    if (player.requestFullscreen) player.requestFullscreen();
-    else if (player.webkitRequestFullscreen) player.webkitRequestFullscreen();
-
+    openInternal(""); // Prépare le plein écran
     if(isShort) openShortsFeed(idx, items);
     else {
         const item = items[idx];
         const url = item.source === 'yt' ? `https://www.youtube.com/embed/${item.id}?autoplay=1` : `https://www.dailymotion.com/embed/video/${item.id}?autoplay=1`;
-        const ifr = document.getElementById('ifr');
-        ifr.style.display = 'block';
-        ifr.src = url;
-        document.getElementById('shortsFeed').style.display = 'none';
+        document.getElementById('ifr').src = url;
     }
 }
 
@@ -174,7 +174,6 @@ function openShortsFeed(idx, list) {
     const f = document.getElementById('shortsFeed');
     document.getElementById('ifr').style.display='none';
     f.style.display='block';
-    
     f.innerHTML = list.map(s => `
         <div class="short-slide" data-id="${s.id}" data-source="${s.source}">
             <iframe src="" allow="autoplay; fullscreen"></iframe>
@@ -190,7 +189,6 @@ function openShortsFeed(idx, list) {
             } else { iframe.src = ""; }
         });
     }, { threshold: 0.8 });
-
     document.querySelectorAll('.short-slide').forEach(s => shortsObserver.observe(s));
     setTimeout(() => f.children[idx].scrollIntoView(), 100);
 }
@@ -204,28 +202,13 @@ function closePlayer() {
 
 function loadTV() {
     const tv = [{n:"TF1", f:"TF1.png"}, {n:"France 2", f:"France2.png"}, {n:"M6", f:"M6.png"}, {n:"Canal+ Sport", f:"Canal+ Sport.png"}, {n:"Canal+ Family", f:"Canal+ Family.png"}, {n:"Eurosport", f:"Eurosport.png"}, {n:"Nickelodeon", f:"Nickelodeon.png"}, {n:"Disney Channel", f:"DisneyChannel.png"}, {n:"SyFy", f:"SyFy.png"}, {n:"Warner TV", f:"WarnerTV.png"}, {n:"J-One", f:"J-One.png"}, {n:"Mangas", f:"Mangas.png"}];
-    document.getElementById('tvRow').innerHTML = tv.map(t => `
-        <div class="card" onclick="openMediaTV('https://vavoo.to')">
-            <span class="badge">LIVE</span>
-            <img src="images/${t.f}" onerror="this.src='https://via.placeholder.com/140x200/111/red?text=${t.n}'">
-            <div class="card-info">${t.n}</div>
-        </div>`).join('');
-}
-
-function openMediaTV(url) {
-    const player = document.getElementById('mainPlayer');
-    player.style.display = 'block';
-    if (player.requestFullscreen) player.requestFullscreen();
-    const ifr = document.getElementById('ifr');
-    ifr.style.display = 'block';
-    ifr.src = url;
-    document.getElementById('shortsFeed').style.display = 'none';
+    document.getElementById('tvRow').innerHTML = tv.map(t => `<div class="card" onclick="openInternal('https://vavoo.to')"><span class="badge">LIVE</span><img src="images/${t.f}" onerror="this.src='https://via.placeholder.com/140x200/111/red?text=${t.n}'"><div class="card-info">${t.n}</div></div>`).join('');
 }
 
 async function loadTMDB(id, type) {
     const r = await fetch(`https://api.themoviedb.org/3/${type}/popular?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`);
     const d = await r.json();
-    document.getElementById(id).innerHTML = d.results.slice(0,12).map(m => `<div class="card" onclick="openMediaTV('https://www.themoviedb.org/${type}/${m.id}')"><img src="https://image.tmdb.org/t/p/w300${m.poster_path}"><div class="card-info">${m.title||m.name}</div></div>`).join('');
+    document.getElementById(id).innerHTML = d.results.slice(0,12).map(m => `<div class="card" onclick="openInternal('https://www.themoviedb.org/${type}/${m.id}')"><img src="https://image.tmdb.org/t/p/w300${m.poster_path}"><div class="card-info">${m.title||m.name}</div></div>`).join('');
 }
 
 async function loadHero() {
@@ -238,7 +221,7 @@ async function loadHero() {
 async function loadKitsu() {
     const r = await fetch("https://kitsu.io/api/edge/anime?page[limit]=12&sort=-favoritesCount");
     const d = await r.json();
-    document.getElementById('animeRow').innerHTML = d.data.map(a => `<div class="card" onclick="openMediaTV('https://kitsu.io/anime/${a.id}')"><img src="${a.attributes.posterImage.medium}"><div class="card-info">${a.attributes.canonicalTitle}</div></div>`).join('');
+    document.getElementById('animeRow').innerHTML = d.data.map(a => `<div class="card" onclick="openInternal('https://kitsu.io/anime/${a.id}')"><img src="${a.attributes.posterImage.medium}"><div class="card-info">${a.attributes.canonicalTitle}</div></div>`).join('');
 }
 
 function jump(id) { window.scrollTo({top: document.getElementById(id).offsetTop - 160, behavior: 'smooth'}); }
