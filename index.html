@@ -2,154 +2,60 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FilmangStream Pro - Premium Cinema</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FilmangStream Pro - Full Experience</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { 
-            --red: #e50914; 
-            --black: #080808; 
-            --gray: #141414; 
-            --text: #ffffff; 
-            --radius: 6px; 
-            --dm-blue: #0062ff;
-            --shadow: 0 8px 16px rgba(0,0,0,0.5);
-        }
+        :root { --red: #e50914; --black: #0a0a0a; --gray: #1a1a1a; --text: #ffffff; --radius: 10px; --dm-blue: #0062ff; }
+        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--black); color: var(--text); font-family: 'Montserrat', sans-serif; padding-top: 130px; overflow-x: hidden; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+        header { position: fixed; top: 0; width: 100%; background: #0a0a0a; z-index: 1000; border-bottom: 1px solid #222; }
+        .top-bar { display: flex; align-items: center; padding: 10px 20px; gap: 15px; }
+        .logo { font-size: 1.1rem; font-weight: 900; color: var(--red); text-transform: uppercase; }
+        .search-box { position: relative; flex-grow: 1; }
+        #search { width: 100%; background: var(--gray); border: none; padding: 10px 15px 10px 35px; border-radius: 20px; color: white; outline: none; }
         
-        body { 
-            background: var(--black); 
-            color: var(--text); 
-            font-family: 'Roboto', sans-serif; 
-            padding-top: 140px; 
-            padding-bottom: 50px; 
-            overflow-x: hidden; 
-        }
+        nav { display: flex; justify-content: center; gap: 8px; padding: 10px; overflow-x: auto; scrollbar-width: none; }
+        .nav-item { padding: 8px 16px; background: #1a1a1a; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; color: #aaa; }
+        .nav-item.active { background: var(--red); color: white; }
 
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { height: 6px; width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--black); }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        #heroSection { width: 100%; height: 380px; position: relative; overflow: hidden; background: #111; }
+        .hero-container { display: flex; transition: transform 0.6s ease; height: 100%; }
+        .hero-item { min-width: 100%; height: 100%; position: relative; }
+        .hero-item img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
+        .hero-info { position: absolute; bottom: 30px; left: 20px; z-index: 10; }
+        .hero-title { font-size: 1.6rem; font-weight: 900; }
 
-        header { 
-            position: fixed; top: 0; width: 100%; 
-            background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 100%);
-            backdrop-filter: blur(10px);
-            z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.1); 
-        }
-
-        .top-bar { display: flex; align-items: center; padding: 15px 4%; gap: 30px; }
-        .logo { 
-            font-size: 1.8rem; font-weight: 900; color: var(--red); 
-            text-transform: uppercase; letter-spacing: -1px; cursor: pointer;
-        }
-
-        .search-box { position: relative; flex-grow: 1; max-width: 500px; }
-        #search { 
-            width: 100%; background: rgba(255,255,255,0.1); border: 1px solid transparent; 
-            padding: 10px 15px 10px 40px; border-radius: 4px; color: white; outline: none; 
-            transition: 0.3s; font-size: 0.9rem;
-        }
-        #search:focus { background: rgba(255,255,255,0.2); border-color: #666; }
-        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa; }
+        section { padding: 20px 0 0 20px; }
+        h2 { font-size: 1rem; margin-bottom: 15px; text-transform: uppercase; border-left: 4px solid var(--red); padding-left: 10px; }
+        .row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 20px; scrollbar-width: none; }
         
-        nav { display: flex; gap: 15px; padding: 10px 4%; overflow-x: auto; scrollbar-width: none; }
-        .nav-item { 
-            padding: 6px 14px; border-radius: 4px; font-size: 0.85rem; font-weight: 400; 
-            cursor: pointer; white-space: nowrap; color: #e5e5e5; transition: 0.3s; 
-        }
-        .nav-item:hover { color: var(--red); }
-        .nav-item.active { background: rgba(255,255,255,0.1); font-weight: 700; color: #fff; }
+        .card { min-width: 140px; width: 140px; border-radius: var(--radius); overflow: hidden; background: #111; cursor: pointer; position: relative; transition: 0.3s; flex-shrink: 0; }
+        .card img { width: 100%; height: 200px; object-fit: cover; display: block; background: #222; }
+        .card-info { padding: 8px 5px; font-size: 0.7rem; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #ddd; }
+        .badge { position: absolute; top: 8px; left: 8px; background: var(--red); color: white; font-size: 0.55rem; padding: 3px 6px; border-radius: 4px; font-weight: 900; z-index: 5; }
 
-        /* HERO SECTION STYLE NETFLIX */
-        #heroSection { width: 100%; height: 70vh; position: relative; overflow: hidden; margin-top: -140px; margin-bottom: 40px; }
-        .hero-container { display: flex; transition: 0.8s ease; height: 100%; }
-        .hero-item { min-width: 100%; height: 100%; position: relative; cursor: pointer; }
-        .hero-item img { width: 100%; height: 100%; object-fit: cover; }
-        .hero-overlay { 
-            position: absolute; inset: 0; 
-            background: linear-gradient(to top, var(--black) 5%, transparent 50%, rgba(0,0,0,0.4) 100%); 
-        }
-        .hero-info { position: absolute; bottom: 80px; left: 4%; z-index: 10; width: 50%; }
-        .hero-title { font-size: 3.5rem; font-weight: 900; margin-bottom: 15px; line-height: 1; }
-
-        /* SECTIONS & CARDS */
-        section { padding: 30px 0 0 4%; }
-        h2 { 
-            font-size: 1.3rem; margin-bottom: 20px; color: #e5e5e5; 
-            display: flex; align-items: center; gap: 12px; font-weight: 700;
-        }
-        .row { display: flex; gap: 10px; overflow-x: auto; padding: 15px 0; scrollbar-width: none; }
-        
-        .card { 
-            min-width: 180px; width: 180px; border-radius: var(--radius); 
-            overflow: hidden; background: var(--gray); cursor: pointer; 
-            position: relative; transition: transform 0.4s ease, z-index 0.4s ease; 
-            flex-shrink: 0;
-        }
-        .card:hover { 
-            transform: scale(1.15); z-index: 100; 
-            box-shadow: 0 15px 30px rgba(0,0,0,0.8);
-        }
-        .card img { width: 100%; height: 260px; object-fit: cover; display: block; }
-        .card-info { 
-            position: absolute; bottom: 0; left: 0; right: 0; 
-            padding: 15px 10px; background: linear-gradient(to top, black, transparent);
-            font-size: 0.8rem; font-weight: 700; opacity: 0; transition: 0.3s;
-        }
-        .card:hover .card-info { opacity: 1; }
-        
-        .badge { 
-            position: absolute; top: 10px; left: 10px; background: var(--red); 
-            color: white; font-size: 0.6rem; padding: 3px 8px; border-radius: 2px; 
-            font-weight: 900; z-index: 2; box-shadow: var(--shadow);
-        }
-
-        /* PLAYER & SHORTS FULLSCREEN */
+        /* PLAYER PLEIN ÉCRAN & SHORTS DÉFILABLES */
         #mainPlayer { display: none; position: fixed; inset: 0; background: #000; z-index: 2000; }
-        #shortsFeed { 
-            height: 100vh; width: 100vw; 
-            overflow-y: scroll; 
-            scroll-snap-type: y mandatory; 
-            display: none; 
-            scrollbar-width: none; 
-        }
-        .short-slide { 
-            height: 100vh; width: 100vw; 
-            scroll-snap-align: start; 
-            display: flex; align-items: center; justify-content: center; 
-            position: relative; background: #000;
-        }
-        .short-slide iframe { 
-            height: 100%; width: 100%; 
-            border: none; max-width: 500px;
-        }
-        @media (max-width: 768px) { .short-slide iframe { max-width: 100%; } }
+        #shortsFeed { height: 100dvh; width: 100vw; overflow-y: scroll; scroll-snap-type: y mandatory; display: none; scrollbar-width: none; }
+        #shortsFeed::-webkit-scrollbar { display: none; }
+        .short-slide { height: 100dvh; width: 100vw; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; position: relative; background: #000; }
+        .short-slide iframe { height: 100%; width: 100%; max-width: 500px; border: none; }
         
-        #ifr { width: 100%; height: 100%; border: none; display: none; }
-
-        .btn-close { 
-            background: rgba(255,255,255,0.2); color: white; border: none; 
-            width: 45px; height: 45px; border-radius: 50%; cursor: pointer; 
-            position: fixed; top: 25px; left: 25px; z-index: 2100; transition: 0.3s;
-        }
-        .btn-close:hover { background: var(--red); transform: rotate(90deg); }
+        .btn-close { background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; position: fixed; top: 20px; left: 20px; z-index: 2100; font-weight: bold; }
+        #ifr { width: 100vw; height: 100dvh; border: none; display: none; }
     </style>
 </head>
 <body>
 
 <header>
     <div class="top-bar">
-        <div class="logo" onclick="location.reload()">FILMANGSTREAM</div>
-        <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input id="search" type="text" placeholder="Titres, genres, vidéos...">
-        </div>
+        <div class="logo">FILMANGSTREAM</div>
+        <div class="search-box"><input id="search" type="text" placeholder="Rechercher sur YouTube et DM..."></div>
     </div>
     <nav>
         <div class="nav-item active" onclick="setActive(this); window.scrollTo(0,0)">Accueil</div>
@@ -166,144 +72,71 @@
 <main id="main">
     <section id="heroSection"><div class="hero-container" id="heroRow"></div></section>
 
-    <section id="shortsSection">
-        <h2><i class="fab fa-youtube" style="color:red"></i> YouTube Shorts</h2>
-        <div class="row" id="shortsRow"></div>
-    </section>
+    <section id="shortsSection"><h2><i class="fab fa-youtube" style="color:red"></i> YouTube Shorts</h2><div class="row" id="shortsRow"></div></section>
+    <section id="dmShortsSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fab fa-dailymotion" style="color:var(--dm-blue)"></i> Dailymotion Shorts</h2><div class="row" id="dmShortsRow"></div></section>
+    
+    <section id="videoSection"><h2><i class="fas fa-play-circle"></i> Vidéos YouTube</h2><div class="row" id="videoRow"></div></section>
+    <section id="dmVideoSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fas fa-video"></i> Vidéos Dailymotion</h2><div class="row" id="dmVideoRow"></div></section>
 
-    <section id="dmShortsSection">
-        <h2 class="dm-title"><i class="fab fa-dailymotion" style="color:var(--dm-blue)"></i> Dailymotion Shorts</h2>
-        <div class="row" id="dmShortsRow"></div>
-    </section>
-
-    <section id="videoSection">
-        <h2><i class="fas fa-play-circle"></i> Vidéos YouTube</h2>
-        <div class="row" id="videoRow"></div>
-    </section>
-
-    <section id="dmVideoSection">
-        <h2 class="dm-title"><i class="fas fa-film" style="color:var(--dm-blue)"></i> Vidéos Dailymotion</h2>
-        <div class="row" id="dmVideoRow"></div>
-    </section>
-
-    <section id="filmSection">
-        <h2><i class="fas fa-fire"></i> Films Populaires</h2>
-        <div class="row" id="filmRow"></div>
-    </section>
-
-    <section id="seriesSection">
-        <h2><i class="fas fa-tv"></i> Séries TV Premium</h2>
-        <div class="row" id="seriesRow"></div>
-    </section>
-
-    <section id="animeSection">
-        <h2><i class="fas fa-dragon"></i> Animes & Mangas</h2>
-        <div class="row" id="animeRow"></div>
-    </section>
+    <section id="filmSection"><h2><i class="fas fa-film"></i> Films Populaires</h2><div class="row" id="filmRow"></div></section>
+    <section id="seriesSection"><h2><i class="fas fa-video"></i> Séries TV</h2><div class="row" id="seriesRow"></div></section>
+    <section id="animeSection"><h2><i class="fas fa-dragon"></i> Animes & Mangas</h2><div class="row" id="animeRow"></div></section>
 
     <section id="streamSection">
-        <h2><i class="fas fa-layer-group"></i> Multi-Streaming</h2>
+        <h2><i class="fas fa-play-circle"></i> Multi-Streaming</h2>
         <div class="row">
-            <div class="card" onclick="window.open('https://www.netflix.com', '_blank')">
-                <img src="images/netflix.png" loading="lazy" onerror="this.src='https://via.placeholder.com/180x260/e50914/fff?text=Netflix'">
-                <div class="card-info">Netflix</div>
-            </div>
-            <div class="card" onclick="window.open('https://www.primevideo.com', '_blank')">
-                <img src="images/primevideo.png" loading="lazy" onerror="this.src='https://via.placeholder.com/180x260/00a8e1/fff?text=Prime+Video'">
-                <div class="card-info">Prime Video</div>
-            </div>
-            <div class="card" onclick="openFull('https://www.disneyplus.com')">
-                <img src="images/disneyplus.png" loading="lazy" onerror="this.src='https://via.placeholder.com/180x260/0063be/fff?text=Disney+'">
-                <div class="card-info">Disney Plus</div>
-            </div>
-            <div class="card" onclick="openFull('https://www.crunchyroll.com')">
-                <img src="images/crunchyroll.png" loading="lazy" onerror="this.src='https://via.placeholder.com/180x260/f47521/fff?text=Crunchyroll'">
-                <div class="card-info">Crunchyroll</div>
-            </div>
-            <div class="card" onclick="openFull('https://anime-sama.store/')">
-                <img src="images/animesama.png" loading="lazy" onerror="this.src='https://via.placeholder.com/180x260/333/fff?text=AnimeSama'">
-                <div class="card-info">Anime Sama</div>
-            </div>
+            <div class="card" onclick="window.open('https://www.netflix.com', '_blank')"><img src="images/netflix.png" onerror="this.src='https://via.placeholder.com/140x200/e50914/fff?text=Netflix'"><div class="card-info">Netflix</div></div>
+            <div class="card" onclick="window.open('https://www.primevideo.com', '_blank')"><img src="images/primevideo.png" onerror="this.src='https://via.placeholder.com/140x200/00a8e1/fff?text=Prime+Video'"><div class="card-info">Prime Video</div></div>
+            <div class="card" onclick="window.open('https://www.disneyplus.com', '_blank')"><img src="images/disneyplus.png" onerror="this.src='https://via.placeholder.com/140x200/0063be/fff?text=Disney+'"><div class="card-info">Disney Plus</div></div>
+            <div class="card" onclick="window.open('https://www.crunchyroll.com', '_blank')"><img src="images/crunchyroll.png" onerror="this.src='https://via.placeholder.com/140x200/f47521/fff?text=Crunchyroll'"><div class="card-info">Crunchyroll</div></div>
+            <div class="card" onclick="window.open('https://anime-sama.store/', '_blank')"><img src="images/animesama.png" onerror="this.src='https://via.placeholder.com/140x200/333/fff?text=AnimeSama'"><div class="card-info">Anime Sama</div></div>
         </div>
     </section>
 
-    <section id="tvSection">
-        <h2><i class="fas fa-broadcast-tower"></i> Direct TV Premium</h2>
-        <div class="row" id="tvRow"></div>
-    </section>
+    <section id="tvSection"><h2><i class="fas fa-tv"></i> Direct TV Premium</h2><div class="row" id="tvRow"></div></section>
 </main>
 
 <div id="mainPlayer">
-    <button class="btn-close" onclick="closePlayer()"><i class="fas fa-times"></i></button>
-    <iframe id="ifr" allowfullscreen allow="autoplay"></iframe>
+    <button class="btn-close" onclick="closePlayer()">✕</button>
+    <iframe id="ifr" allowfullscreen allow="autoplay; fullscreen"></iframe>
     <div id="shortsFeed"></div>
 </div>
 
 <script>
-// API Keys
-const DM_KEY = "09799763fa8a96936000"; 
 const YT_KEYS = ["AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc", "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY"];
+const DM_KEY = "09799763fa8a96936000";
 let currentKeyIdx = 0, heroIdx = 0, shortsObserver;
 
-// Lancement immédiat au chargement du DOM (Optimisation Vitesse)
-document.addEventListener("DOMContentLoaded", () => {
-    // Lancer les chargements en parallèle
-    loadTV(); 
-    loadHero(); 
-    loadTMDB('filmRow', 'movie'); 
-    loadTMDB('seriesRow', 'tv'); 
-    loadKitsu();
-    initSearch();
-    refreshContent('films français 2025');
-});
+window.onload = () => {
+    loadTV(); loadHero(); loadTMDB('filmRow', 'movie'); loadTMDB('seriesRow', 'tv'); loadKitsu();
+    refreshContent('films complets 2025');
+    document.getElementById('search').addEventListener('keypress', (e) => { if(e.key === 'Enter') refreshContent(e.target.value); });
+};
 
-function initSearch() {
-    document.getElementById('search').addEventListener('keypress', (e) => {
-        if(e.key === 'Enter') {
-            const q = e.target.value.trim();
-            if(q) { refreshContent(q); jump('shortsSection'); }
-        }
-    });
-}
-
+// Affichage simultané YouTube et Dailymotion
 async function refreshContent(q) {
-    // Appel sans await pour ne pas bloquer l'exécution (Parallélisme)
     fetchYT('videoRow', q, false);
     fetchYT('shortsRow', q + " #shorts", true);
     fetchDM('dmVideoRow', q, false);
-    fetchDM('dmShortsRow', q, true); 
+    fetchDM('dmShortsRow', q + " vertical shorts", true);
 }
 
-// LOGIQUE DAILYMOTION
+async function fetchYT(id, q, isShort) {
+    try {
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=12&key=${YT_KEYS[currentKeyIdx]}`;
+        const r = await fetch(url);
+        const d = await r.json();
+        if(d.items) render(id, d.items.map(v => ({ id: v.id.videoId, t: v.snippet.title, img: v.snippet.thumbnails.high.url, source: 'yt' })), isShort);
+        else if(d.error && currentKeyIdx < YT_KEYS.length -1) { currentKeyIdx++; fetchYT(id, q, isShort); }
+    } catch(e) {}
+}
+
 async function fetchDM(id, q, isShort) {
     try {
-        const durationFilter = isShort ? '&shorter_than=60' : ''; 
-        const url = `https://api.dailymotion.com/videos?search=${encodeURIComponent(q)}&fields=id,title,thumbnail_480_url&limit=15&ssl_assets=true${durationFilter}&apiKey=${DM_KEY}`;
+        const url = `https://api.dailymotion.com/videos?search=${encodeURIComponent(q)}&fields=id,title,thumbnail_480_url&limit=12`;
         const r = await fetch(url);
         const d = await r.json();
-        
-        if(d.list) {
-            render(id, d.list.map(v => ({ 
-                id: v.id, 
-                t: v.title, 
-                img: v.thumbnail_480_url, 
-                source: 'dm' 
-            })), isShort);
-        }
-    } catch(e) { console.error("DM Error", e); }
-}
-
-// LOGIQUE YOUTUBE
-async function fetchYT(id, q, isShort) {
-    if (currentKeyIdx >= YT_KEYS.length) return;
-    try {
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=15&key=${YT_KEYS[currentKeyIdx]}`;
-        const r = await fetch(url);
-        if (r.status === 403) { currentKeyIdx++; fetchYT(id, q, isShort); return; }
-        const d = await r.json();
-        if(d.items) {
-            render(id, d.items.map(v => ({ id: v.id.videoId, t: v.snippet.title, img: v.snippet.thumbnails.high.url, source: 'yt' })), isShort);
-        }
+        if(d.list) render(id, d.list.map(v => ({ id: v.id, t: v.title, img: v.thumbnail_480_url, source: 'dm' })), isShort);
     } catch(e) {}
 }
 
@@ -311,133 +144,106 @@ function render(id, items, isShort) {
     window[`list_${id}`] = items;
     document.getElementById(id).innerHTML = items.map((i, idx) => `
         <div class="card" onclick="openMedia('${id}', ${idx}, ${isShort})">
-            ${i.source === 'dm' ? '<span class="badge" style="background:var(--dm-blue)">DM</span>' : '<span class="badge">YT</span>'}
-            <img src="${i.img}" loading="lazy">
-            <div class="card-info">${i.t}</div>
+            <span class="badge" style="background:${i.source==='dm'?'var(--dm-blue)':'red'}">${i.source.toUpperCase()}</span>
+            <img src="${i.img}"><div class="card-info">${i.t}</div>
         </div>`).join('');
 }
 
+// GESTION DU PLEIN ÉCRAN
 function openMedia(listId, idx, isShort) {
     const items = window[`list_${listId}`];
-    const item = items[idx];
-    
-    if(isShort) {
-        openShortsFeed(idx, items);
-    } else {
-        let url;
-        if(item.source === 'yt') {
-            url = `https://www.youtube.com/embed/${item.id}?autoplay=1&rel=0&showinfo=0&controls=1`;
-        } else {
-            url = `https://www.dailymotion.com/embed/video/${item.id}?autoplay=1&ui-logo=0&controls=1`;
-        }
-        openFull(url);
+    const player = document.getElementById('mainPlayer');
+    player.style.display = 'block';
+
+    // Demande de plein écran natif
+    if (player.requestFullscreen) player.requestFullscreen();
+    else if (player.webkitRequestFullscreen) player.webkitRequestFullscreen();
+
+    if(isShort) openShortsFeed(idx, items);
+    else {
+        const item = items[idx];
+        const url = item.source === 'yt' ? `https://www.youtube.com/embed/${item.id}?autoplay=1` : `https://www.dailymotion.com/embed/video/${item.id}?autoplay=1`;
+        const ifr = document.getElementById('ifr');
+        ifr.style.display = 'block';
+        ifr.src = url;
+        document.getElementById('shortsFeed').style.display = 'none';
     }
 }
 
 function openShortsFeed(idx, list) {
-    const player = document.getElementById('mainPlayer');
-    const feed = document.getElementById('shortsFeed');
-    const ifr = document.getElementById('ifr');
+    const f = document.getElementById('shortsFeed');
+    document.getElementById('ifr').style.display='none';
+    f.style.display='block';
     
-    player.style.display = 'block';
-    ifr.style.display = 'none'; 
-    feed.style.display = 'block'; 
-    
-    feed.innerHTML = list.map(s => `
+    f.innerHTML = list.map(s => `
         <div class="short-slide" data-id="${s.id}" data-source="${s.source}">
-            <iframe src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
+            <iframe src="" allow="autoplay; fullscreen"></iframe>
         </div>`).join('');
 
     if(shortsObserver) shortsObserver.disconnect();
     shortsObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const iframe = entry.target.querySelector('iframe');
-            const {id, source} = entry.target.dataset;
-            
             if(entry.isIntersecting) {
-                if(source === 'yt') {
-                    iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1&loop=1&playlist=${id}&controls=0&rel=0`;
-                } else {
-                    iframe.src = `https://www.dailymotion.com/embed/video/${id}?autoplay=1&controls=0&ui-start-screen-info=0&ui-logo=0&sharing-enable=0`;
-                }
-            } else { 
-                iframe.src = ""; 
-            }
+                const {id, source} = entry.target.dataset;
+                iframe.src = source === 'yt' ? `https://www.youtube.com/embed/${id}?autoplay=1&playlist=${id}&loop=1` : `https://www.dailymotion.com/embed/video/${id}?autoplay=1`;
+            } else { iframe.src = ""; }
         });
-    }, { threshold: 0.6 });
+    }, { threshold: 0.8 });
 
     document.querySelectorAll('.short-slide').forEach(s => shortsObserver.observe(s));
-    setTimeout(() => feed.children[idx].scrollIntoView(), 100);
+    setTimeout(() => f.children[idx].scrollIntoView(), 100);
 }
 
-function openFull(url) {
-    document.getElementById('mainPlayer').style.display = 'block';
-    document.getElementById('shortsFeed').style.display = 'none';
-    const ifr = document.getElementById('ifr');
-    ifr.style.display = 'block';
-    ifr.src = url;
-}
-
-function closePlayer() { 
-    document.getElementById('mainPlayer').style.display='none'; 
-    document.getElementById('ifr').src=''; 
-    document.getElementById('shortsFeed').innerHTML=''; 
+function closePlayer() {
+    if (document.fullscreenElement) document.exitFullscreen();
+    document.getElementById('mainPlayer').style.display='none';
+    document.getElementById('ifr').src='';
+    document.getElementById('shortsFeed').innerHTML='';
 }
 
 function loadTV() {
-    const tv = [{n:"TF1", f:"TF1.png"}, {n:"France 2", f:"France2.png"}, {n:"M6", f:"M6.png"}, {n:"Canal+", f:"Canal+.png"}, {n:"Eurosport", f:"Eurosport.png"}, {n:"BeIn Sport", f:"BeIn.png"}];
+    const tv = [{n:"TF1", f:"TF1.png"}, {n:"France 2", f:"France2.png"}, {n:"M6", f:"M6.png"}, {n:"Canal+ Sport", f:"Canal+ Sport.png"}, {n:"Canal+ Family", f:"Canal+ Family.png"}, {n:"Eurosport", f:"Eurosport.png"}, {n:"Nickelodeon", f:"Nickelodeon.png"}, {n:"Disney Channel", f:"DisneyChannel.png"}, {n:"SyFy", f:"SyFy.png"}, {n:"Warner TV", f:"WarnerTV.png"}, {n:"J-One", f:"J-One.png"}, {n:"Mangas", f:"Mangas.png"}];
     document.getElementById('tvRow').innerHTML = tv.map(t => `
-        <div class="card" onclick="openFull('https://vavoo.to')">
-            <span class="badge">DIRECT</span>
-            <img src="images/${t.f}" loading="lazy" onerror="this.src='https://via.placeholder.com/180x260/111/fff?text=${t.n}'">
+        <div class="card" onclick="openMediaTV('https://vavoo.to')">
+            <span class="badge">LIVE</span>
+            <img src="images/${t.f}" onerror="this.src='https://via.placeholder.com/140x200/111/red?text=${t.n}'">
             <div class="card-info">${t.n}</div>
         </div>`).join('');
 }
 
-async function loadHero() {
-    try {
-        const r = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`);
-        const d = await r.json();
-        document.getElementById('heroRow').innerHTML = d.results.slice(0, 5).map(m => `
-            <div class="hero-item" onclick="openFull('https://www.themoviedb.org/movie/${m.id}')">
-                <img src="https://image.tmdb.org/t/p/original${m.backdrop_path}" loading="eager">
-                <div class="hero-overlay"></div>
-                <div class="hero-info">
-                    <div class="hero-title">${m.title}</div>
-                    <button style="padding:12px 25px; background:white; color:black; border:none; border-radius:4px; font-weight:bold; cursor:pointer"><i class="fas fa-play"></i> Lecture</button>
-                </div>
-            </div>`).join('');
-        setInterval(() => { heroIdx = (heroIdx + 1) % 5; document.getElementById('heroRow').style.transform = `translateX(-${heroIdx * 100}%)`; }, 6000);
-    } catch(e) {}
+function openMediaTV(url) {
+    const player = document.getElementById('mainPlayer');
+    player.style.display = 'block';
+    if (player.requestFullscreen) player.requestFullscreen();
+    const ifr = document.getElementById('ifr');
+    ifr.style.display = 'block';
+    ifr.src = url;
+    document.getElementById('shortsFeed').style.display = 'none';
 }
 
 async function loadTMDB(id, type) {
-    try {
-        const r = await fetch(`https://api.themoviedb.org/3/${type}/popular?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`);
-        const d = await r.json();
-        document.getElementById(id).innerHTML = d.results.map(m => `
-            <div class="card" onclick="openFull('https://www.themoviedb.org/${type}/${m.id}')">
-                <img src="https://image.tmdb.org/t/p/w500${m.poster_path}" loading="lazy">
-                <div class="card-info">${m.title||m.name}</div>
-            </div>`).join('');
-    } catch(e) {}
+    const r = await fetch(`https://api.themoviedb.org/3/${type}/popular?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`);
+    const d = await r.json();
+    document.getElementById(id).innerHTML = d.results.slice(0,12).map(m => `<div class="card" onclick="openMediaTV('https://www.themoviedb.org/${type}/${m.id}')"><img src="https://image.tmdb.org/t/p/w300${m.poster_path}"><div class="card-info">${m.title||m.name}</div></div>`).join('');
+}
+
+async function loadHero() {
+    const r = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`);
+    const d = await r.json();
+    document.getElementById('heroRow').innerHTML = d.results.slice(0, 5).map(m => `<div class="hero-item"><img src="https://image.tmdb.org/t/p/original${m.backdrop_path}"><div class="hero-info"><div class="hero-title">${m.title}</div></div></div>`).join('');
+    setInterval(() => { heroIdx = (heroIdx + 1) % 5; document.getElementById('heroRow').style.transform = `translateX(-${heroIdx * 100}%)`; }, 5000);
 }
 
 async function loadKitsu() {
-    try {
-        const r = await fetch("https://kitsu.io/api/edge/anime?page[limit]=12&sort=-favoritesCount");
-        const d = await r.json();
-        document.getElementById('animeRow').innerHTML = d.data.map(a => `
-            <div class="card" onclick="openFull('https://kitsu.io/anime/${a.id}')">
-                <img src="${a.attributes.posterImage.medium}" loading="lazy">
-                <div class="card-info">${a.attributes.canonicalTitle}</div>
-            </div>`).join('');
-    } catch(e) {}
+    const r = await fetch("https://kitsu.io/api/edge/anime?page[limit]=12&sort=-favoritesCount");
+    const d = await r.json();
+    document.getElementById('animeRow').innerHTML = d.data.map(a => `<div class="card" onclick="openMediaTV('https://kitsu.io/anime/${a.id}')"><img src="${a.attributes.posterImage.medium}"><div class="card-info">${a.attributes.canonicalTitle}</div></div>`).join('');
 }
 
-function jump(id) { window.scrollTo({top: document.getElementById(id).offsetTop - 150, behavior: 'smooth'}); }
+function jump(id) { window.scrollTo({top: document.getElementById(id).offsetTop - 160, behavior: 'smooth'}); }
 function setActive(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
 </script>
 </body>
-</html>
-
+    </html>
+    
