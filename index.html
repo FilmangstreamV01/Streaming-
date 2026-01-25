@@ -9,128 +9,147 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-:root { --red:#e50914; --black:#0a0a0a; --gray:#1a1a1a; --text:#fff; --radius:10px; --dm-blue:#0062ff; }
-*{box-sizing:border-box;margin:0;padding:0;scroll-behavior:smooth;}
-body{font-family:'Montserrat',sans-serif;background:var(--black);color:var(--text);padding-top:130px;overflow-x:hidden;}
-header{position:fixed;top:0;width:100%;background:#0a0a0a;z-index:1000;border-bottom:1px solid #222;}
-.top-bar{display:flex;align-items:center;padding:10px 20px;gap:15px;}
-.logo{font-size:1.1rem;font-weight:900;color:var(--red);text-transform:uppercase;cursor:pointer;}
-.search-box{position:relative;flex-grow:1;display:flex;align-items:center;gap:10px;}
-#search{width:100%;background:var(--gray);border:none;padding:10px 15px 10px 35px;border-radius:20px;color:white;outline:none;}
-.btn-auth{background:white;color:black;border:none;padding:8px 12px;border-radius:20px;font-size:0.7rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;}
-.btn-auth i{color:#4285F4;font-size:0.9rem;}
-nav{display:flex;justify-content:center;gap:8px;padding:10px;overflow-x:auto;scrollbar-width:none;}
-.nav-item{padding:8px 16px;background:#1a1a1a;border-radius:20px;font-size:0.75rem;font-weight:700;cursor:pointer;white-space:nowrap;color:#aaa;transition:0.3s;}
-.nav-item.active{background:var(--red);color:white;}
-#heroSection{width:100%;height:380px;position:relative;overflow:hidden;background:#111;}
-.hero-container{display:flex;transition:transform 0.6s ease;height:100%;}
-.hero-item{min-width:100%;height:100%;position:relative;}
-.hero-item img{width:100%;height:100%;object-fit:cover;filter:brightness(0.6);}
-.hero-info{position:absolute;bottom:30px;left:20px;z-index:10;}
-.hero-title{font-size:1.6rem;font-weight:900;}
-section{padding:20px 0 0 20px;}
-h2{font-size:1rem;margin-bottom:15px;text-transform:uppercase;border-left:4px solid var(--red);padding-left:10px;}
-.row{display:flex;gap:12px;overflow-x:auto;padding-bottom:20px;scrollbar-width:none;}
-.card{min-width:140px;width:140px;border-radius:var(--radius);overflow:hidden;background:#111;cursor:pointer;position:relative;transition:0.3s;flex-shrink:0;}
-.card img{width:100%;height:200px;object-fit:cover;display:block;background:#222;}
-.card-info{padding:8px 5px;font-size:0.7rem;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#ddd;}
-.badge{position:absolute;top:8px;left:8px;background:var(--red);color:white;font-size:0.55rem;padding:3px 6px;border-radius:4px;font-weight:900;z-index:5;}
-#mainPlayer{display:none;position:fixed;inset:0;background:#000;z-index:2000;}
-#shortsFeed{height:100dvh;width:100vw;overflow-y:scroll;scroll-snap-type:y mandatory;display:none;scrollbar-width:none;}
-.short-slide{height:100dvh;width:100vw;scroll-snap-align:start;display:flex;align-items:center;justify-content:center;position:relative;background:#000;}
-.short-slide iframe{height:100%;width:100%;max-width:500px;border:none;}
-.btn-close{background:rgba(255,255,255,0.2);color:white;border:none;width:40px;height:40px;border-radius:50%;cursor:pointer;position:fixed;top:20px;left:20px;z-index:2100;font-weight:bold;}
-#ifr{width:100vw;height:100dvh;border:none;display:none;}
+:root { --red: #e50914; --black: #0a0a0a; --gray: #1a1a1a; --text: #ffffff; --radius: 10px; --dm-blue: #0062ff; }
+* { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+body { background: var(--black); color: var(--text); font-family: 'Montserrat', sans-serif; padding-top: 130px; overflow-x: hidden; }
+
+header { position: fixed; top: 0; width: 100%; background: #0a0a0a; z-index: 1000; border-bottom: 1px solid #222; }
+.top-bar { display: flex; align-items: center; padding: 10px 20px; gap: 15px; }
+.logo { font-size: 1.1rem; font-weight: 900; color: var(--red); text-transform: uppercase; cursor: pointer; }
+.search-box { position: relative; flex-grow: 1; display: flex; align-items: center; gap: 10px; }
+#search { width: 100%; background: var(--gray); border: none; padding: 10px 15px 10px 35px; border-radius: 20px; color: white; outline: none; }
+
+nav { display: flex; justify-content: center; gap: 8px; padding: 10px; overflow-x: auto; scrollbar-width: none; }
+.nav-item { padding: 8px 16px; background: #1a1a1a; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; color: #aaa; transition: 0.3s; }
+.nav-item.active { background: var(--red); color: white; }
+
+#heroSection { width: 100%; height: 380px; position: relative; overflow: hidden; background: #111; }
+.hero-container { display: flex; transition: transform 0.6s ease; height: 100%; }
+.hero-item { min-width: 100%; height: 100%; position: relative; }
+.hero-item img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
+.hero-info { position: absolute; bottom: 30px; left: 20px; z-index: 10; }
+.hero-title { font-size: 1.6rem; font-weight: 900; }
+
+section { padding: 20px 0 0 20px; }
+h2 { font-size: 1rem; margin-bottom: 15px; text-transform: uppercase; border-left: 4px solid var(--red); padding-left: 10px; }
+.row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 20px; scrollbar-width: none; }
+
+.card { min-width: 140px; width: 140px; border-radius: var(--radius); overflow: hidden; background: #111; cursor: pointer; position: relative; transition: 0.3s; flex-shrink: 0; }
+.card img { width: 100%; height: 200px; object-fit: cover; display: block; background: #222; }
+.card-info { padding: 8px 5px; font-size: 0.7rem; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #ddd; }
+.badge { position: absolute; top: 8px; left: 8px; background: var(--red); color: white; font-size: 0.55rem; padding: 3px 6px; border-radius: 4px; font-weight: 900; z-index: 5; }
+
+#mainPlayer { display: none; position: fixed; inset: 0; background: #000; z-index: 2000; }
+#shortsFeed { height: 100dvh; width: 100vw; overflow-y: scroll; scroll-snap-type: y mandatory; display: none; scrollbar-width: none; }
+.short-slide { height: 100dvh; width: 100vw; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; position: relative; background: #000; }
+.short-slide iframe { height: 100%; width: 100%; max-width: 500px; border: none; }
+
+.btn-close { background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; position: fixed; top: 20px; left: 20px; z-index: 2100; font-weight: bold; }
+#ifr { width: 100vw; height: 100dvh; border: none; display: none; }
+
+#overlay { position: fixed; inset: 0; background: #000d; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; text-align: center; }
+#overlay h1 { margin-bottom: 20px; font-size: 1.5rem; }
+.btn-auth { background: white; color: black; border: none; padding: 10px 20px; border-radius: 25px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+.btn-auth i { color: #4285F4; font-size: 1.2rem; }
 </style>
 </head>
 <body>
 
+<!-- Overlay Login -->
+<div id="overlay">
+<h1>Connexion obligatoire</h1>
+<button class="btn-auth" id="loginBtn"><i class="fab fa-google"></i> Connexion avec Google</button>
+</div>
+
 <header>
-<div class="top-bar">
-<div class="logo" onclick="location.reload()">FILMANGSTREAM</div>
-<div class="search-box">
-<input id="search" type="text" placeholder="Rechercher...">
-<button class="btn-auth" id="loginBtn"><i class="fab fa-google"></i> Connexion</button>
-</div>
-</div>
-<nav>
-<div class="nav-item active" onclick="setActive(this); window.scrollTo(0,0)">Accueil</div>
-<div class="nav-item" onclick="jump('shortsSection'); setActive(this)">Shorts</div>
-<div class="nav-item" onclick="jump('videoSection'); setActive(this)">Vidéos</div>
-<div class="nav-item" onclick="jump('filmSection'); setActive(this)">Films</div>
-<div class="nav-item" onclick="jump('seriesSection'); setActive(this)">Séries</div>
-<div class="nav-item" onclick="jump('animeSection'); setActive(this)">Animes</div>
-<div class="nav-item" onclick="jump('streamSection'); setActive(this)">Streaming</div>
-<div class="nav-item" onclick="jump('tvSection'); setActive(this)">TV</div>
-</nav>
+    <div class="top-bar">
+        <div class="logo" onclick="location.reload()">FILMANGSTREAM</div>
+        <div class="search-box">
+            <input id="search" type="text" placeholder="Rechercher...">
+        </div>
+    </div>
+    <nav>
+        <div class="nav-item active" onclick="setActive(this); window.scrollTo(0,0)">Accueil</div>
+        <div class="nav-item" onclick="jump('shortsSection'); setActive(this)">Shorts</div>
+        <div class="nav-item" onclick="jump('videoSection'); setActive(this)">Vidéos</div>
+        <div class="nav-item" onclick="jump('filmSection'); setActive(this)">Films</div>
+        <div class="nav-item" onclick="jump('seriesSection'); setActive(this)">Séries</div>
+        <div class="nav-item" onclick="jump('animeSection'); setActive(this)">Animes</div>
+        <div class="nav-item" onclick="jump('streamSection'); setActive(this)">Streaming</div>
+        <div class="nav-item" onclick="jump('tvSection'); setActive(this)">TV</div>
+    </nav>
 </header>
 
-<main id="main">
-<section id="heroSection"><div class="hero-container" id="heroRow"></div></section>
-<section id="shortsSection"><h2><i class="fab fa-youtube" style="color:red"></i> YouTube Shorts</h2><div class="row" id="shortsRow"></div></section>
-<section id="dmShortsSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fab fa-dailymotion" style="color:var(--dm-blue)"></i> Dailymotion Shorts</h2><div class="row" id="dmShortsRow"></div></section>
-<section id="videoSection"><h2><i class="fas fa-play-circle"></i> Vidéos YouTube</h2><div class="row" id="videoRow"></div></section>
-<section id="dmVideoSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fas fa-video"></i> Vidéos Dailymotion</h2><div class="row" id="dmVideoRow"></div></section>
-<section id="filmSection"><h2><i class="fas fa-film"></i> Films Populaires</h2><div class="row" id="filmRow"></div></section>
-<section id="seriesSection"><h2><i class="fas fa-video"></i> Séries TV</h2><div class="row" id="seriesRow"></div></section>
-<section id="animeSection"><h2><i class="fas fa-dragon"></i> Animes & Mangas</h2><div class="row" id="animeRow"></div></section>
-<section id="streamSection"><h2><i class="fas fa-layer-group"></i> Multi-Streaming</h2>
-<div class="row">
-<div class="card" onclick="window.open('https://www.netflix.com', '_blank')"><img src="images/netflix.png" onerror="this.src='https://via.placeholder.com/140x200/e50914/fff?text=Netflix'"><div class="card-info">Netflix</div></div>
-<div class="card" onclick="window.open('https://www.primevideo.com', '_blank')"><img src="images/primevideo.png" onerror="this.src='https://via.placeholder.com/140x200/00a8e1/fff?text=Prime+Video'"><div class="card-info">Prime Video</div></div>
-<div class="card" onclick="openInternal('https://www.disneyplus.com')"><img src="images/disneyplus.png" onerror="this.src='https://via.placeholder.com/140x200/0063be/fff?text=Disney+'"><div class="card-info">Disney Plus</div></div>
-<div class="card" onclick="openInternal('https://www.crunchyroll.com')"><img src="images/crunchyroll.png" onerror="this.src='https://via.placeholder.com/140x200/f47521/fff?text=Crunchyroll'"><div class="card-info">Crunchyroll</div></div>
-<div class="card" onclick="openInternal('https://anime-sama.store/')"><img src="images/animesama.png" onerror="this.src='https://via.placeholder.com/140x200/333/fff?text=AnimeSama'"><div class="card-info">Anime Sama</div></div>
-</div>
-</section>
-<section id="tvSection"><h2><i class="fas fa-broadcast-tower"></i> Direct TV Premium</h2><div class="row" id="tvRow"></div></section>
+<main id="main" style="display:none;">
+    <!-- Tout ton contenu existant -->
+    <section id="heroSection"><div class="hero-container" id="heroRow"></div></section>
+    <section id="shortsSection"><h2><i class="fab fa-youtube" style="color:red"></i> YouTube Shorts</h2><div class="row" id="shortsRow"></div></section>
+    <section id="dmShortsSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fab fa-dailymotion" style="color:var(--dm-blue)"></i> Dailymotion Shorts</h2><div class="row" id="dmShortsRow"></div></section>
+    <section id="videoSection"><h2><i class="fas fa-play-circle"></i> Vidéos YouTube</h2><div class="row" id="videoRow"></div></section>
+    <section id="dmVideoSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fas fa-video"></i> Vidéos Dailymotion</h2><div class="row" id="dmVideoRow"></div></section>
+    <section id="filmSection"><h2><i class="fas fa-film"></i> Films Populaires</h2><div class="row" id="filmRow"></div></section>
+    <section id="seriesSection"><h2><i class="fas fa-video"></i> Séries TV</h2><div class="row" id="seriesRow"></div></section>
+    <section id="animeSection"><h2><i class="fas fa-dragon"></i> Animes & Mangas</h2><div class="row" id="animeRow"></div></section>
+    <section id="streamSection">
+        <h2><i class="fas fa-layer-group"></i> Multi-Streaming</h2>
+        <div class="row">
+            <div class="card" onclick="window.open('https://www.netflix.com', '_blank')"><img src="images/netflix.png" onerror="this.src='https://via.placeholder.com/140x200/e50914/fff?text=Netflix'"><div class="card-info">Netflix</div></div>
+            <div class="card" onclick="window.open('https://www.primevideo.com', '_blank')"><img src="images/primevideo.png" onerror="this.src='https://via.placeholder.com/140x200/00a8e1/fff?text=Prime+Video'"><div class="card-info">Prime Video</div></div>
+            <div class="card" onclick="openInternal('https://www.disneyplus.com')"><img src="images/disneyplus.png" onerror="this.src='https://via.placeholder.com/140x200/0063be/fff?text=Disney+'"><div class="card-info">Disney Plus</div></div>
+            <div class="card" onclick="openInternal('https://www.crunchyroll.com')"><img src="images/crunchyroll.png" onerror="this.src='https://via.placeholder.com/140x200/f47521/fff?text=Crunchyroll'"><div class="card-info">Crunchyroll</div></div>
+            <div class="card" onclick="openInternal('https://anime-sama.store/')"><img src="images/animesama.png" onerror="this.src='https://via.placeholder.com/140x200/333/fff?text=AnimeSama'"><div class="card-info">Anime Sama</div></div>
+        </div>
+    </section>
+    <section id="tvSection"><h2><i class="fas fa-broadcast-tower"></i> Direct TV Premium</h2><div class="row" id="tvRow"></div></section>
 </main>
 
 <div id="mainPlayer">
-<button class="btn-close" onclick="closePlayer()">✕</button>
-<iframe id="ifr" allowfullscreen allow="autoplay; fullscreen"></iframe>
-<div id="shortsFeed"></div>
+    <button class="btn-close" onclick="closePlayer()">✕</button>
+    <iframe id="ifr" allowfullscreen allow="autoplay; fullscreen"></iframe>
+    <div id="shortsFeed"></div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check.js";
 
 const firebaseConfig = {
-    apiKey: "TA_API_KEY",
-    authDomain: "TON_PROJET.firebaseapp.com",
-    projectId: "TON_PROJET",
-    storageBucket: "TON_PROJET.appspot.com",
-    messagingSenderId: "TON_ID",
-    appId: "TON_APP_ID"
+    apiKey: "AIzaSyB82499194656e77beb301b",
+    authDomain: "filmangstream.firebaseapp.com",
+    projectId: "filmangstream",
+    storageBucket: "filmangstream.firebasestorage.app",
+    messagingSenderId: "887863323394",
+    appId: "1:887863323394:web:b82499194656e77beb301b"
 };
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider('TA_CLÉ_SITE_RECAPTCHA'),
-    isTokenAutoRefreshEnabled: true
-});
-
-// Redirection si non connecté
-onAuthStateChanged(auth, user => {
-    if(!user) window.location.href = "login.html";
-    else document.getElementById('loginBtn').innerHTML = `<i class="fas fa-user-circle"></i> ${user.displayName.split(' ')[0]}`;
-});
-
-// Connexion
-window.loginWithGoogle = () => {
+const loginBtn = document.getElementById('loginBtn');
+loginBtn.onclick = () => {
     signInWithPopup(auth, provider)
-    .then(res => location.reload())
-    .catch(err => alert(err.message));
+        .catch(err => alert("Erreur de connexion : " + err.message));
 };
+
+onAuthStateChanged(auth, user => {
+    if(user){
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('main').style.display = 'block';
+        loginBtn.innerHTML = `<i class="fas fa-user-circle"></i> ${user.displayName.split(' ')[0]}`;
+        console.log("Utilisateur connecté :", user.displayName);
+    } else {
+        document.getElementById('overlay').style.display = 'flex';
+        document.getElementById('main').style.display = 'none';
+        loginBtn.innerHTML = `<i class="fab fa-google"></i> Connexion avec Google`;
+    }
+});
 </script>
 
-<!-- Ton code existant pour YT, DM, TMDB, Kitsu, lecteur -->
 <script>
-// ... Inclure ici tout ton script pour le contenu vidéo (fetchYT, fetchDM, loadTMDB, loadHero, loadKitsu, openMedia, etc.)
+// Ton code existant pour YouTube, Dailymotion, TMDB, Kitsu, etc.
+// Copie tout le code JS que tu avais pour fetchYT, fetchDM, render, openInternal, etc.
 </script>
+
 </body>
 </html>
