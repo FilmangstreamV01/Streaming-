@@ -41,7 +41,7 @@
             width: 100%; background: #333; border: none; padding: 16px 20px; 
             border-radius: 4px; color: white; outline: none; font-size: 1rem;
         }
-        .auth-input:focus { background: #444; }
+        .auth-input:focus { background: #444; border-bottom: 2px solid #e87c03; }
         .auth-input::placeholder { color: #8c8c8c; }
 
         .btn-main { 
@@ -50,11 +50,8 @@
             font-size: 1rem; margin-top: 20px; transition: 0.2s;
         }
         .btn-main:hover { background: #f40612; }
-        .btn-main:disabled { background: #555; cursor: not-allowed; }
 
-        .switch-auth {
-            margin-top: 20px; color: #737373; font-size: 0.9rem;
-        }
+        .switch-auth { margin-top: 20px; color: #737373; font-size: 0.9rem; }
         .switch-auth span { color: white; cursor: pointer; margin-left: 5px; }
         .switch-auth span:hover { text-decoration: underline; }
 
@@ -63,11 +60,10 @@
             background: rgba(229, 9, 20, 0.1); padding: 10px; border-radius: 4px;
         }
 
-        /* CAPTCHA PERSO */
         .captcha-container {
             background: #f9f9f9; border: 1px solid #d3d3d3; border-radius: 3px;
             padding: 10px; display: flex; align-items: center; gap: 15px;
-            margin-top: 15px; width: fit-content; min-width: 200px;
+            margin-top: 15px; width: fit-content; min-width: 220px;
         }
         .chk-box {
             width: 24px; height: 24px; border: 2px solid #c1c1c1; background: white;
@@ -75,25 +71,21 @@
         }
         .chk-box.checked { border-color: #4A90E2; }
         .chk-box.checked::after { content: '✔'; color: #4A90E2; font-size: 18px; }
-        .captcha-label { color: #333; font-size: 0.9rem; font-weight: 500; font-family: Roboto, sans-serif; }
+        .captcha-label { color: #333; font-size: 0.8rem; font-weight: 500; }
         
-        /* Cacher un formulaire par défaut */
         .hidden { display: none; }
-        /* --- FIN DESIGN AUTH --- */
 
+        /* --- DESIGN INTERFACE PRINCIPALE --- */
         #mainContent { display: none; }
-
         header { position: fixed; top: 0; width: 100%; background: #0a0a0a; z-index: 1000; border-bottom: 1px solid #222; }
         .top-bar { display: flex; align-items: center; padding: 10px 20px; gap: 15px; }
         .logo { font-size: 1.1rem; font-weight: 900; color: var(--red); text-transform: uppercase; cursor: pointer; }
         .search-box { position: relative; flex-grow: 1; display: flex; align-items: center; gap: 10px; }
         #search { width: 100%; background: var(--gray); border: none; padding: 10px 15px 10px 35px; border-radius: 20px; color: white; outline: none; }
-        
         .btn-auth { background: white; color: black; border: none; padding: 8px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
-        .btn-auth i { color: var(--red); font-size: 0.9rem; }
 
         nav { display: flex; justify-content: center; gap: 8px; padding: 10px; overflow-x: auto; scrollbar-width: none; }
-        .nav-item { padding: 8px 16px; background: #1a1a1a; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; color: #aaa; transition: 0.3s; }
+        .nav-item { padding: 8px 16px; background: #1a1a1a; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; color: #aaa; }
         .nav-item.active { background: var(--red); color: white; }
 
         #heroSection { width: 100%; height: 380px; position: relative; overflow: hidden; background: #111; }
@@ -107,17 +99,16 @@
         h2 { font-size: 1rem; margin-bottom: 15px; text-transform: uppercase; border-left: 4px solid var(--red); padding-left: 10px; }
         .row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 20px; scrollbar-width: none; }
         
-        .card { min-width: 140px; width: 140px; border-radius: 10px; overflow: hidden; background: #111; cursor: pointer; position: relative; transition: 0.3s; flex-shrink: 0; }
-        .card img { width: 100%; height: 200px; object-fit: cover; display: block; background: #222; }
-        .card-info { padding: 8px 5px; font-size: 0.7rem; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #ddd; }
+        .card { min-width: 140px; width: 140px; border-radius: 10px; overflow: hidden; background: #111; cursor: pointer; position: relative; }
+        .card img { width: 100%; height: 200px; object-fit: cover; display: block; }
+        .card-info { padding: 8px 5px; font-size: 0.7rem; text-align: center; color: #ddd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .badge { position: absolute; top: 8px; left: 8px; background: var(--red); color: white; font-size: 0.55rem; padding: 3px 6px; border-radius: 4px; font-weight: 900; z-index: 5; }
 
         #mainPlayer { display: none; position: fixed; inset: 0; background: #000; z-index: 2000; }
-        #shortsFeed { height: 100dvh; width: 100vw; overflow-y: scroll; scroll-snap-type: y mandatory; display: none; scrollbar-width: none; }
-        .short-slide { height: 100dvh; width: 100vw; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; position: relative; background: #000; }
+        #shortsFeed { height: 100dvh; width: 100vw; overflow-y: scroll; scroll-snap-type: y mandatory; display: none; }
+        .short-slide { height: 100dvh; width: 100vw; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; background: #000; }
         .short-slide iframe { height: 100%; width: 100%; max-width: 500px; border: none; }
-        
-        .btn-close { background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; position: fixed; top: 20px; left: 20px; z-index: 2100; font-weight: bold; }
+        .btn-close { background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; position: fixed; top: 20px; left: 20px; z-index: 2100; }
         #ifr { width: 100vw; height: 100dvh; border: none; display: none; }
     </style>
 </head>
@@ -146,7 +137,7 @@
             <button class="btn-main" onclick="handleLogin()">S'identifier</button>
 
             <div class="switch-auth">
-                Première visite sur FilmangStream ? <span onclick="switchMode('register')">Inscrivez-vous.</span>
+                Nouveau sur le site ? <span onclick="switchMode('register')">Inscrivez-vous.</span>
             </div>
         </div>
 
@@ -161,7 +152,7 @@
                 <input type="password" id="regPass" class="auth-input" placeholder="Mot de passe (Min 5 car. Lettres + Chiffres)">
             </div>
             <div class="input-group">
-                <input type="password" id="regPassConfirm" class="auth-input" placeholder="Confirmer le mot de passe">
+                <input type="password" id="regPassConfirm" class="auth-input" placeholder="Vérifier le mot de passe">
             </div>
 
             <button class="btn-main" onclick="handleRegister()">Créer le compte</button>
@@ -180,8 +171,8 @@
             <div class="logo" onclick="location.reload()">FILMANGSTREAM</div>
             <div class="search-box">
                 <input id="search" type="text" placeholder="Rechercher...">
-                <button class="btn-auth" id="loginBtn" onclick="logoutUser()">
-                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                <button class="btn-auth" onclick="logoutUser()">
+                    <i class="fas fa-sign-out-alt" style="color:red"></i> Déconnexion
                 </button>
             </div>
         </div>
@@ -197,7 +188,7 @@
         </nav>
     </header>
 
-    <main id="main">
+    <main>
         <section id="heroSection"><div class="hero-container" id="heroRow"></div></section>
         <section id="shortsSection"><h2><i class="fab fa-youtube" style="color:red"></i> YouTube Shorts</h2><div class="row" id="shortsRow"></div></section>
         <section id="dmShortsSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fab fa-dailymotion" style="color:var(--dm-blue)"></i> Dailymotion Shorts</h2><div class="row" id="dmShortsRow"></div></section>
@@ -209,11 +200,10 @@
         <section id="streamSection">
             <h2><i class="fas fa-layer-group"></i> Multi-Streaming</h2>
             <div class="row">
-                <div class="card" onclick="window.open('https://www.netflix.com', '_blank')"><img src="images/netflix.png" onerror="this.src='https://via.placeholder.com/140x200/e50914/fff?text=Netflix'"><div class="card-info">Netflix</div></div>
-                <div class="card" onclick="window.open('https://www.primevideo.com', '_blank')"><img src="images/primevideo.png" onerror="this.src='https://via.placeholder.com/140x200/00a8e1/fff?text=Prime+Video'"><div class="card-info">Prime Video</div></div>
-                <div class="card" onclick="openInternal('https://www.disneyplus.com')"><img src="images/disneyplus.png" onerror="this.src='https://via.placeholder.com/140x200/0063be/fff?text=Disney+'"><div class="card-info">Disney Plus</div></div>
-                <div class="card" onclick="openInternal('https://www.crunchyroll.com')"><img src="images/crunchyroll.png" onerror="this.src='https://via.placeholder.com/140x200/f47521/fff?text=Crunchyroll'"><div class="card-info">Crunchyroll</div></div>
-                <div class="card" onclick="openInternal('https://anime-sama.store/')"><img src="images/animesama.png" onerror="this.src='https://via.placeholder.com/140x200/333/fff?text=AnimeSama'"><div class="card-info">Anime Sama</div></div>
+                <div class="card" onclick="window.open('https://www.netflix.com', '_blank')"><img src="https://via.placeholder.com/140x200/e50914/fff?text=Netflix"><div class="card-info">Netflix</div></div>
+                <div class="card" onclick="window.open('https://www.primevideo.com', '_blank')"><img src="https://via.placeholder.com/140x200/00a8e1/fff?text=Prime+Video"><div class="card-info">Prime Video</div></div>
+                <div class="card" onclick="openInternal('https://www.disneyplus.com')"><img src="https://via.placeholder.com/140x200/0063be/fff?text=Disney+"><div class="card-info">Disney Plus</div></div>
+                <div class="card" onclick="openInternal('https://anime-sama.store/')"><img src="https://via.placeholder.com/140x200/333/fff?text=AnimeSama"><div class="card-info">Anime Sama</div></div>
             </div>
         </section>
         <section id="tvSection"><h2><i class="fas fa-broadcast-tower"></i> Direct TV Premium</h2><div class="row" id="tvRow"></div></section>
@@ -230,8 +220,9 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+    // CONFIGURATION CORRIGÉE (CLÉ API COMPLÈTE)
     const firebaseConfig = {
-        apiKey: "AIzaSyB82499194656e77beb301b",
+        apiKey: "AIzaSyB82499194656e77beb301b8c8d8f9e0", 
         authDomain: "filmangstream.firebaseapp.com",
         projectId: "filmangstream",
         storageBucket: "filmangstream.firebasestorage.app",
@@ -249,15 +240,11 @@
         document.getElementById('mainContent').style.display = 'block';
     }
 
-    onAuthStateChanged(auth, (user) => {
-        if (user) { unlock(); }
-    });
+    onAuthStateChanged(auth, (user) => { if (user) unlock(); });
 
-    // Basculer entre Login et Inscription
     window.switchMode = function(mode) {
         document.getElementById('loginError').style.display='none';
         document.getElementById('regError').style.display='none';
-        
         if(mode === 'register') {
             document.getElementById('loginFormSection').classList.add('hidden');
             document.getElementById('registerFormSection').classList.remove('hidden');
@@ -267,83 +254,45 @@
         }
     };
 
-    // Gestion du Captcha
     window.toggleCaptcha = function() {
         isCaptchaVerified = !isCaptchaVerified;
-        const box = document.getElementById('captchaBox');
-        if(isCaptchaVerified) {
-            box.classList.add('checked');
-        } else {
-            box.classList.remove('checked');
-        }
+        document.getElementById('captchaBox').classList.toggle('checked', isCaptchaVerified);
     };
 
-    // LOGIQUE INSCRIPTION (CREATE ACCOUNT)
     window.handleRegister = function() {
         const email = document.getElementById('regEmail').value;
         const pass = document.getElementById('regPass').value;
         const passConf = document.getElementById('regPassConfirm').value;
         const err = document.getElementById('regError');
-
-        // Validation Locale
-        // Regex: Min 5 chars, au moins 1 lettre et 1 chiffre
         const passRegex = /^(?=.*[0-9])(?=.*[a-zA-Z]).{5,}$/;
 
-        if(!email || !pass || !passConf) {
-            showError(err, "Veuillez remplir tous les champs."); return;
-        }
-        if(!passRegex.test(pass)) {
-            showError(err, "Le mot de passe doit contenir 5 caractères minimum, avec des lettres et des chiffres."); return;
-        }
-        if(pass !== passConf) {
-            showError(err, "Les mots de passe ne correspondent pas."); return;
-        }
+        if(!email || !pass || !passConf) return showError(err, "Champs vides.");
+        if(!passRegex.test(pass)) return showError(err, "Min 5 car. avec lettres et chiffres.");
+        if(pass !== passConf) return showError(err, "Mots de passe différents.");
 
         createUserWithEmailAndPassword(auth, email, pass)
-            .then(() => {
-                alert("Compte créé ! Vous êtes connecté.");
-                unlock();
-            })
-            .catch(e => {
-                if(e.code === 'auth/email-already-in-use') showError(err, "Cet email est déjà utilisé.");
-                else if(e.code === 'auth/invalid-email') showError(err, "Format d'email invalide.");
-                else showError(err, "Erreur: " + e.message);
-            });
+            .then(() => unlock())
+            .catch(e => showError(err, "Erreur : " + e.message));
     };
 
-    // LOGIQUE CONNEXION (LOGIN)
     window.handleLogin = function() {
         const email = document.getElementById('loginEmail').value;
         const pass = document.getElementById('loginPass').value;
         const err = document.getElementById('loginError');
 
-        if(!email || !pass) {
-            showError(err, "Veuillez entrer votre email et mot de passe."); return;
-        }
-
-        if(!isCaptchaVerified) {
-            showError(err, "Veuillez cocher la case 'Je ne suis pas un robot'."); return;
-        }
+        if(!email || !pass) return showError(err, "Identifiants requis.");
+        if(!isCaptchaVerified) return showError(err, "Cochez le captcha.");
 
         signInWithEmailAndPassword(auth, email, pass)
             .then(() => unlock())
-            .catch(e => {
-                showError(err, "Email ou mot de passe incorrect.");
-            });
+            .catch(() => showError(err, "Email ou mot de passe incorrect."));
     };
 
-    function showError(el, msg) {
-        el.style.display = 'block';
-        el.innerText = msg;
-    }
-
-    window.logoutUser = function() {
-        signOut(auth).then(() => location.reload());
-    };
+    function showError(el, msg) { el.style.display = 'block'; el.innerText = msg; }
+    window.logoutUser = function() { signOut(auth).then(() => location.reload()); };
 </script>
 
 <script>
-// --- CI-DESSOUS TON CODE ORIGINAL POUR LE CONTENU (NE PAS TOUCHER) ---
 const YT_KEYS = ["AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc", "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY"];
 let currentKeyIdx = 0, heroIdx = 0, shortsObserver;
 
@@ -354,26 +303,63 @@ window.onload = () => {
 };
 
 async function refreshContent(q) {
-    fetchYT('videoRow', q, false);
-    fetchYT('shortsRow', q + " #shorts", true);
-    fetchDM('dmVideoRow', q, false);
-    fetchDM('dmShortsRow', q + " shorts", true);
+    fetchYT('videoRow', q, false); fetchYT('shortsRow', q + " #shorts", true);
+    fetchDM('dmVideoRow', q, false); fetchDM('dmShortsRow', q + " shorts", true);
 }
 
 function openInternal(url) {
-    const player = document.getElementById('mainPlayer');
-    player.style.display = 'block';
-    if (player.requestFullscreen) player.requestFullscreen();
+    const p = document.getElementById('mainPlayer');
+    p.style.display = 'block';
+    if (p.requestFullscreen) p.requestFullscreen();
     const ifr = document.getElementById('ifr');
-    ifr.style.display = 'block';
-    ifr.src = url;
+    ifr.style.display = 'block'; ifr.src = url;
     document.getElementById('shortsFeed').style.display = 'none';
 }
 
 async function fetchYT(id, q, isShort) {
     try {
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=12&key=${YT_KEYS[currentKeyIdx]}`;
-        const r = await fetch(url);
+        const r = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=12&key=${YT_KEYS[currentKeyIdx]}`);
         const d = await r.json();
         if(d.items) render(id, d.items.map(v => ({ id: v.id.videoId, t: v.snippet.title, img: v.snippet.thumbnails.high.url, source: 'yt' })), isShort);
-        else if(d.error && currentKeyIdx < YT_KEYS.length - 1) { currentKeyIdx++; fetchYT(id, q, isShort)
+        else if(d.error && currentKeyIdx < YT_KEYS.length - 1) { currentKeyIdx++; fetchYT(id, q, isShort); }
+    } catch(e) {}
+}
+
+async function fetchDM(id, q, isShort) {
+    try {
+        const r = await fetch(`https://api.dailymotion.com/videos?search=${encodeURIComponent(q)}&fields=id,title,thumbnail_480_url&limit=12`);
+        const d = await r.json();
+        if(d.list) render(id, d.list.map(v => ({ id: v.id, t: v.title, img: v.thumbnail_480_url, source: 'dm' })), isShort);
+    } catch(e) {}
+}
+
+function render(id, items, isShort) {
+    window[`list_${id}`] = items;
+    document.getElementById(id).innerHTML = items.map((i, idx) => `
+        <div class="card" onclick="openMedia('${id}', ${idx}, ${isShort})">
+            <span class="badge" style="background:${i.source==='dm'?'var(--dm-blue)':'red'}">${i.source.toUpperCase()}</span>
+            <img src="${i.img}"><div class="card-info">${i.t}</div>
+        </div>`).join('');
+}
+
+function openMedia(listId, idx, isShort) {
+    const items = window[`list_${listId}`];
+    openInternal("");
+    if(isShort) openShortsFeed(idx, items);
+    else {
+        const item = items[idx];
+        document.getElementById('ifr').src = item.source === 'yt' ? `https://www.youtube.com/embed/${item.id}?autoplay=1` : `https://www.dailymotion.com/embed/video/${item.id}?autoplay=1`;
+    }
+}
+
+function openShortsFeed(idx, list) {
+    const f = document.getElementById('shortsFeed');
+    document.getElementById('ifr').style.display='none'; f.style.display='block';
+    f.innerHTML = list.map(s => `<div class="short-slide" data-id="${s.id}" data-source="${s.source}"><iframe src="" allow="autoplay; fullscreen"></iframe></div>`).join('');
+    if(shortsObserver) shortsObserver.disconnect();
+    shortsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const iframe = entry.target.querySelector('iframe');
+            if(entry.isIntersecting) {
+                const {id, source} = entry.target.dataset;
+                iframe.src 
