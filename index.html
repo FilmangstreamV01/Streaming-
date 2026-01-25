@@ -13,22 +13,37 @@
         * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
         body { background: var(--black); color: var(--text); font-family: 'Montserrat', sans-serif; padding-top: 130px; overflow-x: hidden; }
 
-        /* --- STYLE ECRAN DE CONNEXION --- */
+        /* --- DESIGN CONNEXION PRO --- */
         #authOverlay {
-            position: fixed; inset: 0; background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+            position: fixed; inset: 0; background: url('https://assets.nflxext.com/ffe/siteui/vlv3/f841d4c7-10e1-40af-bca1-07e3f8eb1468/da677271-4966-4ef3-9a3b-9e42e61f9d45/FR-fr-20220502-popsignuptwoweeks-perspective_alpha_website_large.jpg') center/cover;
             z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 20px;
         }
-        .auth-card {
-            background: rgba(26, 26, 26, 0.95); width: 100%; max-width: 400px; padding: 40px;
-            border-radius: 20px; border: 1px solid #333; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-        .auth-card h1 { color: var(--red); margin-bottom: 20px; font-weight: 900; }
-        .auth-input { width: 100%; background: #0a0a0a; border: 1px solid #333; padding: 15px; border-radius: 12px; color: white; margin-bottom: 15px; outline: none; }
-        .btn-main { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; background: var(--red); color: white; }
-        .btn-google { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; background: white; color: black; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        #authOverlay::before { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,0.75); }
         
-        #mainContent { display: none; } /* Caché au départ */
-        /* --- FIN STYLE ECRAN --- */
+        .auth-card {
+            position: relative; background: rgba(0, 0, 0, 0.85); width: 100%; max-width: 450px; 
+            padding: 60px; border-radius: 8px; text-align: left; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .auth-card h1 { color: #fff; margin-bottom: 28px; font-size: 2rem; font-weight: 700; }
+        .auth-input { 
+            width: 100%; background: #333; border: none; padding: 16px; border-radius: 4px; 
+            color: white; margin-bottom: 16px; font-size: 1rem; transition: 0.2s;
+        }
+        .auth-input:focus { background: #454545; outline: none; }
+        .btn-main { 
+            width: 100%; padding: 16px; border-radius: 4px; border: none; font-weight: 700; 
+            cursor: pointer; background: var(--red); color: white; font-size: 1rem; margin-top: 24px;
+        }
+        .btn-google { 
+            width: 100%; padding: 12px; border-radius: 4px; border: none; font-weight: 600; 
+            cursor: pointer; background: white; color: #000; margin-top: 20px; 
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+        }
+        #errorMessage { color: #e87c03; font-size: 0.85rem; margin-top: 10px; display: none; }
+        #passSection { display: none; }
+        
+        #mainContent { display: none; }
+        /* --- FIN DESIGN CONNEXION --- */
 
         header { position: fixed; top: 0; width: 100%; background: #0a0a0a; z-index: 1000; border-bottom: 1px solid #222; }
         .top-bar { display: flex; align-items: center; padding: 10px 20px; gap: 15px; }
@@ -37,7 +52,6 @@
         #search { width: 100%; background: var(--gray); border: none; padding: 10px 15px 10px 35px; border-radius: 20px; color: white; outline: none; }
         
         .btn-auth { background: white; color: black; border: none; padding: 8px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
-        .btn-auth i { color: var(--red); font-size: 0.9rem; }
 
         nav { display: flex; justify-content: center; gap: 8px; padding: 10px; overflow-x: auto; scrollbar-width: none; }
         .nav-item { padding: 8px 16px; background: #1a1a1a; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; color: #aaa; transition: 0.3s; }
@@ -72,11 +86,24 @@
 
 <div id="authOverlay">
     <div class="auth-card">
-        <h1>FILMANGSTREAM</h1>
-        <input type="email" id="emailInput" class="auth-input" placeholder="Votre e-mail">
-        <button class="btn-main" onclick="handleMailLogin()">Accéder au site</button>
+        <h1>S'identifier</h1>
+        
+        <div id="emailSection">
+            <input type="email" id="emailInput" class="auth-input" placeholder="E-mail ou numéro de téléphone">
+            <button class="btn-main" onclick="nextStep()">Suivant</button>
+        </div>
+
+        <div id="passSection">
+            <p id="displayEmail" style="color: #aaa; margin-bottom: 15px; font-size: 0.9rem;"></p>
+            <input type="password" id="passInput" class="auth-input" placeholder="Mot de passe">
+            <div id="errorMessage">Mot de passe incorrect. Veuillez réessayer.</div>
+            <button class="btn-main" onclick="handleAuth()">S'identifier</button>
+        </div>
+
+        <div style="margin: 25px 0; text-align: center; color: #737373;">OU</div>
+
         <button class="btn-google" onclick="loginWithGoogle()">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Continuer avec Google
+            <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="20"> Continuer avec Google
         </button>
     </div>
 </div>
@@ -135,7 +162,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyB82499194656e77beb301b",
@@ -149,37 +176,53 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' }); // Force le choix du compte Google
 
-    // Fonction pour montrer le site
     function unlock() {
         document.getElementById('authOverlay').style.display = 'none';
         document.getElementById('mainContent').style.display = 'block';
     }
 
-    // Surveiller la connexion
-    onAuthStateChanged(auth, (user) => {
-        if (user) { unlock(); }
-    });
+    onAuthStateChanged(auth, (user) => { if (user) unlock(); });
 
-    // Connexion Google
-    window.loginWithGoogle = function() {
-        signInWithPopup(auth, provider).then(() => unlock()).catch(e => alert("Erreur Google"));
-    };
-
-    // Connexion Mail (Accès direct pour test)
-    window.handleMailLogin = function() {
+    // Étape Email
+    window.nextStep = function() {
         const mail = document.getElementById('emailInput').value;
-        if(mail.includes('@')) { unlock(); } else { alert("Email invalide"); }
+        if(mail.includes('@')) {
+            document.getElementById('emailSection').style.display = 'none';
+            document.getElementById('passSection').style.display = 'block';
+            document.getElementById('displayEmail').innerText = mail;
+        } else { alert("Veuillez entrer un e-mail valide."); }
     };
 
-    // Déconnexion
+    // Connexion Email + Password Réelle
+    window.handleAuth = function() {
+        const email = document.getElementById('emailInput').value;
+        const pass = document.getElementById('passInput').value;
+        const err = document.getElementById('errorMessage');
+        
+        signInWithEmailAndPassword(auth, email, pass)
+            .then(() => unlock())
+            .catch(() => { 
+                err.style.display = 'block';
+                document.getElementById('passInput').value = ""; 
+            });
+    };
+
+    // Connexion Google avec Sélecteur de compte
+    window.loginWithGoogle = function() {
+        signInWithPopup(auth, provider)
+            .then(() => unlock())
+            .catch(e => console.error("Erreur Google"));
+    };
+
     window.logoutUser = function() {
         signOut(auth).then(() => location.reload());
     };
 </script>
 
 <script>
-// --- CI-DESSOUS TON CODE ORIGINAL POUR LE CONTENU (NE PAS TOUCHER) ---
+// --- CODE ORIGINAL DU CONTENU (INCHANGÉ) ---
 const YT_KEYS = ["AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc", "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY"];
 let currentKeyIdx = 0, heroIdx = 0, shortsObserver;
 
@@ -289,19 +332,4 @@ async function loadTMDB(id, type) {
 async function loadHero() {
     const r = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`);
     const d = await r.json();
-    document.getElementById('heroRow').innerHTML = d.results.slice(0, 5).map(m => `<div class="hero-item"><img src="https://image.tmdb.org/t/p/original${m.backdrop_path}"><div class="hero-info"><div class="hero-title">${m.title}</div></div></div>`).join('');
-    setInterval(() => { heroIdx = (heroIdx + 1) % 5; document.getElementById('heroRow').style.transform = `translateX(-${heroIdx * 100}%)`; }, 5000);
-}
-
-async function loadKitsu() {
-    const r = await fetch("https://kitsu.io/api/edge/anime?page[limit]=12&sort=-favoritesCount");
-    const d = await r.json();
-    document.getElementById('animeRow').innerHTML = d.data.map(a => `<div class="card" onclick="openInternal('https://kitsu.io/anime/${a.id}')"><img src="${a.attributes.posterImage.medium}"><div class="card-info">${a.attributes.canonicalTitle}</div></div>`).join('');
-}
-
-function jump(id) { window.scrollTo({top: document.getElementById(id).offsetTop - 160, behavior: 'smooth'}); }
-function setActive(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
-</script>
-</body>
-    </html>
-                    
+    document.getElementById('heroRow').innerHTML = d.results.slice(0, 5).map(m => `<div class="hero-item"><img src="https://image.tmdb.org/t/p/original${m.backdrop_
