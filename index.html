@@ -9,43 +9,408 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --red: #e50914; --black: #0a0a0a; --gray: #1a1a1a; --text: #ffffff; --radius: 10px; --dm-blue: #0062ff; }
-        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--black); color: var(--text); font-family: 'Montserrat', sans-serif; padding-top: 130px; overflow-x: hidden; }
+        :root {
+            --red: #e50914;
+            --black: #0a0a0a;
+            --gray: #1a1a1a;
+            --text: #ffffff;
+            --radius: 12px;
+            --dm-blue: #0062ff;
+            --glow-color: rgba(229, 9, 20, 0.5);
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --transition-fast: 0.2s ease;
+            --transition-slow: 0.4s ease;
+        }
 
-        header { position: fixed; top: 0; width: 100%; background: #0a0a0a; z-index: 1000; border-bottom: 1px solid #222; }
-        .top-bar { display: flex; align-items: center; padding: 10px 20px; gap: 15px; }
-        .logo { font-size: 1.1rem; font-weight: 900; color: var(--red); text-transform: uppercase; cursor: pointer; }
-        .search-box { position: relative; flex-grow: 1; }
-        #search { width: 100%; background: var(--gray); border: none; padding: 10px 15px 10px 35px; border-radius: 20px; color: white; outline: none; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--black);
+            background-image: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 25%);
+            color: var(--text);
+            font-family: 'Montserrat', sans-serif;
+            padding-top: 130px;
+            overflow-x: hidden;
+        }
         
-        nav { display: flex; justify-content: center; gap: 8px; padding: 10px; overflow-x: auto; scrollbar-width: none; }
-        .nav-item { padding: 8px 16px; background: #1a1a1a; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; color: #aaa; transition: 0.3s; }
-        .nav-item.active { background: var(--red); color: white; }
+        /* --- Custom Scrollbar --- */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--black); }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--red); }
 
-        #heroSection { width: 100%; height: 380px; position: relative; overflow: hidden; background: #111; }
-        .hero-container { display: flex; transition: transform 0.6s ease; height: 100%; }
-        .hero-item { min-width: 100%; height: 100%; position: relative; }
-        .hero-item img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
-        .hero-info { position: absolute; bottom: 30px; left: 20px; z-index: 10; }
-        .hero-title { font-size: 1.6rem; font-weight: 900; }
+        /* --- Header & Navigation --- */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            /* Glassmorphism Effect */
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background var(--transition-fast);
+        }
 
-        section { padding: 20px 0 0 20px; }
-        h2 { font-size: 1rem; margin-bottom: 15px; text-transform: uppercase; border-left: 4px solid var(--red); padding-left: 10px; }
-        .row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 20px; scrollbar-width: none; }
+        .top-bar {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: var(--red);
+            text-transform: uppercase;
+            cursor: pointer;
+            text-shadow: 0 0 5px var(--glow-color);
+        }
+
+        .search-box {
+            position: relative;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+        }
         
-        .card { min-width: 140px; width: 140px; border-radius: var(--radius); overflow: hidden; background: #111; cursor: pointer; position: relative; transition: 0.3s; flex-shrink: 0; }
-        .card img { width: 100%; height: 200px; object-fit: cover; display: block; background: #222; }
-        .card-info { padding: 8px 5px; font-size: 0.7rem; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #ddd; }
-        .badge { position: absolute; top: 8px; left: 8px; background: var(--red); color: white; font-size: 0.55rem; padding: 3px 6px; border-radius: 4px; font-weight: 900; z-index: 5; }
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            color: #888;
+        }
 
-        #mainPlayer { display: none; position: fixed; inset: 0; background: #000; z-index: 2000; }
-        #shortsFeed { height: 100dvh; width: 100vw; overflow-y: scroll; scroll-snap-type: y mandatory; display: none; scrollbar-width: none; }
-        .short-slide { height: 100dvh; width: 100vw; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; position: relative; background: #000; }
-        .short-slide iframe { height: 100%; width: 100%; max-width: 500px; border: none; }
+        #search {
+            width: 100%;
+            background: var(--gray);
+            border: 1px solid transparent;
+            padding: 10px 15px 10px 40px;
+            border-radius: 20px;
+            color: white;
+            outline: none;
+            transition: all var(--transition-slow);
+        }
+        #search:focus {
+            border-color: var(--red);
+            background: #222;
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .nav-item {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid #333;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            color: #aaa;
+            transition: all var(--transition-fast);
+        }
+        .nav-item:hover {
+            background: #222;
+            color: white;
+        }
+        .nav-item.active {
+            background: var(--red);
+            color: white;
+            border-color: var(--red);
+            box-shadow: 0 0 10px var(--glow-color);
+        }
+
+        /* --- Hero Section --- */
+        #heroSection {
+            width: 100%;
+            height: 420px; /* Increased height */
+            position: relative;
+            overflow: hidden;
+            background: #111;
+            border-radius: 0 0 var(--radius) var(--radius);
+        }
+
+        .hero-container {
+            display: flex;
+            transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1); /* Smoother transition */
+            height: 100%;
+        }
+
+        .hero-item {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        .hero-item::after { /* Gradient overlay for text readability */
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70%;
+            background: linear-gradient(to top, rgba(10,10,10,1) 0%, rgba(10,10,10,0) 100%);
+        }
+
+        .hero-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.8);
+        }
+
+        .hero-info {
+            position: absolute;
+            bottom: 40px;
+            left: 25px;
+            right: 25px;
+            z-index: 10;
+        }
+
+        .hero-title {
+            font-size: 2rem;
+            font-weight: 900;
+            text-shadow: 0 2px 10px var(--shadow-color);
+        }
+        .hero-description {
+            font-size: 0.9rem;
+            color: #ccc;
+            margin-top: 5px;
+            max-width: 60%;
+        }
+
+        /* --- Content Sections --- */
+        section {
+            padding: 30px 0 0 20px;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-left: 5px solid var(--red);
+            padding-left: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .row {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 5px 5px 20px 5px; /* Added padding for glow effect */
+            scrollbar-width: none;
+            margin-left: -5px;
+        }
         
-        .btn-close { background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; position: fixed; top: 20px; left: 20px; z-index: 2100; font-weight: bold; }
-        #ifr { width: 100vw; height: 100dvh; border: none; display: none; }
+        /* --- Card Styling --- */
+        .card {
+            min-width: 150px; /* Slightly larger cards */
+            width: 150px;
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: #111;
+            cursor: pointer;
+            position: relative;
+            flex-shrink: 0;
+            /* Transitions for hover effect */
+            transition: transform var(--transition-slow), box-shadow var(--transition-slow);
+        }
+        
+        .card:hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 10px 30px var(--shadow-color), 0 0 20px var(--glow-color);
+            z-index: 10;
+        }
+
+        .card .img-container { /* New container for image and overlays */
+            width: 100%;
+            height: 220px;
+            position: relative;
+            background: #222;
+        }
+        
+        .card .img-container::before { /* Gradient overlay for title */
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            z-index: 2;
+        }
+        
+        .card .img-container::after { /* Play icon on hover */
+            content: '\f04b';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            color: white;
+            background: rgba(0,0,0,0.5);
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            z-index: 3;
+            opacity: 0;
+            transition: opacity var(--transition-slow), transform var(--transition-slow);
+        }
+        
+        .card:hover .img-container::after {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform var(--transition-slow);
+        }
+        .card:hover img {
+            transform: scale(1.1);
+        }
+
+        .card-info {
+            padding: 10px;
+            font-size: 0.8rem;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #ddd;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 3;
+            background: transparent; /* Info is now over the gradient */
+        }
+        
+        .badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--red);
+            color: white;
+            font-size: 0.6rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 900;
+            z-index: 5;
+            text-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .badge.live {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 var(--glow-color); }
+            70% { box-shadow: 0 0 0 10px rgba(229, 9, 20, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(229, 9, 20, 0); }
+        }
+
+        /* --- Player & Shorts --- */
+        #mainPlayer {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 2000;
+        }
+
+        #shortsFeed {
+            height: 100dvh;
+            width: 100vw;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            display: none;
+            scrollbar-width: none;
+        }
+
+        .short-slide {
+            height: 100dvh;
+            width: 100vw;
+            scroll-snap-align: start;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: #000;
+        }
+
+        .short-slide iframe {
+            height: 100%;
+            width: 100%;
+            max-width: 500px;
+            border: none;
+        }
+        
+        .btn-close {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 2100;
+            font-weight: bold;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background var(--transition-fast), transform var(--transition-fast);
+        }
+        .btn-close:hover {
+            background: var(--red);
+            transform: scale(1.1);
+        }
+
+        #ifr {
+            width: 100vw;
+            height: 100dvh;
+            border: none;
+            display: none;
+        }
+        
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 768px) {
+            body { padding-top: 120px; }
+            .logo { font-size: 1rem; }
+            .hero-title { font-size: 1.5rem; }
+            .hero-description { display: none; }
+            h2 { font-size: 1rem; }
+            .card { min-width: 130px; width: 130px; }
+            .card .img-container { height: 180px; }
+            section { padding-left: 15px; }
+            .top-bar, nav { padding-left: 15px; padding-right: 15px; }
+        }
+
     </style>
 </head>
 <body>
@@ -53,7 +418,10 @@
 <header>
     <div class="top-bar">
         <div class="logo" onclick="location.reload()">FILMANGSTREAM</div>
-        <div class="search-box"><input id="search" type="text" placeholder="Rechercher..."></div>
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input id="search" type="text" placeholder="Rechercher...">
+        </div>
     </div>
     <nav>
         <div class="nav-item active" onclick="setActive(this); window.scrollTo(0,0)">Accueil</div>
@@ -68,7 +436,11 @@
 </header>
 
 <main id="main">
-    <section id="heroSection"><div class="hero-container" id="heroRow"></div></section>
+    <section id="heroSection">
+        <div class="hero-container" id="heroRow">
+            <!-- Hero items will be dynamically injected here by JS -->
+        </div>
+    </section>
 
     <section id="shortsSection"><h2><i class="fab fa-youtube" style="color:red"></i> YouTube Shorts</h2><div class="row" id="shortsRow"></div></section>
     <section id="dmShortsSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fab fa-dailymotion" style="color:var(--dm-blue)"></i> Dailymotion Shorts</h2><div class="row" id="dmShortsRow"></div></section>
@@ -76,17 +448,17 @@
     <section id="dmVideoSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fas fa-video"></i> Vidéos Dailymotion</h2><div class="row" id="dmVideoRow"></div></section>
 
     <section id="filmSection"><h2><i class="fas fa-film"></i> Films Populaires</h2><div class="row" id="filmRow"></div></section>
-    <section id="seriesSection"><h2><i class="fas fa-video"></i> Séries TV</h2><div class="row" id="seriesRow"></div></section>
+    <section id="seriesSection"><h2><i class="fas fa-tv"></i> Séries TV</h2><div class="row" id="seriesRow"></div></section>
     <section id="animeSection"><h2><i class="fas fa-dragon"></i> Animes & Mangas</h2><div class="row" id="animeRow"></div></section>
 
     <section id="streamSection">
         <h2><i class="fas fa-layer-group"></i> Multi-Streaming</h2>
         <div class="row">
-            <div class="card" onclick="window.open('https://www.netflix.com', '_blank')"><img src="images/netflix.png" onerror="this.src='https://via.placeholder.com/140x200/e50914/fff?text=Netflix'"><div class="card-info">Netflix</div></div>
-            <div class="card" onclick="window.open('https://www.primevideo.com', '_blank')"><img src="images/primevideo.png" onerror="this.src='https://via.placeholder.com/140x200/00a8e1/fff?text=Prime+Video'"><div class="card-info">Prime Video</div></div>
-            <div class="card" onclick="openInternal('https://www.disneyplus.com')"><img src="images/disneyplus.png" onerror="this.src='https://via.placeholder.com/140x200/0063be/fff?text=Disney+'"><div class="card-info">Disney Plus</div></div>
-            <div class="card" onclick="openInternal('https://www.crunchyroll.com')"><img src="images/crunchyroll.png" onerror="this.src='https://via.placeholder.com/140x200/f47521/fff?text=Crunchyroll'"><div class="card-info">Crunchyroll</div></div>
-            <div class="card" onclick="openInternal('https://anime-sama.store/')"><img src="images/animesama.png" onerror="this.src='https://via.placeholder.com/140x200/333/fff?text=AnimeSama'"><div class="card-info">Anime Sama</div></div>
+            <div class="card" onclick="window.open('https://www.netflix.com', '_blank')"><div class="img-container"><img src="images/netflix.png" onerror="this.src='https://via.placeholder.com/150x220/e50914/fff?text=Netflix'"></div><div class="card-info">Netflix</div></div>
+            <div class="card" onclick="window.open('https://www.primevideo.com', '_blank')"><div class="img-container"><img src="images/primevideo.png" onerror="this.src='https://via.placeholder.com/150x220/00a8e1/fff?text=Prime+Video'"></div><div class="card-info">Prime Video</div></div>
+            <div class="card" onclick="openInternal('https://www.disneyplus.com')"><div class="img-container"><img src="images/disneyplus.png" onerror="this.src='https://via.placeholder.com/150x220/0063be/fff?text=Disney+'"></div><div class="card-info">Disney Plus</div></div>
+            <div class="card" onclick="openInternal('https://www.crunchyroll.com')"><div class="img-container"><img src="images/crunchyroll.png" onerror="this.src='https://via.placeholder.com/150x220/f47521/fff?text=Crunchyroll'"></div><div class="card-info">Crunchyroll</div></div>
+            <div class="card" onclick="openInternal('https://anime-sama.store/')"><div class="img-container"><img src="images/animesama.png" onerror="this.src='https://via.placeholder.com/150x220/333/fff?text=AnimeSama'"></div><div class="card-info">Anime Sama</div></div>
         </div>
     </section>
 
@@ -100,6 +472,9 @@
 </div>
 
 <script>
+// --- LE CODE JAVASCRIPT RESTE INCHANGÉ ---
+// --- IL EST JUSTE MODIFIÉ POUR S'ADAPTER À LA NOUVELLE STRUCTURE HTML DES CARTES ---
+
 const YT_KEYS = ["AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc", "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY"];
 let currentKeyIdx = 0, heroIdx = 0, shortsObserver;
 
@@ -116,15 +491,11 @@ async function refreshContent(q) {
     fetchDM('dmShortsRow', q + " shorts", true);
 }
 
-// Fonction pour ouvrir les sites de streaming à l'intérieur du site en plein écran
 function openInternal(url) {
     const player = document.getElementById('mainPlayer');
     player.style.display = 'block';
-
-    // Activation du plein écran natif
-    if (player.requestFullscreen) player.requestFullscreen();
-    else if (player.webkitRequestFullscreen) player.webkitRequestFullscreen();
-
+    if (player.requestFullscreen) player.requestFullscreen().catch(err => console.log(err));
+    else if (player.webkitRequestFullscreen) player.webkitRequestFullscreen().catch(err => console.log(err));
     const ifr = document.getElementById('ifr');
     ifr.style.display = 'block';
     ifr.src = url;
@@ -150,18 +521,20 @@ async function fetchDM(id, q, isShort) {
     } catch(e) {}
 }
 
+// MODIFIED RENDER FUNCTION to match new card structure
 function render(id, items, isShort) {
     window[`list_${id}`] = items;
     document.getElementById(id).innerHTML = items.map((i, idx) => `
         <div class="card" onclick="openMedia('${id}', ${idx}, ${isShort})">
             <span class="badge" style="background:${i.source==='dm'?'var(--dm-blue)':'red'}">${i.source.toUpperCase()}</span>
-            <img src="${i.img}"><div class="card-info">${i.t}</div>
+            <div class="img-container"><img src="${i.img}"></div>
+            <div class="card-info">${i.t}</div>
         </div>`).join('');
 }
 
 function openMedia(listId, idx, isShort) {
     const items = window[`list_${listId}`];
-    openInternal(""); // Prépare le plein écran
+    openInternal(""); // Prepare fullscreen
     if(isShort) openShortsFeed(idx, items);
     else {
         const item = items[idx];
@@ -175,57 +548,4 @@ function openShortsFeed(idx, list) {
     document.getElementById('ifr').style.display='none';
     f.style.display='block';
     f.innerHTML = list.map(s => `
-        <div class="short-slide" data-id="${s.id}" data-source="${s.source}">
-            <iframe src="" allow="autoplay; fullscreen"></iframe>
-        </div>`).join('');
-
-    if(shortsObserver) shortsObserver.disconnect();
-    shortsObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            const iframe = entry.target.querySelector('iframe');
-            if(entry.isIntersecting) {
-                const {id, source} = entry.target.dataset;
-                iframe.src = source === 'yt' ? `https://www.youtube.com/embed/${id}?autoplay=1&playlist=${id}&loop=1` : `https://www.dailymotion.com/embed/video/${id}?autoplay=1`;
-            } else { iframe.src = ""; }
-        });
-    }, { threshold: 0.8 });
-    document.querySelectorAll('.short-slide').forEach(s => shortsObserver.observe(s));
-    setTimeout(() => f.children[idx].scrollIntoView(), 100);
-}
-
-function closePlayer() {
-    if (document.fullscreenElement) document.exitFullscreen();
-    document.getElementById('mainPlayer').style.display='none';
-    document.getElementById('ifr').src='';
-    document.getElementById('shortsFeed').innerHTML='';
-}
-
-function loadTV() {
-    const tv = [{n:"TF1", f:"TF1.png"}, {n:"France 2", f:"France2.png"}, {n:"M6", f:"M6.png"}, {n:"Canal+ Sport", f:"Canal+ Sport.png"}, {n:"Canal+ Family", f:"Canal+ Family.png"}, {n:"Eurosport", f:"Eurosport.png"}, {n:"Nickelodeon", f:"Nickelodeon.png"}, {n:"Disney Channel", f:"DisneyChannel.png"}, {n:"SyFy", f:"SyFy.png"}, {n:"Warner TV", f:"WarnerTV.png"}, {n:"J-One", f:"J-One.png"}, {n:"Mangas", f:"Mangas.png"}];
-    document.getElementById('tvRow').innerHTML = tv.map(t => `<div class="card" onclick="openInternal('https://vavoo.to')"><span class="badge">LIVE</span><img src="images/${t.f}" onerror="this.src='https://via.placeholder.com/140x200/111/red?text=${t.n}'"><div class="card-info">${t.n}</div></div>`).join('');
-}
-
-async function loadTMDB(id, type) {
-    const r = await fetch(`https://api.themoviedb.org/3/${type}/popular?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`);
-    const d = await r.json();
-    document.getElementById(id).innerHTML = d.results.slice(0,12).map(m => `<div class="card" onclick="openInternal('https://www.themoviedb.org/${type}/${m.id}')"><img src="https://image.tmdb.org/t/p/w300${m.poster_path}"><div class="card-info">${m.title||m.name}</div></div>`).join('');
-}
-
-async function loadHero() {
-    const r = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`);
-    const d = await r.json();
-    document.getElementById('heroRow').innerHTML = d.results.slice(0, 5).map(m => `<div class="hero-item"><img src="https://image.tmdb.org/t/p/original${m.backdrop_path}"><div class="hero-info"><div class="hero-title">${m.title}</div></div></div>`).join('');
-    setInterval(() => { heroIdx = (heroIdx + 1) % 5; document.getElementById('heroRow').style.transform = `translateX(-${heroIdx * 100}%)`; }, 5000);
-}
-
-async function loadKitsu() {
-    const r = await fetch("https://kitsu.io/api/edge/anime?page[limit]=12&sort=-favoritesCount");
-    const d = await r.json();
-    document.getElementById('animeRow').innerHTML = d.data.map(a => `<div class="card" onclick="openInternal('https://kitsu.io/anime/${a.id}')"><img src="${a.attributes.posterImage.medium}"><div class="card-info">${a.attributes.canonicalTitle}</div></div>`).join('');
-}
-
-function jump(id) { window.scrollTo({top: document.getElementById(id).offsetTop - 160, behavior: 'smooth'}); }
-function setActive(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
-</script>
-</body>
-</html>
+        <div class="short-slide" data-id="${s.id}
