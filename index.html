@@ -111,10 +111,28 @@
 
         /* PLAYER & SHORTS FULLSCREEN */
         #mainPlayer { display: none; position: fixed; inset: 0; background: #000; z-index: 2000; }
-        #shortsFeed { height: 100vh; width: 100vw; overflow-y: scroll; scroll-snap-type: y mandatory; display: none; scrollbar-width: none; }
-        .short-slide { height: 100vh; width: 100vw; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; position: relative; }
-        .short-slide iframe { height: 100%; width: 100%; border: none; }
+        /* Style crucial pour le défilement des shorts */
+        #shortsFeed { 
+            height: 100vh; width: 100vw; 
+            overflow-y: scroll; 
+            scroll-snap-type: y mandatory; 
+            display: none; 
+            scrollbar-width: none; 
+        }
+        .short-slide { 
+            height: 100vh; width: 100vw; 
+            scroll-snap-align: start; 
+            display: flex; align-items: center; justify-content: center; 
+            position: relative; background: #000;
+        }
+        .short-slide iframe { 
+            height: 100%; width: 100%; 
+            border: none; max-width: 500px; /* Limite largeur short pour PC */
+        }
+        @media (max-width: 768px) { .short-slide iframe { max-width: 100%; } }
         
+        #ifr { width: 100%; height: 100%; border: none; display: none; }
+
         .btn-close { 
             background: rgba(255,255,255,0.2); color: white; border: none; 
             width: 45px; height: 45px; border-radius: 50%; cursor: pointer; 
@@ -222,18 +240,16 @@
 </div>
 
 <script>
-// Tes Clés API corrigées
-const DM_KEY = "09799763fa8a96936000"; 
+// API
+const DM_KEY = "09799763fa8a96936000"; // Clé Publique
 const YT_KEYS = ["AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc", "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY"];
 let currentKeyIdx = 0, heroIdx = 0, shortsObserver;
-
-const fetchT = (url) => Promise.race([fetch(url), new Promise((_, r) => setTimeout(() => r(new Error('Timeout')), 3000))]);
 
 window.onload = () => {
     loadTV(); loadHero(); 
     loadTMDB('filmRow', 'movie'); loadTMDB('seriesRow', 'tv'); loadKitsu();
     initSearch();
-    refreshContent('film complet français 2025');
+    refreshContent('films français 2025');
 };
 
 function initSearch() {
@@ -245,30 +261,46 @@ function initSearch() {
     });
 }
 
+// Fonction centrale qui lance les 4 recherches simultanées
 async function refreshContent(q) {
+    // 1. YouTube Vidéos
     fetchYT('videoRow', q, false);
+    // 2. YouTube Shorts (Ajout #shorts pour cibler)
     fetchYT('shortsRow', q + " #shorts", true);
+    
+    // 3. Dailymotion Vidéos (Pas de limite de temps [0; infini])
     fetchDM('dmVideoRow', q, false);
-    fetchDM('dmShortsRow', q + " shorts", true);
+    // 4. Dailymotion Shorts (Limite < 60s pour format vertical uniquement)
+    fetchDM('dmShortsRow', q, true); 
 }
 
-// LOGIQUE DAILYMOTION - FIXÉ
+// === LOGIQUE DAILYMOTION (CORRIGÉE) ===
 async function fetchDM(id, q, isShort) {
     try {
-        // Ajout du paramètre d'API Key pour Dailymotion
-        const url = `https://api.dailymotion.com/videos?search=${encodeURIComponent(q)}&fields=id,title,thumbnail_480_url&limit=12&apiKey=${DM_KEY}`;
+        // Si c'est pour la section SHORTS, on force < 60s pour avoir le format vertical
+        // Si c'est pour la section VIDEO, on ne met PAS de filtre (0 à infini)
+        const durationFilter = isShort ? '&shorter_than=60' : ''; 
+        
+        const url = `https://api.dailymotion.com/videos?search=${encodeURIComponent(q)}&fields=id,title,thumbnail_480_url&limit=15&ssl_assets=true${durationFilter}&apiKey=${DM_KEY}`;
         const r = await fetch(url);
         const d = await r.json();
+        
         if(d.list) {
-            render(id, d.list.map(v => ({ id: v.id, t: v.title, img: v.thumbnail_480_url, source: 'dm' })), isShort);
+            render(id, d.list.map(v => ({ 
+                id: v.id, 
+                t: v.title, 
+                img: v.thumbnail_480_url, 
+                source: 'dm' 
+            })), isShort);
         }
     } catch(e) { console.error("DM Error", e); }
 }
 
+// === LOGIQUE YOUTUBE ===
 async function fetchYT(id, q, isShort) {
     if (currentKeyIdx >= YT_KEYS.length) return;
     try {
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=12&key=${YT_KEYS[currentKeyIdx]}`;
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=15&key=${YT_KEYS[currentKeyIdx]}`;
         const r = await fetch(url);
         if (r.status === 403) { currentKeyIdx++; fetchYT(id, q, isShort); return; }
         const d = await r.json();
@@ -288,47 +320,71 @@ function render(id, items, isShort) {
         </div>`).join('');
 }
 
+// GESTION DU CLIC (VIDÉO vs SHORTS)
 function openMedia(listId, idx, isShort) {
     const items = window[`list_${listId}`];
     const item = items[idx];
+    
+    // Si c'est un SHORT (YT ou DM) -> On ouvre le feed vertical (Swipe)
     if(isShort) {
         openShortsFeed(idx, items);
-    } else {
-        const url = item.source === 'yt' 
-            ? `https://www.youtube.com/embed/${item.id}?autoplay=1&rel=0&showinfo=0` 
-            : `https://www.dailymotion.com/embed/video/${item.id}?autoplay=1&ui-logo=0`;
+    } 
+    // Si c'est une VIDÉO (YT ou DM) -> On ouvre le lecteur classique plein écran
+    else {
+        let url;
+        if(item.source === 'yt') {
+            url = `https://www.youtube.com/embed/${item.id}?autoplay=1&rel=0&showinfo=0&controls=1`;
+        } else {
+            url = `https://www.dailymotion.com/embed/video/${item.id}?autoplay=1&ui-logo=0&controls=1`;
+        }
         openFull(url);
     }
 }
 
+// === LOGIQUE SWIPE (SHORTS) CORRIGÉE ===
 function openShortsFeed(idx, list) {
-    const f = document.getElementById('shortsFeed');
-    document.getElementById('mainPlayer').style.display='block';
-    document.getElementById('ifr').style.display='none';
-    f.style.display='block';
+    const player = document.getElementById('mainPlayer');
+    const feed = document.getElementById('shortsFeed');
+    const ifr = document.getElementById('ifr');
     
-    f.innerHTML = list.map(s => `
+    player.style.display = 'block';
+    ifr.style.display = 'none'; // Cacher lecteur standard
+    feed.style.display = 'block'; // Afficher feed vertical
+    
+    // Générer les slides
+    feed.innerHTML = list.map(s => `
         <div class="short-slide" data-id="${s.id}" data-source="${s.source}">
             <iframe src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
         </div>`).join('');
 
+    // Observer pour lancer la vidéo quand on scroll dessus
     if(shortsObserver) shortsObserver.disconnect();
     shortsObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const iframe = entry.target.querySelector('iframe');
+            const {id, source} = entry.target.dataset;
+            
             if(entry.isIntersecting) {
-                const {id, source} = entry.target.dataset;
-                iframe.src = source === 'yt' 
-                    ? `https://www.youtube.com/embed/${id}?autoplay=1&playlist=${id}&loop=1&controls=0`
-                    : `https://www.dailymotion.com/embed/video/${id}?autoplay=1&controls=0`;
-            } else { iframe.src = ""; }
+                // Charger la source quand visible
+                if(source === 'yt') {
+                    iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1&loop=1&playlist=${id}&controls=0&rel=0`;
+                } else {
+                    iframe.src = `https://www.dailymotion.com/embed/video/${id}?autoplay=1&controls=0&ui-start-screen-info=0&ui-logo=0&sharing-enable=0`;
+                }
+            } else { 
+                // Couper la vidéo quand non visible
+                iframe.src = ""; 
+            }
         });
-    }, { threshold: 0.8 });
+    }, { threshold: 0.6 }); // Sensibilité du scroll
 
     document.querySelectorAll('.short-slide').forEach(s => shortsObserver.observe(s));
-    f.children[idx].scrollIntoView();
+    
+    // Scroll direct vers l'élément cliqué
+    setTimeout(() => feed.children[idx].scrollIntoView(), 100);
 }
 
+// === LECTEUR STANDARD PLEIN ÉCRAN ===
 function openFull(url) {
     document.getElementById('mainPlayer').style.display = 'block';
     document.getElementById('shortsFeed').style.display = 'none';
@@ -343,6 +399,7 @@ function closePlayer() {
     document.getElementById('shortsFeed').innerHTML=''; 
 }
 
+// Chargement autres sections (ne change pas)
 function loadTV() {
     const tv = [{n:"TF1", f:"TF1.png"}, {n:"France 2", f:"France2.png"}, {n:"M6", f:"M6.png"}, {n:"Canal+", f:"Canal+.png"}, {n:"Eurosport", f:"Eurosport.png"}, {n:"BeIn Sport", f:"BeIn.png"}];
     document.getElementById('tvRow').innerHTML = tv.map(t => `
@@ -394,8 +451,4 @@ async function loadKitsu() {
     } catch(e) {}
 }
 
-function jump(id) { window.scrollTo({top: document.getElementById(id).offsetTop - 150, behavior: 'smooth'}); }
-function setActive(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
-</script>
-</body>
-</html>
+function jump(id) { window.scrollTo({top: document.getElementById(id).offsetT
