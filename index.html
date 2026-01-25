@@ -16,9 +16,13 @@
         header { position: fixed; top: 0; width: 100%; background: #0a0a0a; z-index: 1000; border-bottom: 1px solid #222; }
         .top-bar { display: flex; align-items: center; padding: 10px 20px; gap: 15px; }
         .logo { font-size: 1.1rem; font-weight: 900; color: var(--red); text-transform: uppercase; cursor: pointer; }
-        .search-box { position: relative; flex-grow: 1; }
+        .search-box { position: relative; flex-grow: 1; display: flex; align-items: center; gap: 10px; }
         #search { width: 100%; background: var(--gray); border: none; padding: 10px 15px 10px 35px; border-radius: 20px; color: white; outline: none; }
         
+        /* Style pour le bouton Google */
+        .btn-auth { background: white; color: black; border: none; padding: 8px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+        .btn-auth i { color: #4285F4; font-size: 0.9rem; }
+
         nav { display: flex; justify-content: center; gap: 8px; padding: 10px; overflow-x: auto; scrollbar-width: none; }
         .nav-item { padding: 8px 16px; background: #1a1a1a; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; color: #aaa; transition: 0.3s; }
         .nav-item.active { background: var(--red); color: white; }
@@ -53,7 +57,12 @@
 <header>
     <div class="top-bar">
         <div class="logo" onclick="location.reload()">FILMANGSTREAM</div>
-        <div class="search-box"><input id="search" type="text" placeholder="Rechercher..."></div>
+        <div class="search-box">
+            <input id="search" type="text" placeholder="Rechercher...">
+            <button class="btn-auth" id="loginBtn" onclick="loginWithGoogle()">
+                <i class="fab fa-google"></i> Connexion
+            </button>
+        </div>
     </div>
     <nav>
         <div class="nav-item active" onclick="setActive(this); window.scrollTo(0,0)">Accueil</div>
@@ -69,16 +78,13 @@
 
 <main id="main">
     <section id="heroSection"><div class="hero-container" id="heroRow"></div></section>
-
     <section id="shortsSection"><h2><i class="fab fa-youtube" style="color:red"></i> YouTube Shorts</h2><div class="row" id="shortsRow"></div></section>
     <section id="dmShortsSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fab fa-dailymotion" style="color:var(--dm-blue)"></i> Dailymotion Shorts</h2><div class="row" id="dmShortsRow"></div></section>
     <section id="videoSection"><h2><i class="fas fa-play-circle"></i> Vidéos YouTube</h2><div class="row" id="videoRow"></div></section>
     <section id="dmVideoSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fas fa-video"></i> Vidéos Dailymotion</h2><div class="row" id="dmVideoRow"></div></section>
-
     <section id="filmSection"><h2><i class="fas fa-film"></i> Films Populaires</h2><div class="row" id="filmRow"></div></section>
     <section id="seriesSection"><h2><i class="fas fa-video"></i> Séries TV</h2><div class="row" id="seriesRow"></div></section>
     <section id="animeSection"><h2><i class="fas fa-dragon"></i> Animes & Mangas</h2><div class="row" id="animeRow"></div></section>
-
     <section id="streamSection">
         <h2><i class="fas fa-layer-group"></i> Multi-Streaming</h2>
         <div class="row">
@@ -89,7 +95,6 @@
             <div class="card" onclick="openInternal('https://anime-sama.store/')"><img src="images/animesama.png" onerror="this.src='https://via.placeholder.com/140x200/333/fff?text=AnimeSama'"><div class="card-info">Anime Sama</div></div>
         </div>
     </section>
-
     <section id="tvSection"><h2><i class="fas fa-broadcast-tower"></i> Direct TV Premium</h2><div class="row" id="tvRow"></div></section>
 </main>
 
@@ -99,7 +104,47 @@
     <div id="shortsFeed"></div>
 </div>
 
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check.js";
+
+    // Ta configuration Firebase réelle
+    const firebaseConfig = {
+        apiKey: "AIzaSyB82499194656e77beb301b", // Remplacer par ta clé exacte si différente
+        authDomain: "filmangstream.firebaseapp.com",
+        projectId: "filmangstream",
+        storageBucket: "filmangstream.firebasestorage.app",
+        messagingSenderId: "887863323394",
+        appId: "1:887863323394:web:b82499194656e77beb301b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    // App Check avec ta clé de site Google
+    self.appCheck = initializeAppCheck(app, {
+        provider: new ReCaptchaV3Provider('6Lf1CVYsAAAAAJV-_MtXBBUBGfwClRkE2x75adLI'),
+        isTokenAutoRefreshEnabled: true
+    });
+
+    // Fonction de connexion globale
+    window.loginWithGoogle = function() {
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                document.getElementById('loginBtn').innerHTML = `<i class="fas fa-user-circle"></i> ${result.user.displayName.split(' ')[0]}`;
+                alert("Heureux de vous revoir, " + result.user.displayName + " !");
+            })
+            .catch((error) => {
+                console.error(error);
+                alert("Erreur de connexion. Vérifiez votre configuration Firebase.");
+            });
+    };
+</script>
+
 <script>
+// TON CODE INITIAL POUR LE CONTENU (YT, TMDB, ETC)
 const YT_KEYS = ["AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc", "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY"];
 let currentKeyIdx = 0, heroIdx = 0, shortsObserver;
 
@@ -116,15 +161,10 @@ async function refreshContent(q) {
     fetchDM('dmShortsRow', q + " shorts", true);
 }
 
-// Fonction pour ouvrir les sites de streaming à l'intérieur du site en plein écran
 function openInternal(url) {
     const player = document.getElementById('mainPlayer');
     player.style.display = 'block';
-
-    // Activation du plein écran natif
     if (player.requestFullscreen) player.requestFullscreen();
-    else if (player.webkitRequestFullscreen) player.webkitRequestFullscreen();
-
     const ifr = document.getElementById('ifr');
     ifr.style.display = 'block';
     ifr.src = url;
@@ -161,7 +201,7 @@ function render(id, items, isShort) {
 
 function openMedia(listId, idx, isShort) {
     const items = window[`list_${listId}`];
-    openInternal(""); // Prépare le plein écran
+    openInternal("");
     if(isShort) openShortsFeed(idx, items);
     else {
         const item = items[idx];
@@ -228,5 +268,4 @@ function jump(id) { window.scrollTo({top: document.getElementById(id).offsetTop 
 function setActive(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
 </script>
 </body>
-    </html>
-    rubispadonou66@gmail.com
+</html>
