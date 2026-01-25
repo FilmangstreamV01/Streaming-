@@ -9,81 +9,77 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --red: #e50914; --black: #0a0a0a; --gray: #1a1a1a; --text: #ffffff; --radius: 10px; --dm-blue: #0062ff; }
+        :root { --red: #e50914; --black: #0a0a0a; --gray: #1a1a1a; --text: #ffffff; --radius: 4px; --dm-blue: #0062ff; }
         * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
         body { background: var(--black); color: var(--text); font-family: 'Montserrat', sans-serif; padding-top: 130px; overflow-x: hidden; }
 
-        /* --- NOUVEAU DESIGN PRO ECRAN DE CONNEXION --- */
+        /* --- DESIGN AUTHENTIFICATION PRO (NETFLIX STYLE) --- */
         #authOverlay {
             position: fixed; inset: 0; 
-            background: url('https://assets.nflxext.com/ffe/siteui/vlv3/f841d4c7-10e1-40af-bcae-07a3f8dc141a/f6d7434e-d6de-4185-a6d4-c77a2d08737b/US-en-20220502-popsignuptwoweeks-perspective_alpha_website_medium.jpg') no-repeat center center/cover;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://assets.nflxext.com/ffe/siteui/vlv3/f841d4c7-10e1-40af-bcae-07a3f8dc141a/f6d7434e-d6de-4185-a6d4-c77a2d08737b/US-en-20220502-popsignuptwoweeks-perspective_alpha_website_medium.jpg');
+            background-size: cover; background-position: center;
             z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 20px;
-        }
-        /* Couche sombre par dessus l'image de fond */
-        #authOverlay::before {
-            content: ''; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.75); z-index: -1;
         }
 
         .auth-card {
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(10px); /* Effet de verre */
-            -webkit-backdrop-filter: blur(10px);
-            width: 100%; max-width: 420px; 
-            padding: 50px 40px;
-            border-radius: 16px; 
-            border: 1px solid rgba(255,255,255,0.1);
-            text-align: left; 
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-            animation: fadeIn 0.8s ease-out;
+            background: rgba(0, 0, 0, 0.85);
+            width: 100%; max-width: 450px; 
+            padding: 60px 40px;
+            border-radius: 8px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+            position: relative;
         }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         .auth-card h1 { 
-            color: var(--text); margin-bottom: 30px; font-weight: 800; font-size: 2rem; 
-            text-align: center; letter-spacing: -1px;
+            color: var(--text); margin-bottom: 25px; font-weight: 700; font-size: 2rem; 
+            text-align: left;
         }
-        .auth-card h1 span { color: var(--red); }
 
-        .input-group { position: relative; margin-bottom: 20px; }
+        .input-group { position: relative; margin-bottom: 16px; }
+        
         .auth-input { 
             width: 100%; background: #333; border: none; padding: 16px 20px; 
             border-radius: 4px; color: white; outline: none; font-size: 1rem;
-            transition: 0.3s;
         }
-        .auth-input:focus { background: #444; border-bottom: 2px solid var(--red); }
+        .auth-input:focus { background: #444; }
         .auth-input::placeholder { color: #8c8c8c; }
 
         .btn-main { 
             width: 100%; padding: 16px; border-radius: 4px; border: none; 
             font-weight: 700; cursor: pointer; background: var(--red); color: white; 
-            font-size: 1rem; margin-top: 10px; transition: 0.2s;
+            font-size: 1rem; margin-top: 20px; transition: 0.2s;
         }
-        .btn-main:active { transform: scale(0.98); }
         .btn-main:hover { background: #f40612; }
+        .btn-main:disabled { background: #555; cursor: not-allowed; }
 
-        .divider { 
-            display: flex; align-items: center; color: #8c8c8c; margin: 25px 0; font-size: 0.8rem;
+        .switch-auth {
+            margin-top: 20px; color: #737373; font-size: 0.9rem;
         }
-        .divider::before, .divider::after { 
-            content: ""; flex: 1; height: 1px; background: #333; 
-        }
-        .divider span { padding: 0 10px; }
-
-        .btn-google { 
-            width: 100%; padding: 14px; border-radius: 4px; border: none; 
-            font-weight: 500; cursor: pointer; background: white; color: #333; 
-            display: flex; align-items: center; justify-content: center; gap: 15px; 
-            font-size: 1rem; transition: 0.2s;
-        }
-        .btn-google:hover { background: #e6e6e6; }
+        .switch-auth span { color: white; cursor: pointer; margin-left: 5px; }
+        .switch-auth span:hover { text-decoration: underline; }
 
         .error-msg {
             color: #e50914; font-size: 0.85rem; margin-bottom: 15px; display: none;
-            background: rgba(229, 9, 20, 0.1); padding: 10px; border-radius: 4px; text-align: center;
+            background: rgba(229, 9, 20, 0.1); padding: 10px; border-radius: 4px;
         }
+
+        /* CAPTCHA PERSO */
+        .captcha-container {
+            background: #f9f9f9; border: 1px solid #d3d3d3; border-radius: 3px;
+            padding: 10px; display: flex; align-items: center; gap: 15px;
+            margin-top: 15px; width: fit-content; min-width: 200px;
+        }
+        .chk-box {
+            width: 24px; height: 24px; border: 2px solid #c1c1c1; background: white;
+            border-radius: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        .chk-box.checked { border-color: #4A90E2; }
+        .chk-box.checked::after { content: '✔'; color: #4A90E2; font-size: 18px; }
+        .captcha-label { color: #333; font-size: 0.9rem; font-weight: 500; font-family: Roboto, sans-serif; }
         
-        /* --- FIN STYLE ECRAN DE CONNEXION --- */
+        /* Cacher un formulaire par défaut */
+        .hidden { display: none; }
+        /* --- FIN DESIGN AUTH --- */
 
         #mainContent { display: none; }
 
@@ -111,7 +107,7 @@
         h2 { font-size: 1rem; margin-bottom: 15px; text-transform: uppercase; border-left: 4px solid var(--red); padding-left: 10px; }
         .row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 20px; scrollbar-width: none; }
         
-        .card { min-width: 140px; width: 140px; border-radius: var(--radius); overflow: hidden; background: #111; cursor: pointer; position: relative; transition: 0.3s; flex-shrink: 0; }
+        .card { min-width: 140px; width: 140px; border-radius: 10px; overflow: hidden; background: #111; cursor: pointer; position: relative; transition: 0.3s; flex-shrink: 0; }
         .card img { width: 100%; height: 200px; object-fit: cover; display: block; background: #222; }
         .card-info { padding: 8px 5px; font-size: 0.7rem; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #ddd; }
         .badge { position: absolute; top: 8px; left: 8px; background: var(--red); color: white; font-size: 0.55rem; padding: 3px 6px; border-radius: 4px; font-weight: 900; z-index: 5; }
@@ -129,28 +125,55 @@
 
 <div id="authOverlay">
     <div class="auth-card">
-        <h1>FILMANG<span>STREAM</span></h1>
         
-        <div id="loginError" class="error-msg"><i class="fas fa-exclamation-circle"></i> Mot de passe ou Email incorrect.</div>
+        <div id="loginFormSection">
+            <h1>S'identifier</h1>
+            <div id="loginError" class="error-msg"></div>
+            
+            <div class="input-group">
+                <input type="email" id="loginEmail" class="auth-input" placeholder="E-mail">
+            </div>
+            <div class="input-group">
+                <input type="password" id="loginPass" class="auth-input" placeholder="Mot de passe">
+            </div>
 
-        <div class="input-group">
-            <input type="email" id="emailInput" class="auth-input" placeholder="E-mail ou numéro de mobile">
+            <div class="captcha-container" onclick="toggleCaptcha()">
+                <div class="chk-box" id="captchaBox"></div>
+                <div class="captcha-label">Je ne suis pas un robot</div>
+                <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" width="24" style="margin-left:auto; opacity:0.5">
+            </div>
+
+            <button class="btn-main" onclick="handleLogin()">S'identifier</button>
+
+            <div class="switch-auth">
+                Première visite sur FilmangStream ? <span onclick="switchMode('register')">Inscrivez-vous.</span>
+            </div>
         </div>
-        <div class="input-group">
-            <input type="password" id="passwordInput" class="auth-input" placeholder="Mot de passe">
+
+        <div id="registerFormSection" class="hidden">
+            <h1>Créer un compte</h1>
+            <div id="regError" class="error-msg"></div>
+
+            <div class="input-group">
+                <input type="email" id="regEmail" class="auth-input" placeholder="E-mail valide">
+            </div>
+            <div class="input-group">
+                <input type="password" id="regPass" class="auth-input" placeholder="Mot de passe (Min 5 car. Lettres + Chiffres)">
+            </div>
+            <div class="input-group">
+                <input type="password" id="regPassConfirm" class="auth-input" placeholder="Confirmer le mot de passe">
+            </div>
+
+            <button class="btn-main" onclick="handleRegister()">Créer le compte</button>
+
+            <div class="switch-auth">
+                Déjà membre ? <span onclick="switchMode('login')">Connectez-vous.</span>
+            </div>
         </div>
 
-        <button class="btn-main" onclick="handleMailLogin()">S'identifier</button>
-
-        <div class="divider">
-            <span>OU</span>
-        </div>
-
-        <button class="btn-google" onclick="loginWithGoogle()">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Choisir un compte Google
-        </button>
     </div>
 </div>
+
 <div id="mainContent">
     <header>
         <div class="top-bar">
@@ -205,7 +228,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyB82499194656e77beb301b",
@@ -218,12 +241,8 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
 
-    // Force la sélection du compte Google à chaque clic
-    provider.setCustomParameters({
-        prompt: 'select_account'
-    });
+    let isCaptchaVerified = false;
 
     function unlock() {
         document.getElementById('authOverlay').style.display = 'none';
@@ -234,41 +253,89 @@
         if (user) { unlock(); }
     });
 
-    // Connexion Google améliorée (Sélection du compte)
-    window.loginWithGoogle = function() {
-        signInWithPopup(auth, provider)
-            .then(() => unlock())
+    // Basculer entre Login et Inscription
+    window.switchMode = function(mode) {
+        document.getElementById('loginError').style.display='none';
+        document.getElementById('regError').style.display='none';
+        
+        if(mode === 'register') {
+            document.getElementById('loginFormSection').classList.add('hidden');
+            document.getElementById('registerFormSection').classList.remove('hidden');
+        } else {
+            document.getElementById('registerFormSection').classList.add('hidden');
+            document.getElementById('loginFormSection').classList.remove('hidden');
+        }
+    };
+
+    // Gestion du Captcha
+    window.toggleCaptcha = function() {
+        isCaptchaVerified = !isCaptchaVerified;
+        const box = document.getElementById('captchaBox');
+        if(isCaptchaVerified) {
+            box.classList.add('checked');
+        } else {
+            box.classList.remove('checked');
+        }
+    };
+
+    // LOGIQUE INSCRIPTION (CREATE ACCOUNT)
+    window.handleRegister = function() {
+        const email = document.getElementById('regEmail').value;
+        const pass = document.getElementById('regPass').value;
+        const passConf = document.getElementById('regPassConfirm').value;
+        const err = document.getElementById('regError');
+
+        // Validation Locale
+        // Regex: Min 5 chars, au moins 1 lettre et 1 chiffre
+        const passRegex = /^(?=.*[0-9])(?=.*[a-zA-Z]).{5,}$/;
+
+        if(!email || !pass || !passConf) {
+            showError(err, "Veuillez remplir tous les champs."); return;
+        }
+        if(!passRegex.test(pass)) {
+            showError(err, "Le mot de passe doit contenir 5 caractères minimum, avec des lettres et des chiffres."); return;
+        }
+        if(pass !== passConf) {
+            showError(err, "Les mots de passe ne correspondent pas."); return;
+        }
+
+        createUserWithEmailAndPassword(auth, email, pass)
+            .then(() => {
+                alert("Compte créé ! Vous êtes connecté.");
+                unlock();
+            })
             .catch(e => {
-                console.error(e);
-                alert("Erreur de connexion Google. Veuillez réessayer.");
+                if(e.code === 'auth/email-already-in-use') showError(err, "Cet email est déjà utilisé.");
+                else if(e.code === 'auth/invalid-email') showError(err, "Format d'email invalide.");
+                else showError(err, "Erreur: " + e.message);
             });
     };
 
-    // Connexion Email/Mot de passe sécurisée
-    window.handleMailLogin = function() {
-        const mail = document.getElementById('emailInput').value;
-        const pass = document.getElementById('passwordInput').value;
-        const errorDiv = document.getElementById('loginError');
-        
-        // Cache l'erreur au début
-        errorDiv.style.display = 'none';
+    // LOGIQUE CONNEXION (LOGIN)
+    window.handleLogin = function() {
+        const email = document.getElementById('loginEmail').value;
+        const pass = document.getElementById('loginPass').value;
+        const err = document.getElementById('loginError');
 
-        if(mail && pass) { 
-            // Tentative de connexion réelle via Firebase
-            signInWithEmailAndPassword(auth, mail, pass)
-                .then((userCredential) => {
-                    unlock();
-                })
-                .catch((error) => {
-                    // Si mot de passe incorrect ou email inconnu
-                    errorDiv.style.display = 'block';
-                    errorDiv.innerHTML = '<i class="fas fa-times-circle"></i> Mot de passe ou Email incorrect.';
-                });
-        } else { 
-            errorDiv.style.display = 'block';
-            errorDiv.innerHTML = 'Veuillez remplir tous les champs.';
+        if(!email || !pass) {
+            showError(err, "Veuillez entrer votre email et mot de passe."); return;
         }
+
+        if(!isCaptchaVerified) {
+            showError(err, "Veuillez cocher la case 'Je ne suis pas un robot'."); return;
+        }
+
+        signInWithEmailAndPassword(auth, email, pass)
+            .then(() => unlock())
+            .catch(e => {
+                showError(err, "Email ou mot de passe incorrect.");
+            });
     };
+
+    function showError(el, msg) {
+        el.style.display = 'block';
+        el.innerText = msg;
+    }
 
     window.logoutUser = function() {
         signOut(auth).then(() => location.reload());
@@ -309,67 +376,4 @@ async function fetchYT(id, q, isShort) {
         const r = await fetch(url);
         const d = await r.json();
         if(d.items) render(id, d.items.map(v => ({ id: v.id.videoId, t: v.snippet.title, img: v.snippet.thumbnails.high.url, source: 'yt' })), isShort);
-        else if(d.error && currentKeyIdx < YT_KEYS.length - 1) { currentKeyIdx++; fetchYT(id, q, isShort); }
-    } catch(e) {}
-}
-
-async function fetchDM(id, q, isShort) {
-    try {
-        const url = `https://api.dailymotion.com/videos?search=${encodeURIComponent(q)}&fields=id,title,thumbnail_480_url&limit=12`;
-        const r = await fetch(url);
-        const d = await r.json();
-        if(d.list) render(id, d.list.map(v => ({ id: v.id, t: v.title, img: v.thumbnail_480_url, source: 'dm' })), isShort);
-    } catch(e) {}
-}
-
-function render(id, items, isShort) {
-    window[`list_${id}`] = items;
-    document.getElementById(id).innerHTML = items.map((i, idx) => `
-        <div class="card" onclick="openMedia('${id}', ${idx}, ${isShort})">
-            <span class="badge" style="background:${i.source==='dm'?'var(--dm-blue)':'red'}">${i.source.toUpperCase()}</span>
-            <img src="${i.img}"><div class="card-info">${i.t}</div>
-        </div>`).join('');
-}
-
-function openMedia(listId, idx, isShort) {
-    const items = window[`list_${listId}`];
-    openInternal("");
-    if(isShort) openShortsFeed(idx, items);
-    else {
-        const item = items[idx];
-        const url = item.source === 'yt' ? `https://www.youtube.com/embed/${item.id}?autoplay=1` : `https://www.dailymotion.com/embed/video/${item.id}?autoplay=1`;
-        document.getElementById('ifr').src = url;
-    }
-}
-
-function openShortsFeed(idx, list) {
-    const f = document.getElementById('shortsFeed');
-    document.getElementById('ifr').style.display='none';
-    f.style.display='block';
-    f.innerHTML = list.map(s => `
-        <div class="short-slide" data-id="${s.id}" data-source="${s.source}">
-            <iframe src="" allow="autoplay; fullscreen"></iframe>
-        </div>`).join('');
-
-    if(shortsObserver) shortsObserver.disconnect();
-    shortsObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            const iframe = entry.target.querySelector('iframe');
-            if(entry.isIntersecting) {
-                const {id, source} = entry.target.dataset;
-                iframe.src = source === 'yt' ? `https://www.youtube.com/embed/${id}?autoplay=1&playlist=${id}&loop=1` : `https://www.dailymotion.com/embed/video/${id}?autoplay=1`;
-            } else { iframe.src = ""; }
-        });
-    }, { threshold: 0.8 });
-    document.querySelectorAll('.short-slide').forEach(s => shortsObserver.observe(s));
-    setTimeout(() => f.children[idx].scrollIntoView(), 100);
-}
-
-function closePlayer() {
-    if (document.fullscreenElement) document.exitFullscreen();
-    document.getElementById('mainPlayer').style.display='none';
-    document.getElementById('ifr').src='';
-    document.getElementById('shortsFeed').innerHTML='';
-}
-
-function
+        else if(d.error && currentKeyIdx < YT_KEYS.length - 1) { currentKeyIdx++; fetchYT(id, q, isShort)
