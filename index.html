@@ -37,12 +37,11 @@
         h2.dm-title { border-left-color: var(--dm-blue); }
         .row { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 20px; min-height: 220px; scrollbar-width: none; }
         
+        /* Ajustement des miniatures pour un rendu identique partout */
         .card { min-width: 140px; width: 140px; border-radius: var(--radius); overflow: hidden; background: #111; cursor: pointer; position: relative; transition: 0.3s; flex-shrink: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.3); contain: content; }
         .card img { width: 100%; height: 200px; object-fit: cover; display: block; background: #222; }
         .card-info { padding: 10px 5px; font-size: 0.7rem; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; color: #ddd; }
         .badge { position: absolute; top: 8px; left: 8px; background: var(--red); color: white; font-size: 0.55rem; padding: 3px 6px; border-radius: 4px; font-weight: 900; z-index: 2; }
-
-        .quota-error { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; color: #ff3333; font-size: 0.6rem; text-align: center; padding: 10px; font-weight: bold; z-index: 5; text-transform: uppercase; }
 
         #mainPlayer { display: none; position: fixed; inset: 0; background: #000; z-index: 2000; }
         #shortsFeed { height: 100vh; width: 100vw; overflow-y: scroll; scroll-snap-type: y mandatory; display: none; background: #000; scrollbar-width: none; }
@@ -54,7 +53,7 @@
         .action-btn i { font-size: 1.6rem; }
 
         .btn-close { background: var(--red); color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: bold; position: fixed; top: 20px; left: 20px; z-index: 2100; }
-        iframe, #ytContainer { width: 100%; height: 100%; border: none; }
+        iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body>
@@ -118,23 +117,23 @@
         <h2><i class="fas fa-play-circle"></i> Multi-Streaming</h2>
         <div class="row">
             <div class="card" onclick="window.open('https://www.netflix.com', '_blank')">
-                <img src="images/netflix.png" onerror="this.src='https://via.placeholder.com/140x200?text=Netflix'">
+                <img src="images/netflix.png" onerror="this.src='https://via.placeholder.com/140x200/e50914/fff?text=Netflix'">
                 <div class="card-info">Netflix</div>
             </div>
             <div class="card" onclick="window.open('https://www.primevideo.com', '_blank')">
-                <img src="images/primevideo.png" onerror="this.src='https://via.placeholder.com/140x200?text=Prime+Video'">
+                <img src="images/primevideo.png" onerror="this.src='https://via.placeholder.com/140x200/00a8e1/fff?text=Prime+Video'">
                 <div class="card-info">Prime Video</div>
             </div>
             <div class="card" onclick="openFull('https://www.disneyplus.com')">
-                <img src="images/disneyplus.png" onerror="this.src='https://via.placeholder.com/140x200?text=Disney+'">
+                <img src="images/disneyplus.png" onerror="this.src='https://via.placeholder.com/140x200/0063be/fff?text=Disney+'">
                 <div class="card-info">Disney Plus</div>
             </div>
             <div class="card" onclick="openFull('https://www.crunchyroll.com')">
-                <img src="images/crunchyroll.png" onerror="this.src='https://via.placeholder.com/140x200?text=Crunchyroll'">
+                <img src="images/crunchyroll.png" onerror="this.src='https://via.placeholder.com/140x200/f47521/fff?text=Crunchyroll'">
                 <div class="card-info">Crunchyroll</div>
             </div>
             <div class="card" onclick="openFull('https://anime-sama.store/')">
-                <img src="images/animesama.png" onerror="this.src='https://via.placeholder.com/140x200?text=AnimeSama'">
+                <img src="images/animesama.png" onerror="this.src='https://via.placeholder.com/140x200/333/fff?text=AnimeSama'">
                 <div class="card-info">Anime Sama</div>
             </div>
         </div>
@@ -148,17 +147,16 @@
 
 <div id="mainPlayer">
     <button class="btn-close" onclick="closePlayer()">X</button>
-    <iframe id="ifr"></iframe>
-    <div id="ytContainer"></div>
+    <iframe id="ifr" allowfullscreen></iframe>
     <div id="shortsFeed"></div>
 </div>
 
-<script src="https://www.youtube.com/iframe_api" async></script>
 <script>
 const YT_KEYS = ["AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc", "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY", "AIzaSyBEos5Lzr0WbleEdtP_Gi7kMHcxaL9hhR0"];
-let currentKeyIdx = 0, ytPlayer, heroIdx = 0, currentShortsList = [], shortsObserver;
+const DM_KEY = "09799763fa8a96936000";
+let currentKeyIdx = 0, heroIdx = 0, shortsObserver;
 
-const fetchT = (url) => Promise.race([fetch(url), new Promise((_, r) => setTimeout(() => r(new Error('Timeout')), 3000))]);
+const fetchT = (url) => Promise.race([fetch(url), new Promise((_, r) => setTimeout(() => r(new Error('Timeout')), 2000))]);
 
 window.onload = () => {
     loadTV(); 
@@ -180,94 +178,59 @@ function initSearch() {
 }
 
 async function refreshContent(q) {
-    // YouTube
+    // Différenciation des contenus pour Shorts vs Vidéos
     fetchYT('videoRow', q, false);
     fetchYT('shortsRow', q + " #shorts", true);
-    // Dailymotion
     fetchDM('dmVideoRow', q, false);
-    fetchDM('dmShortsRow', q, true);
+    fetchDM('dmShortsRow', q + " vertical shorts", true);
 }
 
-// --- LOGIQUE DAILYMOTION ---
+// --- DAILYMOTION CORRIGÉ (DURÉE 0-INFINI) ---
 async function fetchDM(id, q, isShort) {
     try {
-        const dur = isShort ? "&max_duration=60" : "&min_duration=600";
-        const url = `https://api.dailymotion.com/videos?search=${encodeURIComponent(q)}${dur}&fields=id,title,thumbnail_480_url&limit=15`;
-        const r = await fetch(url);
+        // Suppression du filtre dur pour [0;+infini[
+        const url = `https://api.dailymotion.com/videos?search=${encodeURIComponent(q)}&fields=id,title,thumbnail_480_url&limit=12&apiKey=${DM_KEY}`;
+        const r = await fetchT(url);
         const d = await r.json();
         if(d.list) {
-            const items = d.list.map(v => ({ id: v.id, t: v.title, img: v.thumbnail_480_url, source: 'dm' }));
-            render(id, items, isShort);
+            render(id, d.list.map(v => ({ id: v.id, t: v.title, img: v.thumbnail_480_url, source: 'dm' })), isShort);
         }
     } catch(e) { console.error("DM Error", e); }
 }
 
-// --- LOGIQUE YOUTUBE ---
+// --- YOUTUBE CORRIGÉ (DURÉE 0-INFINI) ---
 async function fetchYT(id, q, isShort) {
-    if (currentKeyIdx >= YT_KEYS.length) { showQuotaError(id); return; }
+    if (currentKeyIdx >= YT_KEYS.length) return;
     try {
-        const dur = isShort ? "" : "&videoDuration=long";
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=15${dur}&key=${YT_KEYS[currentKeyIdx]}`;
-        const r = await fetch(url);
+        // Suppression du filtre videoDuration pour [0;+infini[
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=12&key=${YT_KEYS[currentKeyIdx]}`;
+        const r = await fetchT(url);
         if (r.status === 403) { currentKeyIdx++; fetchYT(id, q, isShort); return; }
         const d = await r.json();
         if(d.items) {
-            const items = d.items.map(v => ({ id: v.id.videoId, t: v.snippet.title, img: v.snippet.thumbnails.high.url, source: 'yt' }));
-            render(id, items, isShort);
+            render(id, d.items.map(v => ({ id: v.id.videoId, t: v.snippet.title, img: v.snippet.thumbnails.high.url, source: 'yt' })), isShort);
         }
     } catch(e) {}
 }
 
 function render(id, items, isShort) {
-    const container = document.getElementById(id);
-    container.innerHTML = items.map((i, idx) => `
-        <div class="card" onclick="handleCardClick('${id}', ${idx})">
-            <img src="${i.img}" loading="lazy"><div class="card-info">${i.t}</div>
-        </div>`).join('');
-}
-
-function handleCardClick(containerId, idx) {
-    const container = document.getElementById(containerId);
-    // On extrait les données des cartes du container pour créer la playlist de lecture
-    const cards = Array.from(container.querySelectorAll('.card'));
-    const playlist = cards.map(c => {
-        const img = c.querySelector('img').src;
-        const title = c.querySelector('.card-info').innerText;
-        // On détermine la source et l'ID à partir des données injectées au rendu
-        // Pour simplifier, on stocke l'ID et la source directement dans l'élément si besoin, 
-        // ou on utilise une approche par index.
-    });
-
-    // On récupère les items correspondants
-    const isShort = containerId.toLowerCase().includes('shorts');
-    
-    // Pour que le lecteur fonctionne avec les deux sources, on doit reconstruire la liste temporaire
-    // au moment du clic
-    let tempItems = [];
-    if(containerId === 'shortsRow') tempItems = window.lastYTShorts || []; // Nécessite stockage
-    // Plus simple : on passe les données directement
-}
-
-// Modification de render pour inclure les données nécessaires
-function render(id, items, isShort) {
-    // Sauvegarde globale pour la lecture
     window[`list_${id}`] = items;
-    
     document.getElementById(id).innerHTML = items.map((i, idx) => `
         <div class="card" onclick="openMedia('${id}', ${idx}, ${isShort})">
             ${i.source === 'dm' ? '<span class="badge" style="background:#0062ff">DM</span>' : ''}
-            <img src="${i.img}" loading="lazy"><div class="card-info">${i.t}</div>
+            <img src="${i.img}" onerror="this.src='https://via.placeholder.com/140x200/222/444?text=Video'" loading="lazy">
+            <div class="card-info">${i.t}</div>
         </div>`).join('');
 }
 
 function openMedia(listId, idx, isShort) {
     const items = window[`list_${listId}`];
+    const item = items[idx];
     if(isShort) {
         openShortsFeed(idx, items);
     } else {
-        const item = items[idx];
         const url = item.source === 'yt' ? `https://www.youtube.com/embed/${item.id}?autoplay=1` : `https://www.dailymotion.com/embed/video/${item.id}?autoplay=1`;
-        openFull(url, false);
+        openFull(url);
     }
 }
 
@@ -275,17 +238,14 @@ function openShortsFeed(idx, list) {
     const f = document.getElementById('shortsFeed');
     document.getElementById('mainPlayer').style.display='block';
     document.getElementById('ifr').style.display='none';
-    document.getElementById('ytContainer').style.display='none';
     f.style.display='block';
     
     f.innerHTML = list.map(s => `
         <div class="short-slide" data-id="${s.id}" data-source="${s.source}">
-            <iframe src="" allow="autoplay; fullscreen"></iframe>
+            <iframe src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
             <div class="short-actions">
                 <div class="action-btn"><i class="fas fa-thumbs-up"></i><span>Like</span></div>
-                <div class="action-btn"><i class="fas fa-comment"></i><span>1.2k</span></div>
                 <div class="action-btn"><i class="fas fa-share"></i><span>Partager</span></div>
-                <div class="action-btn"><i class="fas fa-plus-square"></i><span>S'abonner</span></div>
             </div>
         </div>`).join('');
 
@@ -293,30 +253,25 @@ function openShortsFeed(idx, list) {
     shortsObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const iframe = entry.target.querySelector('iframe');
-            const id = entry.target.dataset.id;
-            const source = entry.target.dataset.source;
             if(entry.isIntersecting) {
+                const {id, source} = entry.target.dataset;
                 iframe.src = source === 'yt' 
-                    ? `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&loop=1&playlist=${id}`
-                    : `https://www.dailymotion.com/embed/video/${id}?autoplay=1&mute=0`;
-            } else {
-                iframe.src = ""; 
-            }
+                    ? `https://www.youtube.com/embed/${id}?autoplay=1&playlist=${id}`
+                    : `https://www.dailymotion.com/embed/video/${id}?autoplay=1`;
+            } else { iframe.src = ""; }
         });
-    }, { threshold: 0.7 });
+    }, { threshold: 0.6 });
 
     document.querySelectorAll('.short-slide').forEach(s => shortsObserver.observe(s));
     f.children[idx].scrollIntoView();
 }
 
-// --- FONCTIONS EXISTANTES NON MODIFIÉES ---
-function openFull(url, isYT, ytId) {
-    const p = document.getElementById('mainPlayer');
-    p.style.display = 'block';
+function openFull(url) {
+    document.getElementById('mainPlayer').style.display = 'block';
     document.getElementById('shortsFeed').style.display = 'none';
-    document.getElementById('ifr').style.display = 'block';
-    document.getElementById('ytContainer').style.display = 'none';
-    document.getElementById('ifr').src = url;
+    const ifr = document.getElementById('ifr');
+    ifr.style.display = 'block';
+    ifr.src = url;
 }
 
 function closePlayer() { 
@@ -340,10 +295,9 @@ async function loadHero() {
     try {
         const r = await fetchT(`https://api.themoviedb.org/3/movie/now_playing?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`);
         const d = await r.json();
-        const items = d.results.slice(0, 5).map(m => ({t: m.title, img: `https://image.tmdb.org/t/p/original${m.backdrop_path}`, url: `https://www.themoviedb.org/movie/${m.id}`}));
-        document.getElementById('heroRow').innerHTML = items.map(h => `
-            <div class="hero-item" onclick="openFull('${h.url}')">
-                <img src="${h.img}"><div class="hero-info"><div class="hero-title">${h.t}</div></div>
+        document.getElementById('heroRow').innerHTML = d.results.slice(0, 5).map(m => `
+            <div class="hero-item" onclick="openFull('https://www.themoviedb.org/movie/${m.id}')">
+                <img src="https://image.tmdb.org/t/p/original${m.backdrop_path}"><div class="hero-info"><div class="hero-title">${m.title}</div></div>
             </div>`).join('');
         setInterval(() => { heroIdx = (heroIdx + 1) % 5; document.getElementById('heroRow').style.transform = `translateX(-${heroIdx * 100}%)`; }, 5000);
     } catch(e) {}
@@ -353,7 +307,7 @@ async function loadTMDB(id, type) {
     try {
         const r = await fetchT(`https://api.themoviedb.org/3/${type}/popular?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`);
         const d = await r.json();
-        document.getElementById(id).innerHTML = d.results.slice(0,10).map(m => `
+        document.getElementById(id).innerHTML = d.results.slice(0,12).map(m => `
             <div class="card" onclick="openFull('https://www.themoviedb.org/${type}/${m.id}')">
                 <img src="https://image.tmdb.org/t/p/w300${m.poster_path}" loading="lazy">
                 <div class="card-info">${m.title||m.name}</div>
@@ -363,7 +317,7 @@ async function loadTMDB(id, type) {
 
 async function loadKitsu() {
     try {
-        const r = await fetchT("https://kitsu.io/api/edge/anime?page[limit]=10&sort=-favoritesCount");
+        const r = await fetchT("https://kitsu.io/api/edge/anime?page[limit]=12&sort=-favoritesCount");
         const d = await r.json();
         document.getElementById('animeRow').innerHTML = d.data.map(a => `
             <div class="card" onclick="openFull('https://kitsu.io/anime/${a.id}')">
