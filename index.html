@@ -7,7 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    
     <style>
         :root { 
             --red: #e50914; 
@@ -111,7 +112,6 @@
 
         /* PLAYER & SHORTS FULLSCREEN */
         #mainPlayer { display: none; position: fixed; inset: 0; background: #000; z-index: 2000; }
-        /* Style crucial pour le défilement des shorts */
         #shortsFeed { 
             height: 100vh; width: 100vw; 
             overflow-y: scroll; 
@@ -127,7 +127,7 @@
         }
         .short-slide iframe { 
             height: 100%; width: 100%; 
-            border: none; max-width: 500px; /* Limite largeur short pour PC */
+            border: none; max-width: 500px;
         }
         @media (max-width: 768px) { .short-slide iframe { max-width: 100%; } }
         
@@ -205,23 +205,23 @@
         <h2><i class="fas fa-layer-group"></i> Multi-Streaming</h2>
         <div class="row">
             <div class="card" onclick="window.open('https://www.netflix.com', '_blank')">
-                <img src="images/netflix.png" onerror="this.src='https://via.placeholder.com/180x260/e50914/fff?text=Netflix'">
+                <img src="images/netflix.png" loading="lazy" onerror="this.src='https://via.placeholder.com/180x260/e50914/fff?text=Netflix'">
                 <div class="card-info">Netflix</div>
             </div>
             <div class="card" onclick="window.open('https://www.primevideo.com', '_blank')">
-                <img src="images/primevideo.png" onerror="this.src='https://via.placeholder.com/180x260/00a8e1/fff?text=Prime+Video'">
+                <img src="images/primevideo.png" loading="lazy" onerror="this.src='https://via.placeholder.com/180x260/00a8e1/fff?text=Prime+Video'">
                 <div class="card-info">Prime Video</div>
             </div>
             <div class="card" onclick="openFull('https://www.disneyplus.com')">
-                <img src="images/disneyplus.png" onerror="this.src='https://via.placeholder.com/180x260/0063be/fff?text=Disney+'">
+                <img src="images/disneyplus.png" loading="lazy" onerror="this.src='https://via.placeholder.com/180x260/0063be/fff?text=Disney+'">
                 <div class="card-info">Disney Plus</div>
             </div>
             <div class="card" onclick="openFull('https://www.crunchyroll.com')">
-                <img src="images/crunchyroll.png" onerror="this.src='https://via.placeholder.com/180x260/f47521/fff?text=Crunchyroll'">
+                <img src="images/crunchyroll.png" loading="lazy" onerror="this.src='https://via.placeholder.com/180x260/f47521/fff?text=Crunchyroll'">
                 <div class="card-info">Crunchyroll</div>
             </div>
             <div class="card" onclick="openFull('https://anime-sama.store/')">
-                <img src="images/animesama.png" onerror="this.src='https://via.placeholder.com/180x260/333/fff?text=AnimeSama'">
+                <img src="images/animesama.png" loading="lazy" onerror="this.src='https://via.placeholder.com/180x260/333/fff?text=AnimeSama'">
                 <div class="card-info">Anime Sama</div>
             </div>
         </div>
@@ -240,17 +240,22 @@
 </div>
 
 <script>
-// API
-const DM_KEY = "09799763fa8a96936000"; // Clé Publique
+// API Keys
+const DM_KEY = "09799763fa8a96936000"; 
 const YT_KEYS = ["AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc", "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY"];
 let currentKeyIdx = 0, heroIdx = 0, shortsObserver;
 
-window.onload = () => {
-    loadTV(); loadHero(); 
-    loadTMDB('filmRow', 'movie'); loadTMDB('seriesRow', 'tv'); loadKitsu();
+// Lancement immédiat au chargement du DOM (Optimisation Vitesse)
+document.addEventListener("DOMContentLoaded", () => {
+    // Lancer les chargements en parallèle
+    loadTV(); 
+    loadHero(); 
+    loadTMDB('filmRow', 'movie'); 
+    loadTMDB('seriesRow', 'tv'); 
+    loadKitsu();
     initSearch();
     refreshContent('films français 2025');
-};
+});
 
 function initSearch() {
     document.getElementById('search').addEventListener('keypress', (e) => {
@@ -261,26 +266,18 @@ function initSearch() {
     });
 }
 
-// Fonction centrale qui lance les 4 recherches simultanées
 async function refreshContent(q) {
-    // 1. YouTube Vidéos
+    // Appel sans await pour ne pas bloquer l'exécution (Parallélisme)
     fetchYT('videoRow', q, false);
-    // 2. YouTube Shorts (Ajout #shorts pour cibler)
     fetchYT('shortsRow', q + " #shorts", true);
-    
-    // 3. Dailymotion Vidéos (Pas de limite de temps [0; infini])
     fetchDM('dmVideoRow', q, false);
-    // 4. Dailymotion Shorts (Limite < 60s pour format vertical uniquement)
     fetchDM('dmShortsRow', q, true); 
 }
 
-// === LOGIQUE DAILYMOTION (CORRIGÉE) ===
+// LOGIQUE DAILYMOTION
 async function fetchDM(id, q, isShort) {
     try {
-        // Si c'est pour la section SHORTS, on force < 60s pour avoir le format vertical
-        // Si c'est pour la section VIDEO, on ne met PAS de filtre (0 à infini)
         const durationFilter = isShort ? '&shorter_than=60' : ''; 
-        
         const url = `https://api.dailymotion.com/videos?search=${encodeURIComponent(q)}&fields=id,title,thumbnail_480_url&limit=15&ssl_assets=true${durationFilter}&apiKey=${DM_KEY}`;
         const r = await fetch(url);
         const d = await r.json();
@@ -296,7 +293,7 @@ async function fetchDM(id, q, isShort) {
     } catch(e) { console.error("DM Error", e); }
 }
 
-// === LOGIQUE YOUTUBE ===
+// LOGIQUE YOUTUBE
 async function fetchYT(id, q, isShort) {
     if (currentKeyIdx >= YT_KEYS.length) return;
     try {
@@ -320,17 +317,13 @@ function render(id, items, isShort) {
         </div>`).join('');
 }
 
-// GESTION DU CLIC (VIDÉO vs SHORTS)
 function openMedia(listId, idx, isShort) {
     const items = window[`list_${listId}`];
     const item = items[idx];
     
-    // Si c'est un SHORT (YT ou DM) -> On ouvre le feed vertical (Swipe)
     if(isShort) {
         openShortsFeed(idx, items);
-    } 
-    // Si c'est une VIDÉO (YT ou DM) -> On ouvre le lecteur classique plein écran
-    else {
+    } else {
         let url;
         if(item.source === 'yt') {
             url = `https://www.youtube.com/embed/${item.id}?autoplay=1&rel=0&showinfo=0&controls=1`;
@@ -341,23 +334,20 @@ function openMedia(listId, idx, isShort) {
     }
 }
 
-// === LOGIQUE SWIPE (SHORTS) CORRIGÉE ===
 function openShortsFeed(idx, list) {
     const player = document.getElementById('mainPlayer');
     const feed = document.getElementById('shortsFeed');
     const ifr = document.getElementById('ifr');
     
     player.style.display = 'block';
-    ifr.style.display = 'none'; // Cacher lecteur standard
-    feed.style.display = 'block'; // Afficher feed vertical
+    ifr.style.display = 'none'; 
+    feed.style.display = 'block'; 
     
-    // Générer les slides
     feed.innerHTML = list.map(s => `
         <div class="short-slide" data-id="${s.id}" data-source="${s.source}">
             <iframe src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
         </div>`).join('');
 
-    // Observer pour lancer la vidéo quand on scroll dessus
     if(shortsObserver) shortsObserver.disconnect();
     shortsObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -365,26 +355,21 @@ function openShortsFeed(idx, list) {
             const {id, source} = entry.target.dataset;
             
             if(entry.isIntersecting) {
-                // Charger la source quand visible
                 if(source === 'yt') {
                     iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1&loop=1&playlist=${id}&controls=0&rel=0`;
                 } else {
                     iframe.src = `https://www.dailymotion.com/embed/video/${id}?autoplay=1&controls=0&ui-start-screen-info=0&ui-logo=0&sharing-enable=0`;
                 }
             } else { 
-                // Couper la vidéo quand non visible
                 iframe.src = ""; 
             }
         });
-    }, { threshold: 0.6 }); // Sensibilité du scroll
+    }, { threshold: 0.6 });
 
     document.querySelectorAll('.short-slide').forEach(s => shortsObserver.observe(s));
-    
-    // Scroll direct vers l'élément cliqué
     setTimeout(() => feed.children[idx].scrollIntoView(), 100);
 }
 
-// === LECTEUR STANDARD PLEIN ÉCRAN ===
 function openFull(url) {
     document.getElementById('mainPlayer').style.display = 'block';
     document.getElementById('shortsFeed').style.display = 'none';
@@ -399,13 +384,12 @@ function closePlayer() {
     document.getElementById('shortsFeed').innerHTML=''; 
 }
 
-// Chargement autres sections (ne change pas)
 function loadTV() {
     const tv = [{n:"TF1", f:"TF1.png"}, {n:"France 2", f:"France2.png"}, {n:"M6", f:"M6.png"}, {n:"Canal+", f:"Canal+.png"}, {n:"Eurosport", f:"Eurosport.png"}, {n:"BeIn Sport", f:"BeIn.png"}];
     document.getElementById('tvRow').innerHTML = tv.map(t => `
         <div class="card" onclick="openFull('https://vavoo.to')">
             <span class="badge">DIRECT</span>
-            <img src="images/${t.f}" onerror="this.src='https://via.placeholder.com/180x260/111/fff?text=${t.n}'">
+            <img src="images/${t.f}" loading="lazy" onerror="this.src='https://via.placeholder.com/180x260/111/fff?text=${t.n}'">
             <div class="card-info">${t.n}</div>
         </div>`).join('');
 }
@@ -416,7 +400,7 @@ async function loadHero() {
         const d = await r.json();
         document.getElementById('heroRow').innerHTML = d.results.slice(0, 5).map(m => `
             <div class="hero-item" onclick="openFull('https://www.themoviedb.org/movie/${m.id}')">
-                <img src="https://image.tmdb.org/t/p/original${m.backdrop_path}">
+                <img src="https://image.tmdb.org/t/p/original${m.backdrop_path}" loading="eager">
                 <div class="hero-overlay"></div>
                 <div class="hero-info">
                     <div class="hero-title">${m.title}</div>
@@ -451,4 +435,9 @@ async function loadKitsu() {
     } catch(e) {}
 }
 
-function jump(id) { window.scrollTo({top: document.getElementById(id).offsetT
+function jump(id) { window.scrollTo({top: document.getElementById(id).offsetTop - 150, behavior: 'smooth'}); }
+function setActive(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
+</script>
+</body>
+</html>
+
