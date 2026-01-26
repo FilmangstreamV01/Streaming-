@@ -6,84 +6,29 @@
 <title>FilmangStream</title>
 
 <style>
-:root{
-  --red:#e50914;
-  --bg:#141414;
-  --card:#1f1f1f;
-}
-body{
-  margin:0;
-  background:var(--bg);
-  color:#fff;
-  font-family:Arial, sans-serif;
-}
-header{
-  background:var(--red);
-  padding:15px;
-  font-size:22px;
-  font-weight:bold;
-  text-align:center;
-}
-.search{
-  padding:10px;
-}
-.search input{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:6px;
-}
-.section{
-  padding:10px;
-}
-h2{
-  margin:10px 0;
-}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
-  gap:12px;
-}
-.card{
-  background:var(--card);
-  border-radius:8px;
-  overflow:hidden;
-  cursor:pointer;
-  transition:.2s;
-}
-.card:hover{
-  transform:scale(1.05);
-}
-.card img{
-  width:100%;
-}
-.card p{
-  font-size:13px;
-  padding:6px;
-  text-align:center;
-}
+:root{--red:#e50914;--bg:#141414;--card:#1f1f1f}
+body{margin:0;background:var(--bg);color:#fff;font-family:Arial}
+header{background:var(--red);padding:15px;text-align:center;font-size:22px;font-weight:bold}
+.search{padding:10px}
+.search input{width:100%;padding:12px;border-radius:6px;border:none}
+.section{padding:10px}
+h2{margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.card{background:var(--card);border-radius:8px;overflow:hidden;cursor:pointer}
+.card img{width:100%}
+.card p{font-size:13px;padding:6px;text-align:center}
 
-/* PLAYER MODAL */
 #playerBox{
-  position:fixed;
-  top:0;left:0;
-  width:100%;
-  height:100%;
-  background:#000;
-  display:none;
-  flex-direction:column;
-  z-index:999;
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:#000;display:none;flex-direction:column;z-index:999
 }
-#playerHeader{
-  background:var(--red);
-  padding:12px;
-  font-weight:bold;
-  cursor:pointer;
-}
-#playerFrame{
-  width:100%;
-  height:100%;
-  border:none;
+#playerHeader{background:var(--red);padding:12px;font-weight:bold}
+#playerFrame{width:100%;height:100%;border:none}
+
+.list{padding:10px}
+.list button{
+  width:100%;padding:10px;margin:6px 0;
+  background:#222;color:#fff;border:none;border-radius:6px
 }
 </style>
 </head>
@@ -97,47 +42,31 @@ h2{
 </div>
 
 <div class="section">
-<h2>🔥 Films populaires</h2>
+<h2>🎬 Films</h2>
 <div class="grid" id="movies"></div>
 </div>
 
 <div class="section">
-<h2>📺 Séries populaires</h2>
+<h2>📺 Séries</h2>
 <div class="grid" id="series"></div>
 </div>
 
 <div class="section">
-<h2>🍥 Animes</h2>
+<h2>🍥 Anime</h2>
 <div class="grid" id="anime"></div>
 </div>
 
-<div class="section">
-<h2>📡 TV en direct</h2>
-<div class="grid">
-  <div class="card" onclick="openTV()">
-    <img src="https://i.imgur.com/Z6XhK9N.png">
-    <p>Chaînes TV</p>
-  </div>
-</div>
-</div>
-
-<!-- PLAYER -->
 <div id="playerBox">
   <div id="playerHeader" onclick="closePlayer()">⬅ Retour</div>
   <iframe id="playerFrame" allowfullscreen></iframe>
 </div>
 
 <script>
-const TMDB_KEY = "1073e4d36ef71f912da093a5eb38f091";
-const IMG = "https://image.tmdb.org/t/p/w500";
+const KEY="1073e4d36ef71f912da093a5eb38f091";
+const IMG="https://image.tmdb.org/t/p/w500";
 
-/* API LOAD */
-async function load(url){
-  const r = await fetch(url);
-  return await r.json();
-}
+async function api(url){return (await fetch(url)).json();}
 
-/* DRAW CONTENT */
 function draw(id,list,type){
   const box=document.getElementById(id);
   box.innerHTML="";
@@ -145,26 +74,18 @@ function draw(id,list,type){
     if(!i.poster_path) return;
     const d=document.createElement("div");
     d.className="card";
-    d.innerHTML=
-      "<img src='"+IMG+i.poster_path+"'>" +
-      "<p>"+(i.title||i.name)+"</p>";
-    d.onclick=()=>openPlayer(type,i.id);
+    d.innerHTML=`<img src="${IMG+i.poster_path}"><p>${i.title||i.name}</p>`;
+    d.onclick=()=>open(type,i.id);
     box.appendChild(d);
   });
 }
 
-/* PLAYER */
-function openPlayer(type,id){
-  let src="";
-  if(type==="movie") src="https://letsembed.cc/embed/movie/?id="+id;
-  if(type==="tv") src="https://letsembed.cc/embed/tv/?id="+id+"/1/1";
-  if(type==="anime") src="https://letsembed.cc/embed/anime/?id="+id+"/1/1";
-  document.getElementById("playerFrame").src=src;
-  document.getElementById("playerBox").style.display="flex";
+function playMovie(id){
+  openPlayer(`https://letsembed.cc/embed/movie/?id=${id}`);
 }
 
-function openTV(){
-  document.getElementById("playerFrame").src="https://iptv-org.github.io/iptv/index.m3u";
+function openPlayer(src){
+  document.getElementById("playerFrame").src=src;
   document.getElementById("playerBox").style.display="flex";
 }
 
@@ -173,24 +94,53 @@ function closePlayer(){
   document.getElementById("playerBox").style.display="none";
 }
 
-/* INIT */
-async function init(){
-  const movies=await load(
-    "https://api.themoviedb.org/3/movie/popular?api_key="+TMDB_KEY+"&language=fr"
-  );
-  draw("movies",movies.results,"movie");
+async function open(type,id){
+  if(type==="movie"){ playMovie(id); return; }
 
-  const series=await load(
-    "https://api.themoviedb.org/3/tv/popular?api_key="+TMDB_KEY+"&language=fr"
-  );
-  draw("series",series.results,"tv");
-
-  const anime=await load(
-    "https://api.themoviedb.org/3/discover/tv?api_key="+TMDB_KEY+"&with_genres=16&language=fr"
-  );
-  draw("anime",anime.results,"anime");
+  const data=await api(`https://api.themoviedb.org/3/tv/${id}?api_key=${KEY}&language=fr`);
+  let html=`<div class="list"><h3>${data.name}</h3>`;
+  data.seasons.forEach(s=>{
+    if(s.season_number>0)
+      html+=`<button onclick="loadEpisodes(${id},${s.season_number})">
+        Saison ${s.season_number} (${s.episode_count})
+      </button>`;
+  });
+  html+="</div>";
+  showList(html);
 }
 
+async function loadEpisodes(id,season){
+  const data=await api(`https://api.themoviedb.org/3/tv/${id}/season/${season}?api_key=${KEY}&language=fr`);
+  let html=`<div class="list"><h3>Saison ${season}</h3>`;
+  data.episodes.forEach(e=>{
+    html+=`<button onclick="openPlayer('https://letsembed.cc/embed/tv/?id=${id}/${season}/${e.episode_number}')">
+      Épisode ${e.episode_number} – ${e.name}
+    </button>`;
+  });
+  html+="</div>";
+  showList(html);
+}
+
+function showList(content){
+  document.getElementById("playerFrame").src="";
+  document.getElementById("playerHeader").innerHTML=content;
+  document.getElementById("playerBox").style.display="flex";
+}
+
+document.getElementById("search").addEventListener("keyup",async e=>{
+  const q=e.target.value;
+  if(q.length<2){init();return;}
+  const r=await api(`https://api.themoviedb.org/3/search/multi?api_key=${KEY}&query=${q}&language=fr`);
+  draw("movies",r.results.filter(x=>x.media_type==="movie"),"movie");
+  draw("series",r.results.filter(x=>x.media_type==="tv"),"tv");
+  draw("anime",r.results.filter(x=>x.media_type==="tv"),"anime");
+});
+
+async function init(){
+  draw("movies",(await api(`https://api.themoviedb.org/3/movie/popular?api_key=${KEY}&language=fr`)).results,"movie");
+  draw("series",(await api(`https://api.themoviedb.org/3/tv/popular?api_key=${KEY}&language=fr`)).results,"tv");
+  draw("anime",(await api(`https://api.themoviedb.org/3/discover/tv?api_key=${KEY}&with_genres=16&language=fr`)).results,"anime");
+}
 init();
 </script>
 
