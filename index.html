@@ -7,8 +7,8 @@
 
 <style>
 body{margin:0;background:#111;color:#fff;font-family:Arial}
-header{background:#e50914;padding:15px;font-size:22px;text-align:center}
-input,select,button{padding:10px;border:none;border-radius:6px}
+header{background:#e50914;padding:15px;text-align:center;font-size:22px}
+input,select,button{padding:8px;border:none;border-radius:6px}
 .search{padding:10px}
 .section{padding:10px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
@@ -16,11 +16,13 @@ input,select,button{padding:10px;border:none;border-radius:6px}
 .card img{width:100%}
 .card p{text-align:center;font-size:13px;padding:5px}
 
-#player{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:none;flex-direction:column;z-index:999}
-#playerTop{background:#e50914;padding:10px;display:flex;justify-content:space-between}
+#overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:999;display:none;flex-direction:column}
+#top{background:#e50914;padding:10px;display:flex;gap:8px;align-items:center}
 iframe{flex:1;border:none}
-
+.list{padding:10px}
 .list button{width:100%;margin:5px 0;background:#222;color:#fff}
+
+.badge{font-size:11px;color:#aaa}
 </style>
 </head>
 
@@ -34,123 +36,158 @@ iframe{flex:1;border:none}
 
 <div class="section">
 <h2>🎬 Films</h2>
-<div class="grid" id="movies"></div>
+<div id="movies" class="grid"></div>
 </div>
 
 <div class="section">
 <h2>📺 Séries</h2>
-<div class="grid" id="series"></div>
+<div id="series" class="grid"></div>
 </div>
 
 <div class="section">
 <h2>🍥 Anime</h2>
-<div class="grid" id="anime"></div>
+<div id="anime" class="grid"></div>
 </div>
 
-<div id="player">
-<div id="playerTop">
-<span onclick="closePlayer()">⬅ Retour</span>
-<select id="lang" onchange="reloadLang()">
-<option value="">Auto</option>
-<option value="vf">VF</option>
-<option value="vostfr">VOSTFR</option>
-</select>
-</div>
-<iframe id="frame" allowfullscreen></iframe>
+<!-- PLAYER -->
+<div id="overlay">
+  <div id="top">
+    <button onclick="closePlayer()">⬅</button>
+
+    <select id="lang">
+      <option value="">Auto</option>
+      <option value="vf">VF</option>
+      <option value="vostfr">VOSTFR</option>
+    </select>
+
+    <select id="season" style="display:none"></select>
+    <select id="episode" style="display:none"></select>
+
+    <button onclick="toggleFav()">⭐</button>
+  </div>
+
+  <div class="list" id="info"></div>
+  <iframe id="player" allowfullscreen></iframe>
 </div>
 
 <script>
 const API="https://api.themoviedb.org/3";
 const KEY="1073e4d36ef71f912da093a5eb38f091";
 const IMG="https://image.tmdb.org/t/p/w500";
-let currentSrc="";
 
-async function get(url){return (await fetch(url)).json();}
+let current={type:null,id:null,season:null,episode:null,title:null};
 
-function card(container,item,type){
-  if(!item.poster_path) return;
+const favs=JSON.parse(localStorage.getItem("favs")||"[]");
+const history=JSON.parse(localStorage.getItem("history")||"[]");
+
+async function get(u){return (await fetch(u)).json();}
+
+function save(){
+  localStorage.setItem("favs",JSON.stringify(favs));
+  localStorage.setItem("history",JSON.stringify(history));
+}
+
+function card(c,i,t){
+  if(!i.poster_path)return;
   const d=document.createElement("div");
   d.className="card";
-  d.innerHTML=`<img src="${IMG+item.poster_path}"><p>${item.title||item.name}</p>`;
-  d.onclick=()=>open(type,item.id);
-  container.appendChild(d);
+  d.innerHTML=`<img src="${IMG+i.poster_path}"><p>${i.title||i.name}</p>`;
+  d.onclick=()=>open(t,i.id,i.title||i.name);
+  c.appendChild(d);
 }
 
-async function init(){
-  const m=await get(`${API}/movie/popular?api_key=${KEY}&language=fr`);
-  m.results.forEach(x=>card(movies,x,"movie"));
+async function loadHome(){
+  movies.innerHTML="";series.innerHTML="";anime.innerHTML="";
 
-  const s=await get(`${API}/tv/popular?api_key=${KEY}&language=fr`);
-  s.results.forEach(x=>card(series,x,"tv"));
+  (await get(`${API}/movie/popular?api_key=${KEY}&language=fr`))
+    .results.forEach(x=>card(movies,x,"movie"));
 
-  const a=await get(`${API}/discover/tv?api_key=${KEY}&with_genres=16&language=fr`);
-  a.results.forEach(x=>card(anime,x,"tv"));
+  (await get(`${API}/tv/popular?api_key=${KEY}&language=fr`))
+    .results.forEach(x=>card(series,x,"tv"));
+
+  (await get(`${API}/discover/tv?api_key=${KEY}&with_genres=16&language=fr`))
+    .results.forEach(x=>card(anime,x,"tv"));
 }
 
-function play(src){
-  currentSrc=src;
-  frame.src=src;
-  player.style.display="flex";
+async function open(type,id,title){
+  overlay.style.display="flex";
+  player.src="";
+  season.style.display="none";
+  episode.style.display="none";
+  info.innerHTML="";
+  current={type,id,title,season:null,episode:null};
+
+  if(type==="movie"){
+    playMovie();
+  }else{
+    const tv=await get(`${API}/tv/${id}?api_key=${KEY}&language=fr`);
+    info.innerHTML=`<h3>${tv.name}</h3>
+    <p class="badge">${tv.number_of_seasons} saisons • ${tv.number_of_episodes} épisodes</p>`;
+    season.innerHTML="<option>Saison</option>";
+    tv.seasons.forEach(s=>{
+      if(s.season_number>0)
+        season.innerHTML+=`<option value="${s.season_number}">Saison ${s.season_number}</option>`;
+    });
+    season.style.display="block";
+  }
 }
 
-function reloadLang(){
-  if(!currentSrc) return;
-  let l=lang.value ? `?lang=${lang.value}` : "";
-  frame.src=currentSrc+l;
+function playMovie(){
+  player.src=`https://letsembed.cc/embed/movie/${current.id}${lang.value?`?lang=${lang.value}`:""}`;
+  history.push({...current});
+  save();
+}
+
+season.onchange=async ()=>{
+  current.season=season.value;
+  const e=await get(`${API}/tv/${current.id}/season/${current.season}?api_key=${KEY}&language=fr`);
+  episode.innerHTML="<option>Épisode</option>";
+  e.episodes.forEach(ep=>{
+    episode.innerHTML+=`<option value="${ep.episode_number}">Épisode ${ep.episode_number}</option>`;
+  });
+  episode.style.display="block";
+};
+
+episode.onchange=()=>{
+  current.episode=episode.value;
+  playEpisode();
+};
+
+lang.onchange=()=>{
+  if(current.type==="movie") playMovie();
+  if(current.episode) playEpisode();
+};
+
+function playEpisode(){
+  player.src=`https://letsembed.cc/embed/tv/${current.id}/${current.season}/${current.episode}${lang.value?`?lang=${lang.value}`:""}`;
+  history.push({...current});
+  save();
+}
+
+function toggleFav(){
+  const i=favs.findIndex(f=>f.id===current.id);
+  if(i>=0)favs.splice(i,1);
+  else favs.push(current);
+  save();
 }
 
 function closePlayer(){
-  frame.src="";
-  player.style.display="none";
-}
-
-async function open(type,id){
-  if(type==="movie"){
-    play(`https://letsembed.cc/embed/movie/${id}`);
-    return;
-  }
-
-  const tv=await get(`${API}/tv/${id}?api_key=${KEY}&language=fr`);
-  let html=`<div class="list"><h3>${tv.name}</h3>
-  <p>Saisons totales : ${tv.number_of_seasons}</p>`;
-
-  tv.seasons.forEach(s=>{
-    if(s.season_number>0){
-      html+=`<button onclick="episodes(${id},${s.season_number})">
-      Saison ${s.season_number} (${s.episode_count} épisodes)
-      </button>`;
-    }
-  });
-  html+=`</div>`;
-  player.style.display="flex";
-  frame.src="about:blank";
-  playerTop.innerHTML=html;
-}
-
-async function episodes(id,season){
-  const e=await get(`${API}/tv/${id}/season/${season}?api_key=${KEY}&language=fr`);
-  let html=`<div class="list"><h3>Saison ${season}</h3>`;
-  e.episodes.forEach(ep=>{
-    html+=`<button onclick="play('https://letsembed.cc/embed/tv/${id}/${season}/${ep.episode_number}')">
-    Épisode ${ep.episode_number} – ${ep.name}
-    </button>`;
-  });
-  html+=`</div>`;
-  playerTop.innerHTML=html;
+  overlay.style.display="none";
+  player.src="";
 }
 
 search.onkeyup=async ()=>{
   const q=search.value;
-  if(q.length<2){movies.innerHTML="";series.innerHTML="";anime.innerHTML="";init();return;}
-  const r=await get(`${API}/search/multi?api_key=${KEY}&query=${q}&language=fr`);
+  if(q.length<2){loadHome();return;}
   movies.innerHTML="";series.innerHTML="";anime.innerHTML="";
+  const r=await get(`${API}/search/multi?api_key=${KEY}&query=${q}&language=fr`);
   r.results.forEach(x=>{
     if(x.media_type==="movie") card(movies,x,"movie");
     if(x.media_type==="tv") card(series,x,"tv");
   });
-}
+};
 
-init();
+loadHome();
 </script>
 </body>
 </html>
