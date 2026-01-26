@@ -1,314 +1,198 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FilmangStream Pro - Premium</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { --red: #e50914; --black: #0a0a0a; --gray: #1a1a1a; --text: #ffffff; --radius: 10px; --dm-blue: #0062ff; }
-        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--black); color: var(--text); font-family: 'Montserrat', sans-serif; padding-top: 160px; overflow-x: hidden; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FilmangStream</title>
 
-        /* --- AUTH --- */
-        #authOverlay { position: fixed; inset: 0; background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-card { background: rgba(26, 26, 26, 0.95); width: 100%; max-width: 400px; padding: 40px; border-radius: 20px; border: 1px solid #333; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .auth-card h1 { color: var(--red); margin-bottom: 20px; font-weight: 900; font-size: 1.6rem; }
-        .auth-input { width: 100%; background: #0a0a0a; border: 1px solid #333; padding: 15px; border-radius: 12px; color: white; margin-bottom: 15px; outline: none; }
-        .btn-main { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; background: var(--red); color: white; }
-        .btn-google { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; background: white; color: black; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        #mainContent { display: none; }
+<style>
+:root{
+  --red:#e50914;
+  --bg:#141414;
+  --card:#1f1f1f;
+}
+body{
+  margin:0;
+  background:var(--bg);
+  color:#fff;
+  font-family:Arial, sans-serif;
+}
+header{
+  background:var(--red);
+  padding:15px;
+  font-size:22px;
+  font-weight:bold;
+  text-align:center;
+}
+.search{
+  padding:10px;
+}
+.search input{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:6px;
+}
+.section{
+  padding:10px;
+}
+h2{
+  margin:10px 0;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+  gap:12px;
+}
+.card{
+  background:var(--card);
+  border-radius:8px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:.2s;
+}
+.card:hover{
+  transform:scale(1.05);
+}
+.card img{
+  width:100%;
+}
+.card p{
+  font-size:13px;
+  padding:6px;
+  text-align:center;
+}
 
-        /* --- HEADER & RECHERCHE --- */
-        header { position: fixed; top: 0; width: 100%; background: #0a0a0a; z-index: 1000; border-bottom: 1px solid #222; }
-        .top-bar { display: flex; flex-direction: column; padding: 10px 20px; }
-        .top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .logo { font-size: 1.1rem; font-weight: 900; color: var(--red); text-transform: uppercase; cursor: pointer; }
-        .btn-auth { background: white; color: black; border: none; padding: 6px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-
-        .search-box { position: relative; width: 100%; margin-top: 10px; }
-        .search-wrapper { position: relative; width: 100%; max-width: 1200px; }
-        .search-box i.fa-search { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888; z-index: 5; }
-        #search { width: 100%; background: var(--gray); border: 1px solid #444; padding: 12px 15px 12px 45px; border-radius: 25px; color: #ffffff !important; font-size: 1rem; outline: none; }
-
-        nav { display: flex; justify-content: flex-start; gap: 8px; padding: 10px; overflow-x: auto; scrollbar-width: none; }
-        .nav-item { padding: 8px 16px; background: #1a1a1a; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; color: #aaa; }
-        .nav-item.active { background: var(--red); color: white; }
-
-        /* --- SECTIONS & CARDS --- */
-        section { padding: 20px 0 0 20px; }
-        h2 { font-size: 1rem; margin-bottom: 15px; text-transform: uppercase; border-left: 4px solid var(--red); padding-left: 10px; }
-        .row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 20px; scrollbar-width: none; align-items: center; }
-        .card { min-width: 140px; width: 140px; border-radius: var(--radius); overflow: hidden; background: #111; cursor: pointer; position: relative; flex-shrink: 0; height: 240px; }
-        .card img { width: 100%; height: 200px; object-fit: cover; display: block; background: #222; }
-        .card-info { padding: 8px 5px; font-size: 0.7rem; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #ddd; }
-        .card-more { background: var(--gray); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; border: 2px dashed #444; }
-        .card-more i { font-size: 1.8rem; color: var(--red); }
-        .badge { position: absolute; top: 8px; left: 8px; background: var(--red); color: white; font-size: 0.55rem; padding: 3px 6px; border-radius: 4px; font-weight: 900; z-index: 5; }
-
-        /* --- CATALOGUE --- */
-        #catalogView { display: none; position: fixed; inset: 0; background: var(--black); z-index: 3000; overflow-y: auto; padding: 20px; }
-        .catalog-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; position: sticky; top: 0; background: var(--black); padding: 10px 0; z-index: 10; }
-        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; padding-bottom: 100px; }
-        .pagination-ctrl { display: flex; justify-content: center; gap: 20px; padding: 20px; position: sticky; bottom: 0; background: var(--black); border-top: 1px solid #333; }
-        .btn-pg { background: var(--red); color: white; border: none; padding: 10px 25px; border-radius: 20px; font-weight: 700; cursor: pointer; }
-        .btn-pg:disabled { background: #333; cursor: not-allowed; }
-        .btn-back { background: var(--gray); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
-        .catalog-search { flex-grow: 1; background: var(--gray); border: 1px solid #333; padding: 12px; border-radius: 20px; color: white; outline: none; }
-
-        /* --- PLAYER --- */
-        #mainPlayer { display: none; position: fixed; inset: 0; background: #000; z-index: 4000; } /* Z-index augmenté */
-        #ifr { width: 100vw; height: 100dvh; border: none; }
-        .btn-close { background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; position: fixed; top: 20px; left: 20px; z-index: 4100; }
-        
-        #heroSection { width: 100%; height: 380px; position: relative; overflow: hidden; }
-        .hero-container { display: flex; transition: transform 0.6s ease; height: 100%; }
-        .hero-item { min-width: 100%; position: relative; }
-        .hero-item img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); }
-        .hero-info { position: absolute; bottom: 30px; left: 20px; }
-    </style>
+/* PLAYER MODAL */
+#playerBox{
+  position:fixed;
+  top:0;left:0;
+  width:100%;
+  height:100%;
+  background:#000;
+  display:none;
+  flex-direction:column;
+  z-index:999;
+}
+#playerHeader{
+  background:var(--red);
+  padding:12px;
+  font-weight:bold;
+  cursor:pointer;
+}
+#playerFrame{
+  width:100%;
+  height:100%;
+  border:none;
+}
+</style>
 </head>
+
 <body>
 
-<div id="authOverlay">
-    <div class="auth-card">
-        <h1>FILMANGSTREAM</h1>
-        <input type="email" id="emailInput" class="auth-input" placeholder="Votre e-mail">
-        <button class="btn-main" onclick="handleMailLogin()">Accéder au site</button>
-        <button class="btn-google" onclick="loginWithGoogle()">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Continuer avec Google
-        </button>
-    </div>
+<header>🎬 FilmangStream</header>
+
+<div class="search">
+  <input id="search" placeholder="Rechercher film, série, anime...">
 </div>
 
-<div id="mainContent">
-    <header>
-        <div class="top-bar">
-            <div class="top-row">
-                <div class="logo" onclick="location.reload()">FILMANGSTREAM</div>
-                <button class="btn-auth" id="loginBtn" onclick="logoutUser()">
-                    <i class="fas fa-sign-out-alt"></i> Déconnexion
-                </button>
-            </div>
-            <div class="search-box">
-                <div class="search-wrapper">
-                    <i class="fas fa-search"></i>
-                    <input id="search" type="text" placeholder="Rechercher des vidéos/shorts..." maxlength="100">
-                </div>
-            </div>
-        </div>
-        <nav>
-            <div class="nav-item active" onclick="setActive(this); window.scrollTo(0,0)">Accueil</div>
-            <div class="nav-item" onclick="jump('shortsSection'); setActive(this)">Shorts</div>
-            <div class="nav-item" onclick="jump('videoSection'); setActive(this)">Vidéos</div>
-            <div class="nav-item" onclick="jump('filmSection'); setActive(this)">Films</div>
-            <div class="nav-item" onclick="jump('seriesSection'); setActive(this)">Séries</div>
-            <div class="nav-item" onclick="jump('animeSection'); setActive(this)">Animes</div>
-            <div class="nav-item" onclick="jump('streamSection'); setActive(this)">Streaming</div>
-            <div class="nav-item" onclick="jump('tvSection'); setActive(this)">TV</div>
-        </nav>
-    </header>
-
-    <main id="main">
-        <section id="heroSection"><div class="hero-container" id="heroRow"></div></section>
-        
-        <section id="shortsSection"><h2><i class="fab fa-youtube" style="color:red"></i> YouTube Shorts</h2><div class="row" id="shortsRow"></div></section>
-        <section id="dmShortsSection"><h2><i class="fab fa-dailymotion" style="color:var(--dm-blue)"></i> Dailymotion Shorts</h2><div class="row" id="dmShortsRow"></div></section>
-        <section id="videoSection"><h2><i class="fas fa-play-circle"></i> Vidéos YouTube</h2><div class="row" id="videoRow"></div></section>
-        <section id="dmVideoSection"><h2><i class="fas fa-video"></i> Vidéos Dailymotion</h2><div class="row" id="dmVideoRow"></div></section>
-        
-        <section id="filmSection">
-            <h2><i class="fas fa-film"></i> Films - Nouveautés</h2><div class="row" id="f_new"></div>
-            <h2><i class="fas fa-fire"></i> Films - Populaire</h2><div class="row" id="f_pop"></div>
-            <h2><i class="fas fa-heart"></i> Films - Aimés</h2><div class="row" id="f_like"></div>
-            <h2><i class="fas fa-chart-line"></i> Films - Tendance</h2><div class="row" id="f_trend"></div>
-            <h2><i class="fas fa-star"></i> Films - Mieux notés</h2><div class="row" id="f_rate"></div>
-            <h2><i class="fas fa-calendar-alt"></i> Films - À venir</h2><div class="row" id="f_up"></div>
-        </section>
-
-        <section id="seriesSection">
-            <h2><i class="fas fa-tv"></i> Séries - Nouveautés</h2><div class="row" id="s_new"></div>
-            <h2><i class="fas fa-fire"></i> Séries - Populaire</h2><div class="row" id="s_pop"></div>
-            <h2><i class="fas fa-heart"></i> Séries - Aimés</h2><div class="row" id="s_like"></div>
-            <h2><i class="fas fa-chart-line"></i> Séries - Tendance</h2><div class="row" id="s_trend"></div>
-            <h2><i class="fas fa-star"></i> Séries - Mieux notés</h2><div class="row" id="s_rate"></div>
-            <h2><i class="fas fa-calendar-alt"></i> Séries - À venir</h2><div class="row" id="s_up"></div>
-        </section>
-
-        <section id="animeSection">
-            <h2><i class="fas fa-dragon"></i> Animes - Nouveautés</h2><div class="row" id="a_new"></div>
-            <h2><i class="fas fa-fire"></i> Animes - Populaire</h2><div class="row" id="a_pop"></div>
-            <h2><i class="fas fa-heart"></i> Animes - Aimés</h2><div class="row" id="a_like"></div>
-            <h2><i class="fas fa-chart-line"></i> Animes - Tendance</h2><div class="row" id="a_trend"></div>
-            <h2><i class="fas fa-star"></i> Animes - Mieux notés</h2><div class="row" id="a_rate"></div>
-            <h2><i class="fas fa-calendar-alt"></i> Animes - À venir</h2><div class="row" id="a_up"></div>
-        </section>
-
-        <section id="streamSection">
-            <h2><i class="fas fa-layer-group"></i> Multi-Streaming</h2>
-            <div class="row">
-                <div class="card" onclick="window.open('https://www.netflix.com', '_blank')"><img src="images/netflix.png" onerror="this.src='https://via.placeholder.com/140x200/e50914/fff?text=Netflix'"><div class="card-info">Netflix</div></div>
-                <div class="card" onclick="window.open('https://www.primevideo.com', '_blank')"><img src="images/primevideo.png" onerror="this.src='https://via.placeholder.com/140x200/00a8e1/fff?text=Prime+Video'"><div class="card-info">Prime Video</div></div>
-                <div class="card" onclick="openInternal('https://www.disneyplus.com')"><img src="images/disneyplus.png" onerror="this.src='https://via.placeholder.com/140x200/0063be/fff?text=Disney+'"><div class="card-info">Disney Plus</div></div>
-                <div class="card" onclick="openInternal('https://www.crunchyroll.com')"><img src="images/crunchyroll.png" onerror="this.src='https://via.placeholder.com/140x200/f47521/fff?text=Crunchyroll'"><div class="card-info">Crunchyroll</div></div>
-                <div class="card" onclick="openInternal('https://anime-sama.store/')"><img src="images/animesama.png" onerror="this.src='https://via.placeholder.com/140x200/333/fff?text=AnimeSama'"><div class="card-info">Anime Sama</div></div>
-            </div>
-        </section>
-
-        <section id="tvSection"><h2><i class="fas fa-broadcast-tower"></i> Direct TV Premium</h2><div class="row" id="tvRow"></div></section>
-    </main>
+<div class="section">
+<h2>🔥 Films populaires</h2>
+<div class="grid" id="movies"></div>
 </div>
 
-<div id="catalogView">
-    <div class="catalog-header">
-        <button class="btn-back" onclick="closeCatalog()"><i class="fas fa-arrow-left"></i></button>
-        <input type="text" id="catSearch" class="catalog-search" placeholder="Rechercher ici..." maxlength="100">
-    </div>
-    <h2 id="catTitle" style="margin-bottom:20px">Catégorie</h2>
-    <div class="catalog-grid" id="catGrid"></div>
-    <div class="pagination-ctrl">
-        <button class="btn-pg" id="prevBtn" onclick="movePage(-1)">Précédent</button>
-        <button class="btn-pg" id="nextBtn" onclick="movePage(1)">Suivant</button>
-    </div>
+<div class="section">
+<h2>📺 Séries populaires</h2>
+<div class="grid" id="series"></div>
 </div>
 
-<div id="mainPlayer">
-    <button class="btn-close" onclick="closePlayer()">✕</button>
-    <iframe id="ifr" allowfullscreen allow="autoplay; fullscreen"></iframe>
+<div class="section">
+<h2>🍥 Animes</h2>
+<div class="grid" id="anime"></div>
 </div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    const firebaseConfig = { apiKey: "AIzaSyB82499194656e77beb301b", authDomain: "filmangstream.firebaseapp.com", projectId: "filmangstream", storageBucket: "filmangstream.firebasestorage.app", messagingSenderId: "887863323394", appId: "1:887863323394:web:b82499194656e77beb301b" };
-    const app = initializeApp(firebaseConfig); const auth = getAuth(app); const provider = new GoogleAuthProvider();
-    function unlock() { document.getElementById('authOverlay').style.display='none'; document.getElementById('mainContent').style.display='block'; }
-    onAuthStateChanged(auth, (user) => { if(user) unlock(); });
-    window.loginWithGoogle = () => signInWithPopup(auth, provider).then(unlock);
-    window.handleMailLogin = () => { if(document.getElementById('emailInput').value.includes('@')) unlock(); };
-    window.logoutUser = () => signOut(auth).then(() => location.reload());
-</script>
+<div class="section">
+<h2>📡 TV en direct</h2>
+<div class="grid">
+  <div class="card" onclick="openTV()">
+    <img src="https://i.imgur.com/Z6XhK9N.png">
+    <p>Chaînes TV</p>
+  </div>
+</div>
+</div>
+
+<!-- PLAYER -->
+<div id="playerBox">
+  <div id="playerHeader" onclick="closePlayer()">⬅ Retour</div>
+  <iframe id="playerFrame" allowfullscreen></iframe>
+</div>
 
 <script>
-const TMDB_API = "1073e4d36ef71f912da093a5eb38f091";
-const YT_KEYS = ["AIzaSyCo4xWGX9xjFwCoGqum17qvCpr5liZtOq4", "AIzaSyAc7d0U7_DcloYMLqeCdUUZD_M3ZLaEA7E"];
-let currentKeyIdx = 0, heroIdx = 0, catContext = { t:'', c:'', n:'', p:1, q:'' };
+const TMDB_KEY = "1073e4d36ef71f912da093a5eb38f091";
+const IMG = "https://image.tmdb.org/t/p/w500";
 
-window.onload = () => {
-    loadHero(); loadTV();
-    const config = [
-        {id:'f_new', t:'movie', c:'now_playing', n:'Films - Nouveautés'}, {id:'f_pop', t:'movie', c:'popular', n:'Films - Populaires'},
-        {id:'f_like', t:'movie', c:'top_rated', n:'Films - Aimés'}, {id:'f_trend', t:'movie', c:'trending', n:'Films - Tendance'},
-        {id:'f_rate', t:'movie', c:'top_rated', n:'Films - Mieux notés'}, {id:'f_up', t:'movie', c:'upcoming', n:'Films - À venir'},
-        {id:'s_new', t:'tv', c:'airing_today', n:'Séries - Nouveautés'}, {id:'s_pop', t:'tv', c:'popular', n:'Séries - Populaires'},
-        {id:'s_like', t:'tv', c:'top_rated', n:'Séries - Aimés'}, {id:'s_trend', t:'tv', c:'trending', n:'Séries - Tendance'},
-        {id:'s_rate', t:'tv', c:'top_rated', n:'Séries - Mieux notés'}, {id:'s_up', t:'tv', c:'on_the_air', n:'Séries - À venir'},
-        {id:'a_new', t:'anime', c:'-startDate', n:'Animes - Nouveautés'}, {id:'a_pop', t:'anime', c:'-userCount', n:'Animes - Populaires'},
-        {id:'a_like', t:'anime', c:'-favoritesCount', n:'Animes - Aimés'}, {id:'a_trend', t:'anime', c:'trending', n:'Animes - Tendance'},
-        {id:'a_rate', t:'anime', c:'-averageRating', n:'Animes - Mieux notés'}, {id:'a_up', t:'anime', c:'upcoming', n:'Animes - À venir'}
-    ];
-    config.forEach(s => s.t==='anime' ? loadKitsu(s.id, s.c, s.n) : loadTMDB(s.id, s.t, s.c, s.n));
-    refreshContent('film complet 2025');
-    document.getElementById('search').addEventListener('keypress', (e) => { if(e.key === 'Enter') { refreshContent(e.target.value); e.target.blur(); }});
-    document.getElementById('catSearch').addEventListener('keypress', (e) => { if(e.key === 'Enter') { catContext.q = e.target.value; catContext.p = 1; searchCatalog(); e.target.blur(); }});
-};
-
-async function loadTMDB(id, type, cat, name) {
-    let url = (cat==='trending') ? `https://api.themoviedb.org/3/trending/${type}/week?api_key=${TMDB_API}&language=fr-FR` : `https://api.themoviedb.org/3/${type}/${cat}?api_key=${TMDB_API}&language=fr-FR`;
-    const r = await fetch(url); const d = await r.json();
-    let h = d.results.slice(0,10).map(m => `<div class="card" onclick="openInternal('https://www.themoviedb.org/${type}/${m.id}')"><img src="https://image.tmdb.org/t/p/w300${m.poster_path}"><div class="card-info">${m.title||m.name}</div></div>`).join('');
-    h += `<div class="card card-more" onclick="openCatalog('${type}','${cat}','${name}')"><i class="fas fa-plus-circle"></i><span>Voir Plus</span></div>`;
-    document.getElementById(id).innerHTML = h;
+/* API LOAD */
+async function load(url){
+  const r = await fetch(url);
+  return await r.json();
 }
 
-async function loadKitsu(id, sort, name) {
-    let url = (sort==='trending') ? "https://kitsu.io/api/edge/trending/anime" : (sort==='upcoming' ? "https://kitsu.io/api/edge/anime?filter[status]=upcoming&page[limit]=10" : `https://kitsu.io/api/edge/anime?page[limit]=10&sort=${sort}`);
-    const r = await fetch(url); const d = await r.json();
-    let h = d.data.map(a => {
-        let img = a.attributes.posterImage ? a.attributes.posterImage.medium : 'https://via.placeholder.com/140x200?text=No+Image';
-        return `<div class="card" onclick="openInternal('https://kitsu.io/anime/${a.id}')"><img src="${img}"><div class="card-info">${a.attributes.canonicalTitle}</div></div>`;
-    }).join('');
-    h += `<div class="card card-more" onclick="openCatalog('anime','${sort}','${name}')"><i class="fas fa-plus-circle"></i><span>Voir Plus</span></div>`;
-    document.getElementById(id).innerHTML = h;
+/* DRAW CONTENT */
+function draw(id,list,type){
+  const box=document.getElementById(id);
+  box.innerHTML="";
+  list.forEach(i=>{
+    if(!i.poster_path) return;
+    const d=document.createElement("div");
+    d.className="card";
+    d.innerHTML=
+      "<img src='"+IMG+i.poster_path+"'>" +
+      "<p>"+(i.title||i.name)+"</p>";
+    d.onclick=()=>openPlayer(type,i.id);
+    box.appendChild(d);
+  });
 }
 
-function openCatalog(t, c, n) { catContext={t,c,n,p:1,q:''}; document.getElementById('catalogView').style.display='block'; document.getElementById('catTitle').innerText=n; searchCatalog(); }
-function closeCatalog() { document.getElementById('catalogView').style.display='none'; }
-function movePage(dir) { catContext.p += dir; if(catContext.p < 1) catContext.p = 1; searchCatalog(); document.getElementById('catalogView').scrollTo(0,0); }
-
- async function searchCatalog() {
-    const grid = document.getElementById('catGrid'); grid.innerHTML = "Chargement...";
-    const {t, c, p, q} = catContext; 
-    document.getElementById('prevBtn').disabled = (p === 1);
-    let url;
-    if(t==='anime') {
-        let offset = (p-1)*20;
-        url = q ? `https://kitsu.io/api/edge/anime?filter[text]=${q}&page[limit]=20&page[offset]=${offset}` : (c==='trending' ? `https://kitsu.io/api/edge/trending/anime?page[limit]=20&page[offset]=${offset}` : (c==='upcoming' ? `https://kitsu.io/api/edge/anime?filter[status]=upcoming&page[limit]=20&page[offset]=${offset}` : `https://kitsu.io/api/edge/anime?page[limit]=20&page[offset]=${offset}&sort=${c}`));
-        const r = await fetch(url); const d = await r.json();
-        grid.innerHTML = d.data.map(a => {
-             let img = a.attributes.posterImage ? a.attributes.posterImage.medium : 'https://via.placeholder.com/140x200?text=No+Image';
-             return `<div class="card" onclick="openInternal('https://kitsu.io/anime/${a.id}')"><img src="${img}"><div class="card-info">${a.attributes.canonicalTitle}</div></div>`;
-        }).join('');
-    } else {
-        url = q ? `https://api.themoviedb.org/3/search/${t}?api_key=${TMDB_API}&language=fr-FR&query=${q}&page=${p}` : (c==='trending' ? `https://api.themoviedb.org/3/trending/${t}/week?api_key=${TMDB_API}&language=fr-FR&page=${p}` : `https://api.themoviedb.org/3/${t}/${c}?api_key=${TMDB_API}&language=fr-FR&page=${p}`);
-        const r = await fetch(url); const d = await r.json();
-        grid.innerHTML = d.results.map(m => `<div class="card" onclick="openInternal('https://www.themoviedb.org/${t}/${m.id}')"><img src="https://image.tmdb.org/t/p/w300${m.poster_path}"><div class="card-info">${m.title||m.name}</div></div>`).join('');
-    }
+/* PLAYER */
+function openPlayer(type,id){
+  let src="";
+  if(type==="movie") src="https://letsembed.cc/embed/movie/?id="+id;
+  if(type==="tv") src="https://letsembed.cc/embed/tv/?id="+id+"/1/1";
+  if(type==="anime") src="https://letsembed.cc/embed/anime/?id="+id+"/1/1";
+  document.getElementById("playerFrame").src=src;
+  document.getElementById("playerBox").style.display="flex";
 }
 
-async function fetchYT(id, q, isS) {
-    try {
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=12&key=${YT_KEYS[currentKeyIdx]}`;
-        const r = await fetch(url); const d = await r.json();
-        if(d.items) render(id, d.items.map(v=>({id:v.id.videoId, t:v.snippet.title, img:v.snippet.thumbnails.high.url, s:'yt'})), isS);
-    } catch(e){}
-}
-async function fetchDM(id, q, isS) {
-    // Amélioration qualité (thumbnail_720) et filtrage short (shorter_than=60)
-    const url = isS ? `https://api.dailymotion.com/videos?search=shorts+${encodeURIComponent(q)}&flags=no_live&shorter_than=60&fields=id,title,thumbnail_720_url&limit=12` : `https://api.dailymotion.com/videos?search=${encodeURIComponent(q)}&fields=id,title,thumbnail_720_url&limit=12`;
-    const r = await fetch(url);
-    const d = await r.json(); if(d.list) render(id, d.list.map(v=>({id:v.id, t:v.title, img:v.thumbnail_720_url, s:'dm'})), isS);
-}
-function render(id, items, isS) {
-    window[`list_${id}`] = items;
-    document.getElementById(id).innerHTML = items.map((i, idx) => `<div class="card" onclick="openMedia('${id}', ${idx}, ${isS})"><span class="badge" style="background:${i.s==='dm'?'var(--dm-blue)':'red'}">${i.s.toUpperCase()}</span><img src="${i.img}"><div class="card-info">${i.t}</div></div>`).join('');
-}
-function openMedia(lid, idx, isS) {
-    const item = window[`list_${lid}`][idx];
-    openInternal(item.s==='yt' ? `https://www.youtube.com/embed/${item.id}?autoplay=1` : `https://www.dailymotion.com/embed/video/${item.id}?autoplay=1`);
+function openTV(){
+  document.getElementById("playerFrame").src="https://iptv-org.github.io/iptv/index.m3u";
+  document.getElementById("playerBox").style.display="flex";
 }
 
-function loadTV() {
-    const tv = [{n:"TF1", f:"TF1.png"}, {n:"France 2", f:"France2.png"}, {n:"M6", f:"M6.png"}, {n:"Canal+ Sport", f:"Canal+ Sport.png"}, {n:"Eurosport", f:"Eurosport.png"}, {n:"Nickelodeon", f:"Nickelodeon.png"}, {n:"Disney Channel", f:"DisneyChannel.png"}, {n:"SyFy", f:"SyFy.png"}, {n:"Warner TV", f:"WarnerTV.png"}, {n:"J-One", f:"J-One.png"}, {n:"Mangas", f:"Mangas.png"}];
-    document.getElementById('tvRow').innerHTML = tv.map(t => `<div class="card" onclick="openInternal('https://vavoo.to')"><span class="badge">LIVE</span><img src="images/${t.f}" onerror="this.src='https://via.placeholder.com/140x200/111/red?text=${t.n}'"><div class="card-info">${t.n}</div></div>`).join('');
+function closePlayer(){
+  document.getElementById("playerFrame").src="";
+  document.getElementById("playerBox").style.display="none";
 }
 
-async function loadHero() {
-    // Mix Films et Animes pour la grande affiche
-    const [rf, ra] = await Promise.all([
-        fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_API}&language=fr-FR`),
-        fetch(`https://kitsu.io/api/edge/trending/anime`)
-    ]);
-    const [df, da] = await Promise.all([rf.json(), ra.json()]);
-    const items = [
-        {t: df.results[0].title, img: `https://image.tmdb.org/t/p/original${df.results[0].backdrop_path}`},
-        {t: da.data[0].attributes.canonicalTitle, img: da.data[0].attributes.coverImage ? da.data[0].attributes.coverImage.large : da.data[0].attributes.posterImage.large},
-        {t: df.results[1].title, img: `https://image.tmdb.org/t/p/original${df.results[1].backdrop_path}`},
-        {t: da.data[1].attributes.canonicalTitle, img: da.data[1].attributes.coverImage ? da.data[1].attributes.coverImage.large : da.data[1].attributes.posterImage.large},
-        {t: df.results[2].title, img: `https://image.tmdb.org/t/p/original${df.results[2].backdrop_path}`}
-    ];
-    document.getElementById('heroRow').innerHTML = items.map(m => `<div class="hero-item"><img src="${m.img}"><div class="hero-info"><h3>${m.t}</h3></div></div>`).join('');
-    setInterval(() => { heroIdx=(heroIdx+1)%5; document.getElementById('heroRow').style.transform=`translateX(-${heroIdx*100}%)`; }, 5000);
+/* INIT */
+async function init(){
+  const movies=await load(
+    "https://api.themoviedb.org/3/movie/popular?api_key="+TMDB_KEY+"&language=fr"
+  );
+  draw("movies",movies.results,"movie");
+
+  const series=await load(
+    "https://api.themoviedb.org/3/tv/popular?api_key="+TMDB_KEY+"&language=fr"
+  );
+  draw("series",series.results,"tv");
+
+  const anime=await load(
+    "https://api.themoviedb.org/3/discover/tv?api_key="+TMDB_KEY+"&with_genres=16&language=fr"
+  );
+  draw("anime",anime.results,"anime");
 }
 
-function openInternal(u) { document.getElementById('mainPlayer').style.display='block'; document.getElementById('ifr').src=u; }
-function closePlayer() { document.getElementById('mainPlayer').style.display='none'; document.getElementById('ifr').src=''; }
-function jump(id) { window.scrollTo({top: document.getElementById(id).offsetTop - 180, behavior:'smooth'}); }
-function setActive(el) { document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); el.classList.add('active'); }
-function refreshContent(q) { fetchYT('videoRow', q, false); fetchYT('shortsRow', q+" #shorts", true); fetchDM('dmVideoRow', q, false); fetchDM('dmShortsRow', q, true); }
+init();
 </script>
+
 </body>
 </html>
