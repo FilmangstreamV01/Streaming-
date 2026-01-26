@@ -42,10 +42,11 @@
         .logo { font-size: 1.1rem; font-weight: 900; color: var(--red); text-transform: uppercase; cursor: pointer; }
         .search-box { position: relative; flex-grow: 1; display: flex; align-items: center; gap: 10px; }
         
-        /* Style de la loupe */
         .search-box i.fa-search { position: absolute; left: 12px; color: #888; font-size: 0.9rem; pointer-events: none; }
 
-        #search { width: 100%; background: var(--gray); border: none; padding: 10px 15px 10px 35px; border-radius: 20px; color: white; outline: none; }
+        /* MODIFICATION BARRE DE RECHERCHE : VISIBILITÉ OPTIMISÉE */
+        #search { width: 100%; background: var(--gray); border: 1px solid #333; padding: 10px 15px 10px 35px; border-radius: 20px; color: #ffffff; outline: none; font-family: inherit; }
+        #search::placeholder { color: #888; }
         
         .btn-auth { background: white; color: black; border: none; padding: 8px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
         .btn-auth i { color: var(--red); font-size: 0.9rem; }
@@ -98,7 +99,7 @@
             <div class="logo" onclick="location.reload()">FILMANGSTREAM</div>
             <div class="search-box">
                 <i class="fas fa-search"></i>
-                <input id="search" type="text" placeholder="Rechercher...">
+                <input id="search" type="text" placeholder="Rechercher..." maxlength="100">
                 <button class="btn-auth" id="loginBtn" onclick="logoutUser()">
                     <i class="fas fa-sign-out-alt"></i> Déconnexion
                 </button>
@@ -123,7 +124,6 @@
         <section id="videoSection"><h2><i class="fas fa-play-circle"></i> Vidéos YouTube</h2><div class="row" id="videoRow"></div></section>
         <section id="dmVideoSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fas fa-video"></i> Vidéos Dailymotion</h2><div class="row" id="dmVideoRow"></div></section>
         
-        <!-- SECTION FILMS MODIFIÉE -->
         <section id="filmSection">
             <h2><i class="fas fa-film"></i> Films - Nouveautés</h2><div class="row" id="f_new"></div>
             <h2><i class="fas fa-fire"></i> Films - Populaire</h2><div class="row" id="f_pop"></div>
@@ -133,7 +133,6 @@
             <h2><i class="fas fa-calendar-alt"></i> Films - À venir</h2><div class="row" id="f_up"></div>
         </section>
 
-        <!-- SECTION SÉRIES MODIFIÉE -->
         <section id="seriesSection">
             <h2><i class="fas fa-tv"></i> Séries - Nouveautés</h2><div class="row" id="s_new"></div>
             <h2><i class="fas fa-fire"></i> Séries - Populaire</h2><div class="row" id="s_pop"></div>
@@ -143,7 +142,6 @@
             <h2><i class="fas fa-calendar-alt"></i> Séries - À venir</h2><div class="row" id="s_up"></div>
         </section>
 
-        <!-- SECTION ANIMES MODIFIÉE -->
         <section id="animeSection">
             <h2><i class="fas fa-dragon"></i> Animes - Nouveautés</h2><div class="row" id="a_new"></div>
             <h2><i class="fas fa-fire"></i> Animes - Populaire</h2><div class="row" id="a_pop"></div>
@@ -214,30 +212,31 @@
 </script>
 
 <script>
-// --- CODE JS MIS À JOUR POUR LES NOUVELLES SECTIONS ---
-const YT_KEYS = ["AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc", "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY"];
+// --- INSERTION DES 6 CLÉS API AVEC ROTATION ---
+const YT_KEYS = [
+    "AIzaSyCo4xWGX9xjFwCoGqum17qvCpr5liZtOq4",
+    "AIzaSyAc7d0U7_DcloYMLqeCdUUZD_M3ZLaEA7E",
+    "AIzaSyCTfzR9KdN2QKLA7SrJkdmCvFaTYVPIs24",
+    "AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc",
+    "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY",
+    "AIzaSyBEos5Lzr0WbleEdtP_Gi7kMHcxaL9hhR0"
+];
 let currentKeyIdx = 0, heroIdx = 0, shortsObserver;
 
 window.onload = () => {
     loadTV(); loadHero(); 
-    
-    // Chargement Films
     loadTMDB('f_new', 'movie', 'now_playing');
     loadTMDB('f_pop', 'movie', 'popular');
     loadTMDB('f_like', 'movie', 'top_rated');
     loadTMDB('f_trend', 'movie', 'trending');
-    loadTMDB('f_rate', 'movie', 'top_rated'); // Utilisé comme "Mieux notés"
+    loadTMDB('f_rate', 'movie', 'top_rated');
     loadTMDB('f_up', 'movie', 'upcoming');
-
-    // Chargement Séries
     loadTMDB('s_new', 'tv', 'airing_today');
     loadTMDB('s_pop', 'tv', 'popular');
     loadTMDB('s_like', 'tv', 'top_rated');
     loadTMDB('s_trend', 'tv', 'trending');
     loadTMDB('s_rate', 'tv', 'top_rated');
     loadTMDB('s_up', 'tv', 'on_the_air');
-
-    // Chargement Animes (Kitsu)
     loadKitsu('a_new', '-startDate');
     loadKitsu('a_pop', '-userCount');
     loadKitsu('a_like', '-favoritesCount');
@@ -266,14 +265,28 @@ function openInternal(url) {
     document.getElementById('shortsFeed').style.display = 'none';
 }
 
+// GESTIONNAIRE YOUTUBE AVEC ROTATION AUTOMATIQUE DES 6 CLÉS
 async function fetchYT(id, q, isShort) {
     try {
         const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=12&key=${YT_KEYS[currentKeyIdx]}`;
         const r = await fetch(url);
         const d = await r.json();
+        
+        // Si Erreur de quota (403), on change de clé
+        if(d.error && (d.error.code === 403 || d.error.errors[0].reason === 'quotaExceeded')) {
+            if(currentKeyIdx < YT_KEYS.length - 1) {
+                console.warn("Changement de clé API YouTube...");
+                currentKeyIdx++;
+                return fetchYT(id, q, isShort);
+            } else {
+                console.error("Toutes les clés API sont épuisées.");
+            }
+        }
+
         if(d.items) render(id, d.items.map(v => ({ id: v.id.videoId, t: v.snippet.title, img: v.snippet.thumbnails.high.url, source: 'yt' })), isShort);
-        else if(d.error && currentKeyIdx < YT_KEYS.length - 1) { currentKeyIdx++; fetchYT(id, q, isShort); }
-    } catch(e) {}
+    } catch(e) {
+        console.error("Erreur réseau YouTube");
+    }
 }
 
 async function fetchDM(id, q, isShort) {
@@ -340,13 +353,7 @@ function loadTV() {
 }
 
 async function loadTMDB(id, type, category) {
-    let url;
-    if(category === 'trending') {
-        url = `https://api.themoviedb.org/3/trending/${type}/week?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`;
-    } else {
-        url = `https://api.themoviedb.org/3/${type}/${category}?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`;
-    }
-    
+    let url = (category === 'trending') ? `https://api.themoviedb.org/3/trending/${type}/week?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR` : `https://api.themoviedb.org/3/${type}/${category}?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`;
     try {
         const r = await fetch(url);
         const d = await r.json();
@@ -362,11 +369,7 @@ async function loadHero() {
 }
 
 async function loadKitsu(id, sortType) {
-    let url;
-    if(sortType === 'trending') url = "https://kitsu.io/api/edge/trending/anime";
-    else if(sortType === 'upcoming') url = "https://kitsu.io/api/edge/anime?filter[status]=upcoming&page[limit]=12&sort=startDate";
-    else url = `https://kitsu.io/api/edge/anime?page[limit]=12&sort=${sortType}`;
-
+    let url = (sortType === 'trending') ? "https://kitsu.io/api/edge/trending/anime" : (sortType === 'upcoming') ? "https://kitsu.io/api/edge/anime?filter[status]=upcoming&page[limit]=12&sort=startDate" : `https://kitsu.io/api/edge/anime?page[limit]=12&sort=${sortType}`;
     try {
         const r = await fetch(url);
         const d = await r.json();
@@ -379,11 +382,3 @@ function setActive(el) { document.querySelectorAll('.nav-item').forEach(n => n.c
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
