@@ -334,14 +334,56 @@ function closePlayer() {
     document.getElementById('ifr').src='';
     document.getElementById('shortsFeed').innerHTML='';
 }
-
-
-
-
-
-
-
-
 function loadTV() {
     const tv = [{n:"TF1", f:"TF1.png"}, {n:"France 2", f:"France2.png"}, {n:"M6", f:"M6.png"}, {n:"Canal+ Sport", f:"Canal+ Sport.png"}, {n:"Canal+ Family", f:"Canal+ Family.png"}, {n:"Eurosport", f:"Eurosport.png"}, {n:"Nickelodeon", f:"Nickelodeon.png"}, {n:"Disney Channel", f:"DisneyChannel.png"}, {n:"SyFy", f:"SyFy.png"}, {n:"Warner TV", f:"WarnerTV.png"}, {n:"J-One", f:"J-One.png"}, {n:"Mangas", f:"Mangas.png"}];
-    document.getElementById('tvRow').innerHTML = tv.map(t => `<div class="card" onclick="openInternal('https://vavoo.to')"><span class="badge">LIVE</span><img src="images/${t.f}" onerror="this.src='https://via.placeholder.com/140x200/111/red?text=${t.n}'"><div class="card-info">${t.n}</div></div>`).jo
+    document.getElementById('tvRow').innerHTML = tv.map(t => `<div class="card" onclick="openInternal('https://vavoo.to')"><span class="badge">LIVE</span><img src="images/${t.f}" onerror="this.src='https://via.placeholder.com/140x200/111/red?text=${t.n}'"><div class="card-info">${t.n}</div></div>`).join('');
+}
+
+async function loadTMDB(id, type, category) {
+    let url;
+    if(category === 'trending') {
+        url = `https://api.themoviedb.org/3/trending/${type}/week?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`;
+    } else {
+        url = `https://api.themoviedb.org/3/${type}/${category}?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`;
+    }
+    
+    try {
+        const r = await fetch(url);
+        const d = await r.json();
+        document.getElementById(id).innerHTML = d.results.slice(0,12).map(m => `<div class="card" onclick="openInternal('https://www.themoviedb.org/${type}/${m.id}')"><img src="https://image.tmdb.org/t/p/w300${m.poster_path}"><div class="card-info">${m.title||m.name}</div></div>`).join('');
+    } catch(e) {}
+}
+
+async function loadHero() {
+    const r = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`);
+    const d = await r.json();
+    document.getElementById('heroRow').innerHTML = d.results.slice(0, 5).map(m => `<div class="hero-item"><img src="https://image.tmdb.org/t/p/original${m.backdrop_path}"><div class="hero-info"><div class="hero-title">${m.title}</div></div></div>`).join('');
+    setInterval(() => { heroIdx = (heroIdx + 1) % 5; document.getElementById('heroRow').style.transform = `translateX(-${heroIdx * 100}%)`; }, 5000);
+}
+
+async function loadKitsu(id, sortType) {
+    let url;
+    if(sortType === 'trending') url = "https://kitsu.io/api/edge/trending/anime";
+    else if(sortType === 'upcoming') url = "https://kitsu.io/api/edge/anime?filter[status]=upcoming&page[limit]=12&sort=startDate";
+    else url = `https://kitsu.io/api/edge/anime?page[limit]=12&sort=${sortType}`;
+
+    try {
+        const r = await fetch(url);
+        const d = await r.json();
+        document.getElementById(id).innerHTML = d.data.map(a => `<div class="card" onclick="openInternal('https://kitsu.io/anime/${a.id}')"><img src="${a.attributes.posterImage.medium}"><div class="card-info">${a.attributes.canonicalTitle}</div></div>`).join('');
+    } catch(e) {}
+}
+
+function jump(id) { window.scrollTo({top: document.getElementById(id).offsetTop - 160, behavior: 'smooth'}); }
+function setActive(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
