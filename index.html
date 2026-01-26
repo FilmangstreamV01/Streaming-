@@ -9,63 +9,42 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --red: #e50914; --prime-blue: #00a8e1; --black: #0a0a0a; --gray: #1a1a1a; --text: #ffffff; --radius: 10px; --dm-blue: #0062ff; }
+        :root { --red: #e50914; --black: #0a0a0a; --gray: #1a1a1a; --text: #ffffff; --radius: 10px; --dm-blue: #0062ff; }
         * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
         body { background: var(--black); color: var(--text); font-family: 'Montserrat', sans-serif; padding-top: 130px; overflow-x: hidden; }
 
-        /* --- DESIGN FUSION NETFLIX + PRIME VIDEO --- */
+        /* --- STYLE ECRAN DE CONNEXION --- */
         #authOverlay {
-            position: fixed; inset: 0; 
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.9) 100%), 
-                        url('https://assets.nflxext.com/ffe/siteui/vlv3/f841d4c7-10e1-40af-bcae-07a3f8dc141a/f6d7434e-d6de-4185-a6d4-c77a2d08737b/US-en-20220502-popsignuptwoweeks-perspective_alpha_website_medium.jpg');
-            background-size: cover; background-position: center;
+            position: fixed; inset: 0; background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
             z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 20px;
         }
         .auth-card {
-            background: rgba(0, 0, 0, 0.75); 
-            backdrop-filter: blur(15px); 
-            -webkit-backdrop-filter: blur(15px);
-            width: 100%; max-width: 420px; padding: 50px 40px;
-            border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);
-            text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+            background: rgba(26, 26, 26, 0.95); width: 100%; max-width: 400px; padding: 40px;
+            border-radius: 20px; border: 1px solid #333; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
         .auth-card h1 { 
-            color: var(--red); margin-bottom: 10px; font-weight: 900; font-size: 2rem;
-            text-shadow: 0 0 20px rgba(229, 9, 20, 0.4);
+            color: var(--red); 
+            margin-bottom: 20px; 
+            font-weight: 900; 
+            font-size: 1.6rem; 
+            width: 100%;
+            text-align: center;
         }
-        .auth-subtitle { color: #ccc; font-size: 0.9rem; margin-bottom: 30px; }
-        
-        .auth-input { 
-            width: 100%; background: #333; border: none; padding: 18px; border-radius: 8px; 
-            color: white; margin-bottom: 15px; outline: none; font-size: 1rem;
-            transition: background 0.3s, border-bottom 0.2s;
-            border-bottom: 2px solid transparent;
-        }
-        .auth-input:focus { background: #454545; border-bottom: 2px solid var(--prime-blue); }
-
-        .btn-main { 
-            width: 100%; padding: 16px; border-radius: 8px; border: none; font-weight: 700; 
-            cursor: pointer; background: var(--red); color: white; font-size: 1.1rem;
-            transition: transform 0.2s, background 0.3s;
-        }
-        .btn-main:hover { background: #ff0a16; transform: scale(1.02); }
-        
-        .divider { margin: 25px 0; color: #777; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
-
-        .btn-google { 
-            width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #555; font-weight: 700; 
-            cursor: pointer; background: transparent; color: white; display: flex; 
-            align-items: center; justify-content: center; gap: 12px; transition: 0.3s;
-        }
-        .btn-google:hover { background: rgba(255,255,255,0.1); border-color: white; }
+        .auth-input { width: 100%; background: #0a0a0a; border: 1px solid #333; padding: 15px; border-radius: 12px; color: white; margin-bottom: 15px; outline: none; }
+        .btn-main { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; background: var(--red); color: white; }
+        .btn-google { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; background: white; color: black; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
         
         #mainContent { display: none; }
-        /* --- FIN DESIGN FUSION --- */
+        /* --- FIN STYLE ECRAN --- */
 
         header { position: fixed; top: 0; width: 100%; background: #0a0a0a; z-index: 1000; border-bottom: 1px solid #222; }
         .top-bar { display: flex; align-items: center; padding: 10px 20px; gap: 15px; }
         .logo { font-size: 1.1rem; font-weight: 900; color: var(--red); text-transform: uppercase; cursor: pointer; }
         .search-box { position: relative; flex-grow: 1; display: flex; align-items: center; gap: 10px; }
+        
+        /* Style de la loupe */
+        .search-box i.fa-search { position: absolute; left: 12px; color: #888; font-size: 0.9rem; pointer-events: none; }
+
         #search { width: 100%; background: var(--gray); border: none; padding: 10px 15px 10px 35px; border-radius: 20px; color: white; outline: none; }
         
         .btn-auth { background: white; color: black; border: none; padding: 8px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
@@ -105,14 +84,10 @@
 <div id="authOverlay">
     <div class="auth-card">
         <h1>FILMANGSTREAM</h1>
-        <p class="auth-subtitle">Films, séries et animes en illimité.</p>
-        <input type="email" id="emailInput" class="auth-input" placeholder="Adresse e-mail">
-        <button class="btn-main" onclick="handleMailLogin()">Commencer</button>
-        
-        <div class="divider">ou</div>
-
+        <input type="email" id="emailInput" class="auth-input" placeholder="Votre e-mail">
+        <button class="btn-main" onclick="handleMailLogin()">Accéder au site</button>
         <button class="btn-google" onclick="loginWithGoogle()">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Continuer avec Google
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Continuer avec Google
         </button>
     </div>
 </div>
@@ -122,6 +97,7 @@
         <div class="top-bar">
             <div class="logo" onclick="location.reload()">FILMANGSTREAM</div>
             <div class="search-box">
+                <i class="fas fa-search"></i>
                 <input id="search" type="text" placeholder="Rechercher...">
                 <button class="btn-auth" id="loginBtn" onclick="logoutUser()">
                     <i class="fas fa-sign-out-alt"></i> Déconnexion
@@ -146,9 +122,37 @@
         <section id="dmShortsSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fab fa-dailymotion" style="color:var(--dm-blue)"></i> Dailymotion Shorts</h2><div class="row" id="dmShortsRow"></div></section>
         <section id="videoSection"><h2><i class="fas fa-play-circle"></i> Vidéos YouTube</h2><div class="row" id="videoRow"></div></section>
         <section id="dmVideoSection"><h2 style="border-left-color:var(--dm-blue)"><i class="fas fa-video"></i> Vidéos Dailymotion</h2><div class="row" id="dmVideoRow"></div></section>
-        <section id="filmSection"><h2><i class="fas fa-film"></i> Films Populaires</h2><div class="row" id="filmRow"></div></section>
-        <section id="seriesSection"><h2><i class="fas fa-video"></i> Séries TV</h2><div class="row" id="seriesRow"></div></section>
-        <section id="animeSection"><h2><i class="fas fa-dragon"></i> Animes & Mangas</h2><div class="row" id="animeRow"></div></section>
+        
+        <!-- SECTION FILMS MODIFIÉE -->
+        <section id="filmSection">
+            <h2><i class="fas fa-film"></i> Films - Nouveautés</h2><div class="row" id="f_new"></div>
+            <h2><i class="fas fa-fire"></i> Films - Populaire</h2><div class="row" id="f_pop"></div>
+            <h2><i class="fas fa-heart"></i> Films - Aimés</h2><div class="row" id="f_like"></div>
+            <h2><i class="fas fa-chart-line"></i> Films - Tendance</h2><div class="row" id="f_trend"></div>
+            <h2><i class="fas fa-star"></i> Films - Mieux notés</h2><div class="row" id="f_rate"></div>
+            <h2><i class="fas fa-calendar-alt"></i> Films - À venir</h2><div class="row" id="f_up"></div>
+        </section>
+
+        <!-- SECTION SÉRIES MODIFIÉE -->
+        <section id="seriesSection">
+            <h2><i class="fas fa-tv"></i> Séries - Nouveautés</h2><div class="row" id="s_new"></div>
+            <h2><i class="fas fa-fire"></i> Séries - Populaire</h2><div class="row" id="s_pop"></div>
+            <h2><i class="fas fa-heart"></i> Séries - Aimés</h2><div class="row" id="s_like"></div>
+            <h2><i class="fas fa-chart-line"></i> Séries - Tendance</h2><div class="row" id="s_trend"></div>
+            <h2><i class="fas fa-star"></i> Séries - Mieux notés</h2><div class="row" id="s_rate"></div>
+            <h2><i class="fas fa-calendar-alt"></i> Séries - À venir</h2><div class="row" id="s_up"></div>
+        </section>
+
+        <!-- SECTION ANIMES MODIFIÉE -->
+        <section id="animeSection">
+            <h2><i class="fas fa-dragon"></i> Animes - Nouveautés</h2><div class="row" id="a_new"></div>
+            <h2><i class="fas fa-fire"></i> Animes - Populaire</h2><div class="row" id="a_pop"></div>
+            <h2><i class="fas fa-heart"></i> Animes - Aimés</h2><div class="row" id="a_like"></div>
+            <h2><i class="fas fa-chart-line"></i> Animes - Tendance</h2><div class="row" id="a_trend"></div>
+            <h2><i class="fas fa-star"></i> Animes - Mieux notés</h2><div class="row" id="a_rate"></div>
+            <h2><i class="fas fa-calendar-alt"></i> Animes - À venir</h2><div class="row" id="a_up"></div>
+        </section>
+
         <section id="streamSection">
             <h2><i class="fas fa-layer-group"></i> Multi-Streaming</h2>
             <div class="row">
@@ -210,12 +214,37 @@
 </script>
 
 <script>
-// --- LE RESTE DU CODE POUR LE CONTENU EST IDENTIQUE ---
+// --- CODE JS MIS À JOUR POUR LES NOUVELLES SECTIONS ---
 const YT_KEYS = ["AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc", "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY"];
 let currentKeyIdx = 0, heroIdx = 0, shortsObserver;
 
 window.onload = () => {
-    loadTV(); loadHero(); loadTMDB('filmRow', 'movie'); loadTMDB('seriesRow', 'tv'); loadKitsu();
+    loadTV(); loadHero(); 
+    
+    // Chargement Films
+    loadTMDB('f_new', 'movie', 'now_playing');
+    loadTMDB('f_pop', 'movie', 'popular');
+    loadTMDB('f_like', 'movie', 'top_rated');
+    loadTMDB('f_trend', 'movie', 'trending');
+    loadTMDB('f_rate', 'movie', 'top_rated'); // Utilisé comme "Mieux notés"
+    loadTMDB('f_up', 'movie', 'upcoming');
+
+    // Chargement Séries
+    loadTMDB('s_new', 'tv', 'airing_today');
+    loadTMDB('s_pop', 'tv', 'popular');
+    loadTMDB('s_like', 'tv', 'top_rated');
+    loadTMDB('s_trend', 'tv', 'trending');
+    loadTMDB('s_rate', 'tv', 'top_rated');
+    loadTMDB('s_up', 'tv', 'on_the_air');
+
+    // Chargement Animes (Kitsu)
+    loadKitsu('a_new', '-startDate');
+    loadKitsu('a_pop', '-userCount');
+    loadKitsu('a_like', '-favoritesCount');
+    loadKitsu('a_trend', 'trending');
+    loadKitsu('a_rate', '-averageRating');
+    loadKitsu('a_up', 'upcoming');
+
     refreshContent('film complet 2025');
     document.getElementById('search').addEventListener('keypress', (e) => { if(e.key === 'Enter') refreshContent(e.target.value); });
 };
@@ -306,25 +335,13 @@ function closePlayer() {
     document.getElementById('shortsFeed').innerHTML='';
 }
 
+
+
+
+
+
+
+
 function loadTV() {
     const tv = [{n:"TF1", f:"TF1.png"}, {n:"France 2", f:"France2.png"}, {n:"M6", f:"M6.png"}, {n:"Canal+ Sport", f:"Canal+ Sport.png"}, {n:"Canal+ Family", f:"Canal+ Family.png"}, {n:"Eurosport", f:"Eurosport.png"}, {n:"Nickelodeon", f:"Nickelodeon.png"}, {n:"Disney Channel", f:"DisneyChannel.png"}, {n:"SyFy", f:"SyFy.png"}, {n:"Warner TV", f:"WarnerTV.png"}, {n:"J-One", f:"J-One.png"}, {n:"Mangas", f:"Mangas.png"}];
-    document.getElementById('tvRow').innerHTML = tv.map(t => `<div class="card" onclick="openInternal('https://vavoo.to')"><span class="badge">LIVE</span><img src="images/${t.f}" onerror="this.src='https://via.placeholder.com/140x200/111/red?text=${t.n}'"><div class="card-info">${t.n}</div></div>`).join('');
-}
-
-async function loadTMDB(id, type) {
-    const r = await fetch(`https://api.themoviedb.org/3/${type}/popular?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`);
-    const d = await r.json();
-    document.getElementById(id).innerHTML = d.results.slice(0,12).map(m => `<div class="card" onclick="openInternal('https://www.themoviedb.org/${type}/${m.id}')"><img src="https://image.tmdb.org/t/p/w300${m.poster_path}"><div class="card-info">${m.title||m.name}</div></div>`).join('');
-}
-
-async function loadHero() {
-    const r = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=1073e4d36ef71f912da093a5eb38f091&language=fr-FR`);
-    const d = await r.json();
-    document.getElementById('heroRow').innerHTML = d.results.slice(0, 5).map(m => `<div class="hero-item"><img src="https://image.tmdb.org/t/p/original${m.backdrop_path}"><div class="hero-info"><div class="hero-title">${m.title}</div></div></div>`).join('');
-    setInterval(() => { heroIdx = (heroIdx + 1) % 5; document.getElementById('heroRow').style.transform = `translateX(-${heroIdx * 100}%)`; }, 5000);
-}
-
-async function loadKitsu() {
-    const r = await fetch("https://kitsu.io/api/edge/anime?page[limit]=12&sort=-favoritesCount");
-    const d = await r.json();
-    document.getElementById('animeRow').innerHTML = d.data.map(a => `<div class="card" onclick="openInternal('https://kitsu.io/anime/${a.id}')"><img src="${a.attributes.po
+    document.getElementById('tvRow').innerHTML = tv.map(t => `<div class="card" onclick="openInternal('https://vavoo.to')"><span class="badge">LIVE</span><img src="images/${t.f}" onerror="this.src='https://via.placeholder.com/140x200/111/red?text=${t.n}'"><div class="card-info">${t.n}</div></div>`).jo
