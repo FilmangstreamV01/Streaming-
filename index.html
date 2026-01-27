@@ -19,6 +19,7 @@ select,button{background:#222;color:#fff;border:none;border-radius:10px;padding:
 #playerBox{flex:1; position:relative;}
 #playerBox iframe{position:absolute; inset:0; width:100%; height:100%; border:none;}
 .badge{font-size:11px;color:#aaa;}
+#errorMsg{color:red;text-align:center;padding:10px;}
 </style>
 </head>
 <body>
@@ -51,6 +52,7 @@ select,button{background:#222;color:#fff;border:none;border-radius:10px;padding:
     <span class="badge" id="sourceLabel"></span>
   </div>
   <div id="playerBox"></div>
+  <div id="errorMsg"></div>
 </div>
 
 <script>
@@ -61,8 +63,9 @@ const IMG = "https://image.tmdb.org/t/p/w500";
 let current = {};
 let sourceIndex = 0;
 let langIndex = 0;
+const DEFAULT_LANGS = ["french","english","spanish","german"]; 
 
-// Multi-sources (NextGen APIs)
+// Multi-sources NextGen
 const SOURCES = {
   movie: [
     id => `https://player.embed-api.stream/?id=${id}&type=movie`,
@@ -77,9 +80,6 @@ const SOURCES = {
     (id,s,e) => `https://player.vidplus.to/embed/tv/${id}/${s}/${e}`
   ]
 };
-
-// Langues audio possibles (si disponibles)
-const LANGS = ["original","french","english","spanish","german"]; // tu peux ajouter d'autres
 
 async function get(url){ return (await fetch(url)).json(); }
 
@@ -98,19 +98,22 @@ async function loadHome(){
   (await get(`${API}/discover/tv?api_key=${KEY}&with_genres=16&language=fr`)).results.forEach(x=>card(anime,x,"tv"));
 }
 
+// Ouvrir un contenu
 async function openContent(type,id){
   playerUI.style.display="flex";
   playerBox.innerHTML="";
   season.style.display="none";
   episode.style.display="none";
   lang.style.display="inline-block";
-  langIndex = 0;
+  document.getElementById('errorMsg').textContent="";
   sourceIndex = 0;
-  current = {type,id,lang:LANGS[0]};
+  langIndex = 0;
 
-  // Remplir menu langues
+  current = {type,id,season:1,episode:1,lang:DEFAULT_LANGS[0],availableLangs:DEFAULT_LANGS};
+
+  // Menu langue
   lang.innerHTML = "";
-  LANGS.forEach(l => {lang.innerHTML += `<option value="${l}">${l.toUpperCase()}</option>`});
+  current.availableLangs.forEach(l => { lang.innerHTML += `<option value="${l}">${l.toUpperCase()}</option>` });
 
   if(type==="movie"){ play(); updateSourceLabel(); }
   else {
@@ -124,7 +127,7 @@ async function openContent(type,id){
   }
 }
 
-// Changement de saison
+// Changement de saison/épisode/langue
 season.onchange = async () => {
   current.season = season.value;
   const e = await get(`${API}/tv/${current.id}/season/${current.season}?api_key=${KEY}&language=fr`);
@@ -135,54 +138,57 @@ season.onchange = async () => {
   episode.style.display="block";
 }
 
-// Changement d'épisode
-episode.onchange = () => {
-  current.episode = episode.value;
-  play(); updateSourceLabel();
-}
+episode.onchange = () => { current.episode = episode.value; play(); updateSourceLabel(); }
+lang.onchange = () => { current.lang = lang.value; play(); updateSourceLabel(); }
 
-// Changement de langue
-lang.onchange = () => {
-  current.lang = lang.value;
-  play(); updateSourceLabel();
-}
-
-// Lecture
+// Lecture avec fallback automatique
 function play(){
   const iframe = document.createElement("iframe");
   iframe.allow = "autoplay; fullscreen";
   iframe.allowFullscreen = true;
 
-  let src;
-  if(current.type==="movie") src = SOURCES.movie[sourceIndex](current.id) + `&lang=${current.lang}`;
-  else src = SOURCES.tv[sourceIndex](current.id,current.season,current.episode) + `&lang=${current.lang}`;
+  const src = current.type==="movie" 
+      ? SOURCES.movie[sourceIndex](current.id)+`&lang=${current.lang}`
+      : SOURCES.tv[sourceIndex](current.id,current.season,current.episode)+`&lang=${current.lang}`;
 
   iframe.src = src;
   playerBox.innerHTML = "";
+  document.getElementById('errorMsg').textContent = "";
   playerBox.appendChild(iframe);
+
+  // Si l'iframe échoue, passer à la source suivante
+  iframe.onerror = () => {
+    sourceIndex++;
+    const max = current.type==="movie"?SOURCES.movie.length:SOURCES.tv.length;
+    if(sourceIndex < max){
+      play(); // relancer avec la source suivante
+    } else {
+      document.getElementById('errorMsg').textContent = "⚠️ Toutes les sources ont échoué.";
+    }
+  }
+}
+
+// Changer manuellement de source
+function switchSource(){
+  sourceIndex++;
+  const max = current.type==="movie"?SOURCES.movie.length:SOURCES.tv.length;
+  if(sourceIndex >= max) sourceIndex = 0;
+  play();
   updateSourceLabel();
 }
 
-// Changer de source
-function switchSource(){
-  sourceIndex++;
-  if(current.type==="movie" && sourceIndex>=SOURCES.movie.length) sourceIndex=0;
-  if(current.type==="tv" && sourceIndex>=SOURCES.tv.length) sourceIndex=0;
-  play();
-}
-
 function updateSourceLabel(){
-  const sources = current.type==="movie" ? SOURCES.movie : SOURCES.tv;
+  const sources = current.type==="movie"?SOURCES.movie:SOURCES.tv;
   sourceLabel.textContent = `Source: ${sourceIndex+1}/${sources.length} | Lang: ${current.lang.toUpperCase()}`;
 }
 
 function closePlayer(){
   playerUI.style.display="none";
   playerBox.innerHTML="";
+  document.getElementById('errorMsg').textContent = "";
 }
 
 loadHome();
 </script>
-
 </body>
 </html>
