@@ -3,48 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FilmangStream+</title>
-
+<title>FilmangStream NextGen</title>
 <style>
-:root{
-  --red:#e50914;
-  --bg:#0b0b0b;
-  --card:#161616;
-  --text:#fff;
-}
-body{margin:0;font-family:system-ui;background:var(--bg);color:var(--text);}
-header{padding:14px;font-size:22px;font-weight:700;text-align:center;background:linear-gradient(90deg,#b00610,#e50914);}
-.section{padding:14px;}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;}
-.card{background:var(--card);border-radius:14px;overflow:hidden;cursor:pointer;transition:.2s;}
-.card:hover{transform:scale(1.05);}
-.card img{width:100%;display:block;}
-.card p{margin:6px;font-size:13px;text-align:center;}
-#playerUI{position:fixed;inset:0;background:#000;display:none;flex-direction:column;z-index:9999;}
-#topbar{display:flex;gap:8px;padding:10px;align-items:center;background:linear-gradient(#000,#000a);}
-select,button,input{background:#222;color:#fff;border:none;border-radius:10px;padding:8px 10px;}
-#playerBox{flex:1;position:relative;}
-#playerBox iframe{position:absolute;inset:0;width:100%;height:100%;border:none;}
-#servers{display:flex;gap:6px;margin-left:10px;}
-#audioBadge{margin-left:auto;font-size:12px;color:#aaa;}
-.search{padding:10px;}
+body {margin:0; background:#0b0b0b; color:#fff; font-family:system-ui;}
+header {padding:14px; font-size:22px; text-align:center; background:#e50914;}
+.section {padding:14px;}
+.grid {display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px;}
+.card {background:#161616; border-radius:14px; overflow:hidden; transition:.2s; cursor:pointer;}
+.card:active {transform:scale(.97);}
+.card img {width:100%;}
+.card p {margin:6px; font-size:13px; text-align:center;}
+#playerUI {position:fixed; inset:0; background:#000; display:none; flex-direction:column; z-index:9999;}
+#topbar {display:flex; gap:8px; padding:10px; background:linear-gradient(#000,#000a); align-items:center;}
+select,button{background:#222;color:#fff;border:none;border-radius:10px;padding:8px 10px;font-size:14px;}
+#playerBox{flex:1; position:relative;}
+#playerBox iframe{position:absolute; inset:0; width:100%; height:100%; border:none;}
+.badge{font-size:11px;color:#aaa;}
 </style>
 </head>
 <body>
 
-<header>🎬 FilmangStream+</header>
-
-<div class="search">
-  <input id="search" placeholder="🔍 Rechercher un film, une série…" style="width:100%">
-</div>
+<header>🎬 FilmangStream NextGen</header>
 
 <div class="section">
-<h3>🔥 Films populaires</h3>
+<h3>🎬 Films</h3>
 <div id="movies" class="grid"></div>
 </div>
 
 <div class="section">
-<h3>📺 Séries populaires</h3>
+<h3>📺 Séries</h3>
 <div id="series" class="grid"></div>
 </div>
 
@@ -59,160 +46,143 @@ select,button,input{background:#222;color:#fff;border:none;border-radius:10px;pa
     <button onclick="closePlayer()">⬅</button>
     <select id="season" style="display:none"></select>
     <select id="episode" style="display:none"></select>
-    <div id="servers"></div>
-    <span id="audioBadge">🎧 Audio selon la source</span>
+    <select id="lang"></select>
+    <button onclick="switchSource()">🔁 Source</button>
+    <span class="badge" id="sourceLabel"></span>
   </div>
   <div id="playerBox"></div>
 </div>
 
 <script>
-/* CONFIG */
-const TMDB="https://api.themoviedb.org/3";
-const KEY="1073e4d36ef71f912da093a5eb38f091";
-const IMG="https://image.tmdb.org/t/p/w500";
+const API = "https://api.themoviedb.org/3";
+const KEY = "1073e4d36ef71f912da093a5eb38f091";
+const IMG = "https://image.tmdb.org/t/p/w500";
 
-let current={}, sourceIndex=0;
+let current = {};
+let sourceIndex = 0;
+let langIndex = 0;
 
-/* MULTI-SOURCES */
+// Multi-sources (NextGen APIs)
 const SOURCES = {
   movie: [
-    id => `https://player.vidplus.to/embed/movie/${id}`,
-    id => `https://hnembed.cc/embed/movie/${id}`,
-    id => `https://vidsrc.to/embed/movie/${id}`,
-    id => `https://letsembed.cc/embed/movie/${id}`
+    id => `https://player.embed-api.stream/?id=${id}&type=movie`,
+    id => `https://letsembed.cc/embed/movie/?id=${id}`,
+    id => `https://moviesapi.pro/movie/${id}`,
+    id => `https://player.vidplus.to/embed/movie/${id}`
   ],
   tv: [
-    (id,s,e) => `https://player.vidplus.to/embed/tv/${id}/${s}/${e}`,
-    (id,s,e) => `https://hnembed.cc/embed/tv/${id}/${s}/${e}`,
-    (id,s,e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}`
+    (id,s,e) => `https://player.embed-api.stream/?id=${id}&s=${s}&e=${e}`,
+    (id,s,e) => `https://letsembed.cc/embed/tv/?id=${id}/${s}/${e}`,
+    (id,s,e) => `https://moviesapi.pro/tv/${id}/${s}/${e}`,
+    (id,s,e) => `https://player.vidplus.to/embed/tv/${id}/${s}/${e}`
   ]
 };
 
-const $=id=>document.getElementById(id);
-async function get(u){return(await fetch(u)).json();}
+// Langues audio possibles (si disponibles)
+const LANGS = ["original","french","english","spanish","german"]; // tu peux ajouter d'autres
+
+async function get(url){ return (await fetch(url)).json(); }
 
 function card(container,item,type){
   if(!item.poster_path) return;
   const d=document.createElement("div");
   d.className="card";
-  d.innerHTML=`<img src="${IMG+item.poster_path}"><p>${item.title||item.name}</p>`;
-  d.onclick=()=>openContent(type,item.id);
+  d.innerHTML = `<img src="${IMG+item.poster_path}"><p>${item.title||item.name}</p>`;
+  d.onclick = () => openContent(type,item.id);
   container.appendChild(d);
 }
 
 async function loadHome(){
-  (await get(`${TMDB}/movie/popular?api_key=${KEY}&language=fr`)).results.forEach(x=>card(movies,x,"movie"));
-  (await get(`${TMDB}/tv/popular?api_key=${KEY}&language=fr`)).results.forEach(x=>card(series,x,"tv"));
-  (await get(`${TMDB}/discover/tv?api_key=${KEY}&with_genres=16&language=fr`)).results.forEach(x=>card(anime,x,"tv"));
+  (await get(`${API}/movie/popular?api_key=${KEY}&language=fr`)).results.forEach(x=>card(movies,x,"movie"));
+  (await get(`${API}/tv/popular?api_key=${KEY}&language=fr`)).results.forEach(x=>card(series,x,"tv"));
+  (await get(`${API}/discover/tv?api_key=${KEY}&with_genres=16&language=fr`)).results.forEach(x=>card(anime,x,"tv"));
 }
 
-/* RECHERCHE */
-search.oninput=async()=>{
-  const q=search.value.trim();
-  if(q.length<3) return;
-  movies.innerHTML=series.innerHTML=anime.innerHTML="";
-  const r=await get(`${TMDB}/search/multi?api_key=${KEY}&query=${q}&language=fr`);
-  r.results.forEach(x=>{
-    if(x.media_type==="movie") card(movies,x,"movie");
-    if(x.media_type==="tv") card(series,x,"tv");
-  });
-};
-
-/* OPEN CONTENT */
 async function openContent(type,id){
   playerUI.style.display="flex";
   playerBox.innerHTML="";
   season.style.display="none";
   episode.style.display="none";
-  current={type,id};
-  loadBestSource();
-  if(type==="movie"){play();}
-  else{
-    const tv=await get(`${TMDB}/tv/${id}?api_key=${KEY}&language=fr`);
-    season.innerHTML="";
+  lang.style.display="inline-block";
+  langIndex = 0;
+  sourceIndex = 0;
+  current = {type,id,lang:LANGS[0]};
+
+  // Remplir menu langues
+  lang.innerHTML = "";
+  LANGS.forEach(l => {lang.innerHTML += `<option value="${l}">${l.toUpperCase()}</option>`});
+
+  if(type==="movie"){ play(); updateSourceLabel(); }
+  else {
+    const tv = await get(`${API}/tv/${id}?api_key=${KEY}&language=fr`);
+    season.innerHTML = "<option>Saison</option>";
     tv.seasons.forEach(s=>{
-      if(s.episode_count>0) season.innerHTML+=`<option value="${s.season_number}">${s.season_number===0?"Spéciaux":"Saison "+s.season_number}</option>`;
+      if(s.season_number>0)
+        season.innerHTML += `<option value="${s.season_number}">Saison ${s.season_number}</option>`;
     });
     season.style.display="block";
-    season.onchange();
   }
 }
 
-/* SEASON / EPISODE */
-season.onchange=async()=>{
-  current.season=season.value;
-  const s=await get(`${TMDB}/tv/${current.id}/season/${current.season}?api_key=${KEY}&language=fr`);
-  episode.innerHTML="";
-  s.episodes.forEach(e=>episode.innerHTML+=`<option value="${e.episode_number}">Épisode ${e.episode_number}</option>`);
+// Changement de saison
+season.onchange = async () => {
+  current.season = season.value;
+  const e = await get(`${API}/tv/${current.id}/season/${current.season}?api_key=${KEY}&language=fr`);
+  episode.innerHTML="<option>Épisode</option>";
+  e.episodes.forEach(ep=>{
+    episode.innerHTML += `<option value="${ep.episode_number}">Épisode ${ep.episode_number}</option>`;
+  });
   episode.style.display="block";
-  episode.onchange();
-  episode.value=1;
-};
-
-episode.onchange=()=>play();
-
-/* PLAY / SWITCH SOURCE / SERVERS */
-function play(){
-  const iframe=document.createElement("iframe");
-  iframe.allow="autoplay; fullscreen";
-  iframe.allowFullscreen=true;
-
-  let src=current.type==="movie" ? SOURCES.movie[sourceIndex](current.id) : SOURCES.tv[sourceIndex](current.id,current.season,current.episode);
-
-  iframe.src=src;
-
-  iframe.onerror=()=>{switchSource(true);} // AUTO SWITCH IF ERROR
-  playerBox.innerHTML="";
-  playerBox.appendChild(iframe);
-  updateSourceUI();
 }
 
-function switchSource(auto=false){
+// Changement d'épisode
+episode.onchange = () => {
+  current.episode = episode.value;
+  play(); updateSourceLabel();
+}
+
+// Changement de langue
+lang.onchange = () => {
+  current.lang = lang.value;
+  play(); updateSourceLabel();
+}
+
+// Lecture
+function play(){
+  const iframe = document.createElement("iframe");
+  iframe.allow = "autoplay; fullscreen";
+  iframe.allowFullscreen = true;
+
+  let src;
+  if(current.type==="movie") src = SOURCES.movie[sourceIndex](current.id) + `&lang=${current.lang}`;
+  else src = SOURCES.tv[sourceIndex](current.id,current.season,current.episode) + `&lang=${current.lang}`;
+
+  iframe.src = src;
+  playerBox.innerHTML = "";
+  playerBox.appendChild(iframe);
+  updateSourceLabel();
+}
+
+// Changer de source
+function switchSource(){
   sourceIndex++;
-  const max=current.type==="movie"?SOURCES.movie.length:SOURCES.tv.length;
-  if(sourceIndex>=max){
-    if(auto) return;
-    sourceIndex=0;
-  }
-  if(!auto) saveBestSource();
+  if(current.type==="movie" && sourceIndex>=SOURCES.movie.length) sourceIndex=0;
+  if(current.type==="tv" && sourceIndex>=SOURCES.tv.length) sourceIndex=0;
   play();
 }
 
-/* SERVERS UI & AUDIO BADGE */
-function updateSourceUI(){
-  const list=current.type==="movie"?SOURCES.movie:SOURCES.tv;
-  servers.innerHTML="";
-  list.forEach((_,i)=>{
-    const b=document.createElement("button");
-    b.textContent="Serveur "+(i+1);
-    if(i===sourceIndex) b.style.background="#e50914";
-    b.onclick=()=>{
-      sourceIndex=i;
-      saveBestSource();
-      play();
-    };
-    servers.appendChild(b);
-  });
-  audioBadge.textContent="🎧 Audio selon la source (changer si besoin)";
+function updateSourceLabel(){
+  const sources = current.type==="movie" ? SOURCES.movie : SOURCES.tv;
+  sourceLabel.textContent = `Source: ${sourceIndex+1}/${sources.length} | Lang: ${current.lang.toUpperCase()}`;
 }
 
-/* BEST SOURCE LOCALSTORAGE */
-function saveBestSource(){
-  localStorage.setItem("bestSource_"+current.type,sourceIndex);
-}
-function loadBestSource(){
-  const s=localStorage.getItem("bestSource_"+current.type);
-  if(s!==null) sourceIndex=parseInt(s);
-}
-
-/* CLOSE PLAYER */
 function closePlayer(){
   playerUI.style.display="none";
   playerBox.innerHTML="";
 }
 
-/* INIT */
 loadHome();
 </script>
+
 </body>
 </html>
