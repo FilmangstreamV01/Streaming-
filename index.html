@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FilmangStream NextGen VF/VO</title>
+<title>FilmangStream NextGen VF prioritaire</title>
 <style>
 body {margin:0; background:#0b0b0b; color:#fff; font-family:system-ui;}
 header {padding:14px; font-size:22px; text-align:center; background:#e50914;}
@@ -24,7 +24,7 @@ select,button{background:#222;color:#fff;border:none;border-radius:10px;padding:
 </head>
 <body>
 
-<header>🎬 FilmangStream NextGen VF/VO</header>
+<header>🎬 FilmangStream NextGen</header>
 
 <div class="section">
 <h3>🎬 Films</h3>
@@ -63,17 +63,21 @@ const IMG = "https://image.tmdb.org/t/p/w500";
 let current = {};
 let sourceIndex = 0;
 
-// Multi-sources NextGen
+// Ordre de priorité des sources NextGen
 const SOURCES = {
   movie: [
-    id => `https://player.embed-api.stream/?id=${id}`,
     id => `https://moviesapi.pro/movie/${id}`,
-    id => `https://player.vidplus.to/embed/movie/${id}`
+    id => `https://letsembed.cc/embed/movie/?id=${id}`,
+    id => `https://player.vidplus.to/embed/movie/${id}`,
+    id => `https://streamsrc.cc/embed/movie/${id}`,
+    id => `https://player.autoembed.cc/embed/movie/${id}`
   ],
   tv: [
-    (id,s,e) => `https://player.embed-api.stream/?id=${id}&s=${s}&e=${e}`,
     (id,s,e) => `https://moviesapi.pro/tv/${id}/${s}/${e}`,
-    (id,s,e) => `https://player.vidplus.to/embed/tv/${id}&s=${s}&e=${e}`
+    (id,s,e) => `https://letsembed.cc/embed/tv/?id=${id}/${s}/${e}`,
+    (id,s,e) => `https://player.vidplus.to/embed/tv/${id}/${s}/${e}`,
+    (id,s,e) => `https://streamsrc.cc/embed/tv/${id}/${s}/${e}`,
+    (id,s,e) => `https://player.autoembed.cc/embed/tv/${id}/${s}/${e}`
   ]
 };
 
@@ -104,11 +108,18 @@ async function openContent(type,id){
   document.getElementById('errorMsg').textContent = "";
   sourceIndex = 0;
 
-  current = {type,id,season:1,episode:1,lang:"french",availableLangs:["french","english"]};
+  // On va chercher les langues disponibles
+  const langs = await fetchAvailableLangs(type,id);
+  current = {
+    type,id,
+    season:1,
+    episode:1,
+    availableLangs:langs.length ? langs : ["VF","VO"]
+  };
 
-  // Menu langue dynamique basé sur API
-  const audioData = await fetchAvailableAudio(type,id);
-  current.availableLangs = audioData.length>0 ? audioData : ["french","english"];
+  // VF prioritaire si dispo
+  current.lang = current.availableLangs.includes("VF") ? "VF" : current.availableLangs[0];
+
   populateLangMenu();
 
   if(type==="movie"){ play(); updateSourceLabel(); }
@@ -123,29 +134,25 @@ async function openContent(type,id){
   }
 }
 
-// Fetch pistes audio disponibles (simulation, adapter selon API)
-async function fetchAvailableAudio(type,id){
+// Fetch langues disponibles (simulation, adapter selon API)
+async function fetchAvailableLangs(type,id){
   try{
-    // Exemple endpoint MoviesAPI
     const url = type==="movie"
       ? `https://moviesapi.pro/api/movie/${id}/audio`
       : `https://moviesapi.pro/api/tv/${id}/season/1/episode/1/audio`;
     const res = await fetch(url);
     const data = await res.json();
-    if(data && data.audio && data.audio.length>0){
-      return data.audio.map(a => a.language.toLowerCase());
-    }
+    if(data && data.audio) return data.audio.map(a=>a.language.toUpperCase());
     return [];
   }catch(e){ return []; }
 }
 
 function populateLangMenu(){
   lang.innerHTML = "";
-  current.availableLangs.forEach(l => { lang.innerHTML += `<option value="${l}">${l.toUpperCase()}</option>`; });
-  current.lang = current.availableLangs[0];
+  current.availableLangs.forEach(l => { lang.innerHTML += `<option value="${l}">${l}</option>`; });
 }
 
-// Changement de saison/épisode/langue
+// Gestion saisons/épisodes/langue
 season.onchange = async () => {
   current.season = season.value;
   const e = await get(`${API}/tv/${current.id}/season/${current.season}?api_key=${KEY}&language=fr`);
@@ -159,7 +166,7 @@ season.onchange = async () => {
 episode.onchange = () => { current.episode = episode.value; play(); updateSourceLabel(); }
 lang.onchange = () => { current.lang = lang.value; play(); updateSourceLabel(); }
 
-// Lecture avec fallback automatique et langue exacte
+// Lecture avec fallback automatique
 function play(){
   const iframe = document.createElement("iframe");
   iframe.allow = "autoplay; fullscreen";
@@ -167,13 +174,14 @@ function play(){
 
   let src;
   if(current.type==="movie")
-    src = SOURCES.movie[sourceIndex](current.id)+`?audio=${current.lang}`;
+    src = SOURCES.movie[sourceIndex](current.id) + `?audio=${current.lang.toLowerCase()}`;
   else
-    src = SOURCES.tv[sourceIndex](current.id,current.season,current.episode)+`?audio=${current.lang}`;
+    src = SOURCES.tv[sourceIndex](current.id,current.season,current.episode) + `?audio=${current.lang.toLowerCase()}`;
 
   playerBox.innerHTML = "";
   document.getElementById('errorMsg').textContent = "";
   playerBox.appendChild(iframe);
+  iframe.src = src;
 
   iframe.onerror = () => {
     sourceIndex++;
@@ -183,7 +191,6 @@ function play(){
   }
 }
 
-// Changer source manuellement
 function switchSource(){
   sourceIndex++;
   const max = current.type==="movie"?SOURCES.movie.length:SOURCES.tv.length;
@@ -194,7 +201,7 @@ function switchSource(){
 
 function updateSourceLabel(){
   const sources = current.type==="movie"?SOURCES.movie:SOURCES.tv;
-  sourceLabel.textContent = `Source: ${sourceIndex+1}/${sources.length} | Lang: ${current.lang.toUpperCase()}`;
+  sourceLabel.textContent = `Source: ${sourceIndex+1}/${sources.length} | Lang: ${current.lang}`;
 }
 
 function closePlayer(){
