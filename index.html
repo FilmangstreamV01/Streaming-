@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>FilmangStream</title>
 
 <style>
@@ -13,78 +13,56 @@
   --text:#fff;
 }
 *{box-sizing:border-box}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:system-ui,-apple-system,Segoe UI,Roboto;
-}
-header{
-  padding:16px;
-  text-align:center;
-  font-size:24px;
-  font-weight:800;
-  background:var(--red);
-}
-.section{padding:16px}
-.section h2{margin:0 0 12px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui}
+header{background:var(--red);padding:14px;font-size:22px;text-align:center;font-weight:800}
 
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
-  gap:14px;
+input{
+  width:100%;padding:10px;border:none;border-radius:8px;
+  background:#222;color:#fff;font-size:16px
 }
+
+.section{padding:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
 
 .card{
   background:var(--card);
   border-radius:12px;
   overflow:hidden;
   cursor:pointer;
-  transition:.25s;
+  transition:.2s
 }
 .card:hover{transform:scale(1.05)}
-.card img{width:100%;display:block}
-.card p{
-  margin:6px;
-  font-size:14px;
-  text-align:center;
-}
+.card img{width:100%}
+.card p{margin:6px;font-size:13px;text-align:center}
 
 /* PLAYER */
 #playerUI{
-  position:fixed;
-  inset:0;
-  background:#000;
-  display:none;
-  flex-direction:column;
-  z-index:9999;
+  position:fixed;inset:0;background:#000;
+  display:none;flex-direction:column;z-index:9999
 }
 #topbar{
-  display:flex;
-  gap:8px;
-  padding:10px;
-  background:linear-gradient(#000,#000a);
+  display:flex;gap:8px;padding:10px;background:#000c
 }
 button,select{
-  background:#222;
-  color:#fff;
-  border:none;
-  border-radius:8px;
-  padding:6px 10px;
-  font-size:14px;
+  background:#222;color:#fff;border:none;
+  border-radius:8px;padding:6px 10px
 }
 button.primary{background:var(--red)}
-#playerBox{
-  flex:1;
-  position:relative;
+
+#content{
+  flex:1;display:flex;gap:10px;padding:10px
 }
-#playerBox iframe{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  border:none;
+#playerBox{flex:3;position:relative}
+#playerBox iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
+
+#playlist{
+  flex:1;overflow-y:auto
 }
+#playlist .ep{
+  padding:8px;border-bottom:1px solid #222;
+  cursor:pointer;font-size:13px
+}
+#playlist .ep.active{background:#222;color:var(--red)}
 </style>
 </head>
 
@@ -93,17 +71,21 @@ button.primary{background:var(--red)}
 <header>🎬 FilmangStream</header>
 
 <div class="section">
-  <h2>🎬 Films</h2>
+  <input id="search" placeholder="🔍 Rechercher un film, une série, un anime…">
+</div>
+
+<div class="section">
+  <h3>🎬 Films</h3>
   <div id="movies" class="grid"></div>
 </div>
 
 <div class="section">
-  <h2>📺 Séries</h2>
+  <h3>📺 Séries</h3>
   <div id="series" class="grid"></div>
 </div>
 
 <div class="section">
-  <h2>🍥 Anime</h2>
+  <h3>🍥 Anime</h3>
   <div id="anime" class="grid"></div>
 </div>
 
@@ -111,135 +93,143 @@ button.primary{background:var(--red)}
 <div id="playerUI">
   <div id="topbar">
     <button onclick="closePlayer()">⬅</button>
-
     <select id="season" style="display:none"></select>
-    <select id="episode" style="display:none"></select>
-
-    <select id="lang">
-      <option value="fr">VF</option>
-      <option value="en">VO</option>
-    </select>
-
-    <button class="primary" onclick="reloadPlayer()">🔄</button>
+    <button class="primary" onclick="reload()">🔄</button>
   </div>
-  <div id="playerBox"></div>
+
+  <div id="content">
+    <div id="playerBox"></div>
+    <div id="playlist"></div>
+  </div>
 </div>
 
 <script>
-/* ================= CONFIG ================= */
-const TMDB_KEY = "1073e4d36ef71f912da093a5eb38f091";
-const TMDB = "https://api.themoviedb.org/3";
-const IMG = "https://image.tmdb.org/t/p/w500";
-
-/* VidAPI embeds */
-const VIDAPI = {
-  movie: id => `https://vidapi.xyz/embed/movie/${id}`,
-  tv: (id,s,e) => `https://vidapi.xyz/embed/tv/${id}/${s}/${e}`
+/* CONFIG */
+const TMDB_KEY="1073e4d36ef71f912da093a5eb38f091";
+const TMDB="https://api.themoviedb.org/3";
+const IMG="https://image.tmdb.org/t/p/w500";
+const VIDAPI={
+  movie:id=>`https://vidapi.xyz/embed/movie/${id}`,
+  tv:(id,s,e)=>`https://vidapi.xyz/embed/tv/${id}/${s}/${e}`
 };
 
-let current = {};
-const movies = document.getElementById("movies");
-const series = document.getElementById("series");
-const anime  = document.getElementById("anime");
+let current={}, episodes=[];
 
-const playerUI = document.getElementById("playerUI");
-const playerBox = document.getElementById("playerBox");
-const seasonSel = document.getElementById("season");
-const episodeSel = document.getElementById("episode");
+/* UTILS */
+const $=id=>document.getElementById(id);
+const get=u=>fetch(u).then(r=>r.json());
 
-/* ================= UTILS ================= */
-const get = u => fetch(u).then(r=>r.json());
-
-function makeCard(container,item,type){
-  if(!item.poster_path) return;
+function card(c,i,t){
+  if(!i.poster_path)return;
   const d=document.createElement("div");
   d.className="card";
-  d.innerHTML=`
-    <img src="${IMG+item.poster_path}">
-    <p>${item.title||item.name}</p>
-  `;
-  d.onclick=()=>openContent(type,item.id);
-  container.appendChild(d);
+  d.innerHTML=`<img src="${IMG+i.poster_path}"><p>${i.title||i.name}</p>`;
+  d.onclick=()=>openContent(t,i.id);
+  c.appendChild(d);
 }
 
-/* ================= LOAD HOME ================= */
-async function loadHome(){
-  (await get(`${TMDB}/movie/popular?api_key=${TMDB_KEY}&language=fr`))
-    .results.forEach(x=>makeCard(movies,x,"movie"));
-
-  (await get(`${TMDB}/tv/popular?api_key=${TMDB_KEY}&language=fr`))
-    .results.forEach(x=>makeCard(series,x,"tv"));
-
-  (await get(`${TMDB}/discover/tv?api_key=${TMDB_KEY}&with_genres=16&language=fr`))
-    .results.forEach(x=>makeCard(anime,x,"tv"));
+/* LOAD HOME */
+async function load(){
+  cardLoad("movie/popular","movies","movie");
+  cardLoad("tv/popular","series","tv");
+  cardLoad("discover/tv?with_genres=16","anime","tv");
+}
+async function cardLoad(path,el,type){
+  const r=await get(`${TMDB}/${path}&api_key=${TMDB_KEY}&language=fr`);
+  r.results.forEach(x=>card($(el),x,type));
 }
 
-/* ================= PLAYER ================= */
+/* SEARCH */
+$("search").oninput=async e=>{
+  const q=e.target.value;
+  if(q.length<3)return;
+  ["movies","series","anime"].forEach(id=>$(id).innerHTML="");
+  const r=await get(`${TMDB}/search/multi?query=${q}&api_key=${TMDB_KEY}&language=fr`);
+  r.results.forEach(x=>{
+    if(x.media_type==="movie") card(movies,x,"movie");
+    if(x.media_type==="tv") card(series,x,"tv");
+  });
+};
+
+/* PLAYER */
 async function openContent(type,id){
   playerUI.style.display="flex";
   playerBox.innerHTML="";
-  seasonSel.style.display="none";
-  episodeSel.style.display="none";
+  playlist.innerHTML="";
+  season.style.display="none";
 
   current={type,id};
+
+  saveHistory(type,id);
 
   if(type==="movie"){
     playMovie();
   }else{
     const tv=await get(`${TMDB}/tv/${id}?api_key=${TMDB_KEY}&language=fr`);
-    seasonSel.innerHTML="<option>Saison</option>";
+    season.innerHTML="";
     tv.seasons.forEach(s=>{
-      if(s.season_number>0)
-        seasonSel.innerHTML+=`<option value="${s.season_number}">Saison ${s.season_number}</option>`;
+      if(s.episode_count>0){
+        season.innerHTML+=`<option value="${s.season_number}">
+          ${s.season_number===0?"Spéciaux":"Saison "+s.season_number}
+        </option>`;
+      }
     });
-    seasonSel.style.display="block";
+    season.style.display="block";
+    season.onchange();
   }
 }
 
-seasonSel.onchange=async()=>{
-  current.season=seasonSel.value;
+season.onchange=async()=>{
+  current.season=season.value;
   const s=await get(`${TMDB}/tv/${current.id}/season/${current.season}?api_key=${TMDB_KEY}&language=fr`);
-  episodeSel.innerHTML="<option>Épisode</option>";
-  s.episodes.forEach(e=>{
-    episodeSel.innerHTML+=`<option value="${e.episode_number}">Épisode ${e.episode_number}</option>`;
+  episodes=s.episodes;
+  playlist.innerHTML="";
+  episodes.forEach((e,i)=>{
+    const d=document.createElement("div");
+    d.className="ep";
+    d.textContent=`${e.episode_number}. ${e.name}`;
+    d.onclick=()=>playEpisode(i);
+    playlist.appendChild(d);
   });
-  episodeSel.style.display="block";
-};
-
-episodeSel.onchange=()=>{
-  current.episode=episodeSel.value;
-  playEpisode();
+  playEpisode(0);
 };
 
 function playMovie(){
-  const iframe=document.createElement("iframe");
-  iframe.src=VIDAPI.movie(current.id);
-  iframe.allow="autoplay; fullscreen";
-  iframe.allowFullscreen=true;
-  playerBox.innerHTML="";
-  playerBox.appendChild(iframe);
+  playerBox.innerHTML=`<iframe src="${VIDAPI.movie(current.id)}" allowfullscreen></iframe>`;
 }
 
-function playEpisode(){
-  const iframe=document.createElement("iframe");
-  iframe.src=VIDAPI.tv(current.id,current.season,current.episode);
-  iframe.allow="autoplay; fullscreen";
-  iframe.allowFullscreen=true;
-  playerBox.innerHTML="";
-  playerBox.appendChild(iframe);
+function playEpisode(i){
+  current.ep=i;
+  document.querySelectorAll(".ep").forEach((e,n)=>e.classList.toggle("active",n===i));
+  playerBox.innerHTML=`<iframe src="${VIDAPI.tv(current.id,current.season,episodes[i].episode_number)}" allowfullscreen></iframe>`;
 }
 
-function reloadPlayer(){
-  current.type==="movie" ? playMovie() : playEpisode();
+/* AUTO NEXT */
+setInterval(()=>{
+  const iframe=playerBox.querySelector("iframe");
+  if(!iframe || current.type!=="tv")return;
+  try{
+    if(iframe.contentWindow.location.href.includes("ended")){
+      if(current.ep+1<episodes.length) playEpisode(current.ep+1);
+    }
+  }catch{}
+},4000);
+
+/* HISTORY + FAVORITES */
+function saveHistory(t,id){
+  const h=JSON.parse(localStorage.getItem("history")||"[]");
+  if(!h.find(x=>x.id===id)) h.unshift({t,id});
+  localStorage.setItem("history",JSON.stringify(h.slice(0,20)));
 }
 
+function reload(){
+  current.type==="movie"?playMovie():playEpisode(current.ep||0);
+}
 function closePlayer(){
   playerUI.style.display="none";
   playerBox.innerHTML="";
 }
-
-loadHome();
+load();
 </script>
-
 </body>
 </html>
