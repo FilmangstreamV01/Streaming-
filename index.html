@@ -2,219 +2,244 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>FilmangStream - Player MovieBox</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FilmangStream</title>
+
 <style>
-body{margin:0;background:#0b0b0b;color:#fff;font-family:'Montserrat',system-ui,sans-serif;}
-header{padding:16px;font-size:24px;text-align:center;background:#e50914;font-weight:700;letter-spacing:1px;}
-.section{padding:16px;}
-.section h3{margin-bottom:12px;}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
-.card{background:#161616;border-radius:12px;overflow:hidden;transition:transform .2s;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.5);}
+:root{
+  --red:#e50914;
+  --bg:#0b0b0b;
+  --card:#161616;
+  --text:#fff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+}
+header{
+  padding:16px;
+  text-align:center;
+  font-size:24px;
+  font-weight:800;
+  background:var(--red);
+}
+.section{padding:16px}
+.section h2{margin:0 0 12px}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:14px;
+}
+
+.card{
+  background:var(--card);
+  border-radius:12px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:.25s;
+}
 .card:hover{transform:scale(1.05)}
-.card img{width:100%;display:block;}
-.card p{margin:6px;font-size:14px;text-align:center;font-weight:500;}
+.card img{width:100%;display:block}
+.card p{
+  margin:6px;
+  font-size:14px;
+  text-align:center;
+}
 
-/* Player UI */
-#playerUI{position:fixed;inset:0;background:#000;display:none;flex-direction:column;z-index:9999;}
-#topbar{display:flex;align-items:center;gap:10px;padding:10px;background:linear-gradient(to bottom,#000,#000a);}
-select,button{background:#222;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:14px;cursor:pointer;}
-button:hover,select:hover{background:#333;}
-#downloadBtn{background:#e50914;font-weight:700;}
-#downloadBtn:hover{background:#ff1a2f;}
-
-/* Player + playlist */
-#playerContent{flex:1;display:flex;flex-direction:row;gap:10px;padding:10px;}
-#playerBox{flex:3;position:relative;}
-#playerBox iframe{position:absolute;inset:0;width:100%;height:100%;border:none;border-radius:8px;}
-#playlist{flex:1;overflow-y:auto;}
-#playlist .card{margin-bottom:10px;}
-#playlist .card p{font-size:12px;}
-#playlist .card.active{border:2px solid #e50914;}
+/* PLAYER */
+#playerUI{
+  position:fixed;
+  inset:0;
+  background:#000;
+  display:none;
+  flex-direction:column;
+  z-index:9999;
+}
+#topbar{
+  display:flex;
+  gap:8px;
+  padding:10px;
+  background:linear-gradient(#000,#000a);
+}
+button,select{
+  background:#222;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  padding:6px 10px;
+  font-size:14px;
+}
+button.primary{background:var(--red)}
+#playerBox{
+  flex:1;
+  position:relative;
+}
+#playerBox iframe{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:none;
+}
 </style>
 </head>
 
 <body>
+
 <header>🎬 FilmangStream</header>
 
 <div class="section">
-<h3>🎬 Films</h3>
-<div id="movies" class="grid"></div>
+  <h2>🎬 Films</h2>
+  <div id="movies" class="grid"></div>
 </div>
+
 <div class="section">
-<h3>📺 Séries</h3>
-<div id="series" class="grid"></div>
+  <h2>📺 Séries</h2>
+  <div id="series" class="grid"></div>
 </div>
+
 <div class="section">
-<h3>🍥 Anime</h3>
-<div id="anime" class="grid"></div>
+  <h2>🍥 Anime</h2>
+  <div id="anime" class="grid"></div>
 </div>
 
 <!-- PLAYER -->
 <div id="playerUI">
   <div id="topbar">
-    <button onclick="closePlayer()">⬅ Retour</button>
+    <button onclick="closePlayer()">⬅</button>
+
     <select id="season" style="display:none"></select>
     <select id="episode" style="display:none"></select>
-    <select id="language">
+
+    <select id="lang">
       <option value="fr">VF</option>
       <option value="en">VO</option>
-      <option value="es">ES</option>
     </select>
-    <button onclick="switchSource()">🔁 Source</button>
-    <button id="downloadBtn" onclick="downloadVideo()">⬇ Télécharger</button>
-  </div>
 
-  <div id="playerContent">
-    <div id="playerBox"></div>
-    <div id="playlist"></div>
+    <button class="primary" onclick="reloadPlayer()">🔄</button>
   </div>
+  <div id="playerBox"></div>
 </div>
 
 <script>
-const API="https://api.themoviedb.org/3";
-const KEY="1073e4d36ef71f912da093a5eb38f091";
-const IMG="https://image.tmdb.org/t/p/w500";
+/* ================= CONFIG ================= */
+const TMDB_KEY = "1073e4d36ef71f912da093a5eb38f091";
+const TMDB = "https://api.themoviedb.org/3";
+const IMG = "https://image.tmdb.org/t/p/w500";
 
-let current={}, sourceIndex=0;
-const moviesGrid=document.getElementById("movies");
-const seriesGrid=document.getElementById("series");
-const animeGrid=document.getElementById("anime");
-
-const playerUI=document.getElementById("playerUI");
-const playerBox=document.getElementById("playerBox");
-const playlist=document.getElementById("playlist");
-const season=document.getElementById("season");
-const episode=document.getElementById("episode");
-const languageSelect=document.getElementById("language");
-const downloadBtn=document.getElementById("downloadBtn");
-
-const SOURCES={
-  movie:[
-    (id,lang)=>`https://multiembed.mov/?video_id=${id}&lang=${lang}`,
-    (id,lang)=>`https://vidsrc.to/embed/movie/${id}?lang=${lang}`,
-    (id,lang)=>`https://letsembed.cc/embed/movie/${id}?lang=${lang}`
-  ],
-  tv:[
-    (id,s,e,lang)=>`https://multiembed.mov/?video_id=${id}&s=${s}&e=${e}&lang=${lang}`,
-    (id,s,e,lang)=>`https://vidsrc.to/embed/tv/${id}/${s}/${e}?lang=${lang}`,
-    (id,s,e,lang)=>`https://letsembed.cc/embed/tv/${id}/${s}/${e}?lang=${lang}`
-  ]
+/* VidAPI embeds */
+const VIDAPI = {
+  movie: id => `https://vidapi.xyz/embed/movie/${id}`,
+  tv: (id,s,e) => `https://vidapi.xyz/embed/tv/${id}/${s}/${e}`
 };
 
-async function get(u){return(await fetch(u)).json();}
-function card(container,item,type){
-  if(!item.poster_path)return;
+let current = {};
+const movies = document.getElementById("movies");
+const series = document.getElementById("series");
+const anime  = document.getElementById("anime");
+
+const playerUI = document.getElementById("playerUI");
+const playerBox = document.getElementById("playerBox");
+const seasonSel = document.getElementById("season");
+const episodeSel = document.getElementById("episode");
+
+/* ================= UTILS ================= */
+const get = u => fetch(u).then(r=>r.json());
+
+function makeCard(container,item,type){
+  if(!item.poster_path) return;
   const d=document.createElement("div");
   d.className="card";
-  d.innerHTML=`<img src="${IMG+item.poster_path}"><p>${item.title||item.name}</p>`;
+  d.innerHTML=`
+    <img src="${IMG+item.poster_path}">
+    <p>${item.title||item.name}</p>
+  `;
   d.onclick=()=>openContent(type,item.id);
   container.appendChild(d);
 }
 
+/* ================= LOAD HOME ================= */
 async function loadHome(){
-  (await get(`${API}/movie/popular?api_key=${KEY}&language=fr`)).results.forEach(x=>card(moviesGrid,x,"movie"));
-  (await get(`${API}/tv/popular?api_key=${KEY}&language=fr`)).results.forEach(x=>card(seriesGrid,x,"tv"));
-  (await get(`${API}/discover/tv?api_key=${KEY}&with_genres=16&language=fr`)).results.forEach(x=>card(animeGrid,x,"tv"));
+  (await get(`${TMDB}/movie/popular?api_key=${TMDB_KEY}&language=fr`))
+    .results.forEach(x=>makeCard(movies,x,"movie"));
+
+  (await get(`${TMDB}/tv/popular?api_key=${TMDB_KEY}&language=fr`))
+    .results.forEach(x=>makeCard(series,x,"tv"));
+
+  (await get(`${TMDB}/discover/tv?api_key=${TMDB_KEY}&with_genres=16&language=fr`))
+    .results.forEach(x=>makeCard(anime,x,"tv"));
 }
 
+/* ================= PLAYER ================= */
 async function openContent(type,id){
   playerUI.style.display="flex";
   playerBox.innerHTML="";
-  playlist.innerHTML="";
-  season.style.display="none";
-  episode.style.display="none";
-  sourceIndex=0;
+  seasonSel.style.display="none";
+  episodeSel.style.display="none";
 
   current={type,id};
 
   if(type==="movie"){
-    play();
-    addMoviePlaylist(id);
+    playMovie();
   }else{
-    const tv=await get(`${API}/tv/${id}?api_key=${KEY}&language=fr`);
-    season.innerHTML="<option>Saison</option>";
+    const tv=await get(`${TMDB}/tv/${id}?api_key=${TMDB_KEY}&language=fr`);
+    seasonSel.innerHTML="<option>Saison</option>";
     tv.seasons.forEach(s=>{
-      if(s.season_number>0) season.innerHTML+=`<option value="${s.season_number}">Saison ${s.season_number}</option>`;
+      if(s.season_number>0)
+        seasonSel.innerHTML+=`<option value="${s.season_number}">Saison ${s.season_number}</option>`;
     });
-    season.style.display="block";
+    seasonSel.style.display="block";
   }
 }
 
-season.onchange=async()=>{
-  current.season=season.value;
-  const e=await get(`${API}/tv/${current.id}/season/${current.season}?api_key=${KEY}&language=fr`);
-  episode.innerHTML="<option>Épisode</option>";
-  e.episodes.forEach(ep=>{
-    episode.innerHTML+=`<option value="${ep.episode_number}">${ep.episode_number}. ${ep.name}</option>`;
+seasonSel.onchange=async()=>{
+  current.season=seasonSel.value;
+  const s=await get(`${TMDB}/tv/${current.id}/season/${current.season}?api_key=${TMDB_KEY}&language=fr`);
+  episodeSel.innerHTML="<option>Épisode</option>";
+  s.episodes.forEach(e=>{
+    episodeSel.innerHTML+=`<option value="${e.episode_number}">Épisode ${e.episode_number}</option>`;
   });
-  episode.style.display="block";
-  buildPlaylist(e.episodes);
-}
+  episodeSel.style.display="block";
+};
 
-episode.onchange=()=>{current.episode=episode.value; play();}
-languageSelect.onchange=()=>{play();}
+episodeSel.onchange=()=>{
+  current.episode=episodeSel.value;
+  playEpisode();
+};
 
-function play(nextIndex){
-  if(current.type==="tv" && (!current.season || !current.episode)) return;
+function playMovie(){
   const iframe=document.createElement("iframe");
+  iframe.src=VIDAPI.movie(current.id);
   iframe.allow="autoplay; fullscreen";
   iframe.allowFullscreen=true;
-  const lang=languageSelect.value;
-
-  const src=current.type==="movie"
-    ? SOURCES.movie[sourceIndex](current.id,lang)
-    : SOURCES.tv[sourceIndex](current.id,current.season,current.episode,lang);
-
-  iframe.src=src;
   playerBox.innerHTML="";
   playerBox.appendChild(iframe);
-
-  downloadBtn.href=src;
-  downloadBtn.download=`${current.type}_${current.id}.mp4`;
-
-  // Highlight current in playlist
-  Array.from(playlist.children).forEach((c,i)=>{
-    c.classList.toggle("active", i==nextIndex || (current.type==="movie" && i==0));
-  });
 }
 
-function switchSource(){sourceIndex++;if(current.type==="movie" && sourceIndex>=SOURCES.movie.length) sourceIndex=0;if(current.type==="tv" && sourceIndex>=SOURCES.tv.length) sourceIndex=0;play();}
-
-function downloadVideo(){
-  const a=document.createElement("a");
-  a.href=downloadBtn.href;
-  a.download=downloadBtn.download;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+function playEpisode(){
+  const iframe=document.createElement("iframe");
+  iframe.src=VIDAPI.tv(current.id,current.season,current.episode);
+  iframe.allow="autoplay; fullscreen";
+  iframe.allowFullscreen=true;
+  playerBox.innerHTML="";
+  playerBox.appendChild(iframe);
 }
 
-function closePlayer(){playerUI.style.display="none"; playerBox.innerHTML=""; playlist.innerHTML="";}
-
-function buildPlaylist(episodes){
-  playlist.innerHTML="";
-  episodes.forEach((ep,i)=>{
-    const d=document.createElement("div");
-    d.className="card";
-    d.innerHTML=`<img src="${IMG+ep.still_path}"><p>${ep.episode_number}. ${ep.name}</p>`;
-    d.onclick=()=>{
-      current.episode=ep.episode_number;
-      play(i);
-    };
-    playlist.appendChild(d);
-  });
+function reloadPlayer(){
+  current.type==="movie" ? playMovie() : playEpisode();
 }
 
-// Pour films, on peut simuler une playlist avec 1 élément
-function addMoviePlaylist(id){
-  const d=document.createElement("div");
-  d.className="card active";
-  d.innerHTML=`<p>Film ID ${id}</p>`;
-  playlist.appendChild(d);
+function closePlayer(){
+  playerUI.style.display="none";
+  playerBox.innerHTML="";
 }
 
 loadHome();
 </script>
+
 </body>
 </html>
