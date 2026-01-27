@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FilmangStream NextGen</title>
+<title>FilmangStream NextGen VF/VO</title>
 <style>
 body {margin:0; background:#0b0b0b; color:#fff; font-family:system-ui;}
 header {padding:14px; font-size:22px; text-align:center; background:#e50914;}
@@ -24,7 +24,7 @@ select,button{background:#222;color:#fff;border:none;border-radius:10px;padding:
 </head>
 <body>
 
-<header>🎬 FilmangStream NextGen</header>
+<header>🎬 FilmangStream NextGen VF/VO</header>
 
 <div class="section">
 <h3>🎬 Films</h3>
@@ -62,25 +62,22 @@ const IMG = "https://image.tmdb.org/t/p/w500";
 
 let current = {};
 let sourceIndex = 0;
-let langIndex = 0;
-const DEFAULT_LANGS = ["french","english","spanish","german"]; 
 
 // Multi-sources NextGen
 const SOURCES = {
   movie: [
-    id => `https://player.embed-api.stream/?id=${id}&type=movie`,
-    id => `https://letsembed.cc/embed/movie/?id=${id}`,
+    id => `https://player.embed-api.stream/?id=${id}`,
     id => `https://moviesapi.pro/movie/${id}`,
     id => `https://player.vidplus.to/embed/movie/${id}`
   ],
   tv: [
     (id,s,e) => `https://player.embed-api.stream/?id=${id}&s=${s}&e=${e}`,
-    (id,s,e) => `https://letsembed.cc/embed/tv/?id=${id}/${s}/${e}`,
     (id,s,e) => `https://moviesapi.pro/tv/${id}/${s}/${e}`,
-    (id,s,e) => `https://player.vidplus.to/embed/tv/${id}/${s}/${e}`
+    (id,s,e) => `https://player.vidplus.to/embed/tv/${id}&s=${s}&e=${e}`
   ]
 };
 
+// Charger TMDb
 async function get(url){ return (await fetch(url)).json(); }
 
 function card(container,item,type){
@@ -104,16 +101,15 @@ async function openContent(type,id){
   playerBox.innerHTML="";
   season.style.display="none";
   episode.style.display="none";
-  lang.style.display="inline-block";
-  document.getElementById('errorMsg').textContent="";
+  document.getElementById('errorMsg').textContent = "";
   sourceIndex = 0;
-  langIndex = 0;
 
-  current = {type,id,season:1,episode:1,lang:DEFAULT_LANGS[0],availableLangs:DEFAULT_LANGS};
+  current = {type,id,season:1,episode:1,lang:"french",availableLangs:["french","english"]};
 
-  // Menu langue
-  lang.innerHTML = "";
-  current.availableLangs.forEach(l => { lang.innerHTML += `<option value="${l}">${l.toUpperCase()}</option>` });
+  // Menu langue dynamique basé sur API
+  const audioData = await fetchAvailableAudio(type,id);
+  current.availableLangs = audioData.length>0 ? audioData : ["french","english"];
+  populateLangMenu();
 
   if(type==="movie"){ play(); updateSourceLabel(); }
   else {
@@ -125,6 +121,28 @@ async function openContent(type,id){
     });
     season.style.display="block";
   }
+}
+
+// Fetch pistes audio disponibles (simulation, adapter selon API)
+async function fetchAvailableAudio(type,id){
+  try{
+    // Exemple endpoint MoviesAPI
+    const url = type==="movie"
+      ? `https://moviesapi.pro/api/movie/${id}/audio`
+      : `https://moviesapi.pro/api/tv/${id}/season/1/episode/1/audio`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if(data && data.audio && data.audio.length>0){
+      return data.audio.map(a => a.language.toLowerCase());
+    }
+    return [];
+  }catch(e){ return []; }
+}
+
+function populateLangMenu(){
+  lang.innerHTML = "";
+  current.availableLangs.forEach(l => { lang.innerHTML += `<option value="${l}">${l.toUpperCase()}</option>`; });
+  current.lang = current.availableLangs[0];
 }
 
 // Changement de saison/épisode/langue
@@ -141,34 +159,31 @@ season.onchange = async () => {
 episode.onchange = () => { current.episode = episode.value; play(); updateSourceLabel(); }
 lang.onchange = () => { current.lang = lang.value; play(); updateSourceLabel(); }
 
-// Lecture avec fallback automatique
+// Lecture avec fallback automatique et langue exacte
 function play(){
   const iframe = document.createElement("iframe");
   iframe.allow = "autoplay; fullscreen";
   iframe.allowFullscreen = true;
 
-  const src = current.type==="movie" 
-      ? SOURCES.movie[sourceIndex](current.id)+`&lang=${current.lang}`
-      : SOURCES.tv[sourceIndex](current.id,current.season,current.episode)+`&lang=${current.lang}`;
+  let src;
+  if(current.type==="movie")
+    src = SOURCES.movie[sourceIndex](current.id)+`?audio=${current.lang}`;
+  else
+    src = SOURCES.tv[sourceIndex](current.id,current.season,current.episode)+`?audio=${current.lang}`;
 
-  iframe.src = src;
   playerBox.innerHTML = "";
   document.getElementById('errorMsg').textContent = "";
   playerBox.appendChild(iframe);
 
-  // Si l'iframe échoue, passer à la source suivante
   iframe.onerror = () => {
     sourceIndex++;
     const max = current.type==="movie"?SOURCES.movie.length:SOURCES.tv.length;
-    if(sourceIndex < max){
-      play(); // relancer avec la source suivante
-    } else {
-      document.getElementById('errorMsg').textContent = "⚠️ Toutes les sources ont échoué.";
-    }
+    if(sourceIndex < max){ play(); }
+    else { document.getElementById('errorMsg').textContent = "⚠️ Toutes les sources ont échoué."; }
   }
 }
 
-// Changer manuellement de source
+// Changer source manuellement
 function switchSource(){
   sourceIndex++;
   const max = current.type==="movie"?SOURCES.movie.length:SOURCES.tv.length;
