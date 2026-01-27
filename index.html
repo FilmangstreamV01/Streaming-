@@ -3,214 +3,259 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FilmangStream NextGen VF prioritaire</title>
+<title>FilmangStream • Legal</title>
+
+<!-- PWA -->
+<link rel="manifest" href="data:application/json,{
+  \"name\":\"FilmangStream\",
+  \"short_name\":\"Filmang\",
+  \"start_url\":\".\",
+  \"display\":\"standalone\",
+  \"background_color\":\"#000\",
+  \"theme_color\":\"#e50914\"
+}">
+
 <style>
-body {margin:0; background:#0b0b0b; color:#fff; font-family:system-ui;}
-header {padding:14px; font-size:22px; text-align:center; background:#e50914;}
-.section {padding:14px;}
-.grid {display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px;}
-.card {background:#161616; border-radius:14px; overflow:hidden; transition:.2s; cursor:pointer;}
-.card:active {transform:scale(.97);}
-.card img {width:100%;}
-.card p {margin:6px; font-size:13px; text-align:center;}
-#playerUI {position:fixed; inset:0; background:#000; display:none; flex-direction:column; z-index:9999;}
-#topbar {display:flex; gap:8px; padding:10px; background:linear-gradient(#000,#000a); align-items:center;}
-select,button{background:#222;color:#fff;border:none;border-radius:10px;padding:8px 10px;font-size:14px;}
-#playerBox{flex:1; position:relative;}
-#playerBox iframe{position:absolute; inset:0; width:100%; height:100%; border:none;}
-.badge{font-size:11px;color:#aaa;}
-#errorMsg{color:red;text-align:center;padding:10px;}
+:root{
+  --red:#e50914;
+  --bg:#0b0b0b;
+  --card:#161616;
+  --text:#fff;
+  --muted:#aaa;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui;
+}
+
+header{
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:#000c;
+  padding:12px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+header h1{
+  color:var(--red);
+  margin:0;
+  font-size:20px;
+}
+
+input,select{
+  background:#222;
+  color:#fff;
+  border:none;
+  border-radius:20px;
+  padding:10px 14px;
+}
+
+.section{padding:14px}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+  gap:14px;
+}
+
+.card{
+  background:var(--card);
+  border-radius:14px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.card:hover{transform:scale(1.04)}
+
+.card img{width:100%;display:block}
+
+.card p{
+  margin:8px;
+  font-size:13px;
+  text-align:center;
+}
+
+.badge{
+  font-size:11px;
+  color:var(--muted);
+}
+
+/* PLAYER */
+#player{
+  position:fixed;
+  inset:0;
+  background:#000;
+  display:none;
+  flex-direction:column;
+  z-index:9999;
+}
+
+#playerTop{
+  padding:10px;
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+button{
+  background:#222;
+  color:#fff;
+  border:none;
+  padding:8px 12px;
+  border-radius:10px;
+}
+
+iframe{
+  flex:1;
+  width:100%;
+  border:none;
+}
 </style>
 </head>
+
 <body>
 
-<header>🎬 FilmangStream NextGen</header>
+<header>
+  <h1>🎬 Filmang</h1>
+  <input id="search" placeholder="Rechercher un film ou une série">
+  <select id="lang">
+    <option value="fr">FR</option>
+    <option value="en">EN</option>
+  </select>
+</header>
 
 <div class="section">
-<h3>🎬 Films</h3>
-<div id="movies" class="grid"></div>
+  <h3>🔥 Tendances</h3>
+  <div id="trending" class="grid"></div>
 </div>
 
 <div class="section">
-<h3>📺 Séries</h3>
-<div id="series" class="grid"></div>
-</div>
-
-<div class="section">
-<h3>🍥 Anime</h3>
-<div id="anime" class="grid"></div>
+  <h3>🔍 Résultats</h3>
+  <div id="results" class="grid"></div>
 </div>
 
 <!-- PLAYER -->
-<div id="playerUI">
-  <div id="topbar">
+<div id="player">
+  <div id="playerTop">
     <button onclick="closePlayer()">⬅</button>
     <select id="season" style="display:none"></select>
     <select id="episode" style="display:none"></select>
-    <select id="lang"></select>
-    <button onclick="switchSource()">🔁 Source</button>
-    <span class="badge" id="sourceLabel"></span>
   </div>
-  <div id="playerBox"></div>
-  <div id="errorMsg"></div>
+  <iframe id="iframe" allow="autoplay; fullscreen"></iframe>
 </div>
 
 <script>
+/* 🔑 CLÉ TMDB (celle que tu utilisais déjà avant) */
+const TMDB_KEY = "1073e4d36ef71f912da093a5eb38f091";
 const API = "https://api.themoviedb.org/3";
-const KEY = "1073e4d36ef71f912da093a5eb38f091";
 const IMG = "https://image.tmdb.org/t/p/w500";
 
 let current = {};
-let sourceIndex = 0;
 
-// Ordre de priorité des sources NextGen
-const SOURCES = {
-  movie: [
-    id => `https://moviesapi.pro/movie/${id}`,
-    id => `https://letsembed.cc/embed/movie/?id=${id}`,
-    id => `https://player.vidplus.to/embed/movie/${id}`,
-    id => `https://streamsrc.cc/embed/movie/${id}`,
-    id => `https://player.autoembed.cc/embed/movie/${id}`
-  ],
-  tv: [
-    (id,s,e) => `https://moviesapi.pro/tv/${id}/${s}/${e}`,
-    (id,s,e) => `https://letsembed.cc/embed/tv/?id=${id}/${s}/${e}`,
-    (id,s,e) => `https://player.vidplus.to/embed/tv/${id}/${s}/${e}`,
-    (id,s,e) => `https://streamsrc.cc/embed/tv/${id}/${s}/${e}`,
-    (id,s,e) => `https://player.autoembed.cc/embed/tv/${id}/${s}/${e}`
-  ]
-};
+/* UTIL */
+const get = u => fetch(u).then(r=>r.json());
 
-// Charger TMDb
-async function get(url){ return (await fetch(url)).json(); }
-
-function card(container,item,type){
+function card(container,item){
   if(!item.poster_path) return;
   const d=document.createElement("div");
   d.className="card";
-  d.innerHTML = `<img src="${IMG+item.poster_path}"><p>${item.title||item.name}</p>`;
-  d.onclick = () => openContent(type,item.id);
+  d.innerHTML=`
+    <img src="${IMG+item.poster_path}">
+    <p>${item.title||item.name}<br><span class="badge">${item.media_type}</span></p>
+  `;
+  d.onclick=()=>open(item);
   container.appendChild(d);
 }
 
-async function loadHome(){
-  (await get(`${API}/movie/popular?api_key=${KEY}&language=fr`)).results.forEach(x=>card(movies,x,"movie"));
-  (await get(`${API}/tv/popular?api_key=${KEY}&language=fr`)).results.forEach(x=>card(series,x,"tv"));
-  (await get(`${API}/discover/tv?api_key=${KEY}&with_genres=16&language=fr`)).results.forEach(x=>card(anime,x,"tv"));
+/* TENDANCES */
+async function loadTrending(){
+  const r = await get(`${API}/trending/all/week?api_key=${TMDB_KEY}&language=${lang.value}`);
+  trending.innerHTML="";
+  r.results.forEach(x=>card(trending,x));
 }
 
-// Ouvrir un contenu
-async function openContent(type,id){
-  playerUI.style.display="flex";
-  playerBox.innerHTML="";
+/* RECHERCHE */
+search.onkeydown = async e =>{
+  if(e.key!=="Enter")return;
+  results.innerHTML="";
+  const q=search.value.trim();
+  if(!q)return;
+
+  const r=await get(`${API}/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(q)}&language=${lang.value}`);
+  r.results.forEach(x=>card(results,x));
+};
+
+/* OUVERTURE CONTENU */
+async function open(item){
+  current=item;
+  player.style.display="flex";
+  iframe.src="";
   season.style.display="none";
   episode.style.display="none";
-  document.getElementById('errorMsg').textContent = "";
-  sourceIndex = 0;
 
-  // On va chercher les langues disponibles
-  const langs = await fetchAvailableLangs(type,id);
-  current = {
-    type,id,
-    season:1,
-    episode:1,
-    availableLangs:langs.length ? langs : ["VF","VO"]
-  };
-
-  // VF prioritaire si dispo
-  current.lang = current.availableLangs.includes("VF") ? "VF" : current.availableLangs[0];
-
-  populateLangMenu();
-
-  if(type==="movie"){ play(); updateSourceLabel(); }
-  else {
-    const tv = await get(`${API}/tv/${id}?api_key=${KEY}&language=fr`);
-    season.innerHTML = "<option>Saison</option>";
+  if(item.media_type==="movie"){
+    playTrailer(item.media_type,item.id);
+  }else{
+    const tv=await get(`${API}/tv/${item.id}?api_key=${TMDB_KEY}&language=${lang.value}`);
+    season.innerHTML="<option>Saison</option>";
     tv.seasons.forEach(s=>{
       if(s.season_number>0)
-        season.innerHTML += `<option value="${s.season_number}">Saison ${s.season_number}</option>`;
+        season.innerHTML+=`<option value="${s.season_number}">S${s.season_number}</option>`;
     });
     season.style.display="block";
   }
 }
 
-// Fetch langues disponibles (simulation, adapter selon API)
-async function fetchAvailableLangs(type,id){
-  try{
-    const url = type==="movie"
-      ? `https://moviesapi.pro/api/movie/${id}/audio`
-      : `https://moviesapi.pro/api/tv/${id}/season/1/episode/1/audio`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if(data && data.audio) return data.audio.map(a=>a.language.toUpperCase());
-    return [];
-  }catch(e){ return []; }
-}
-
-function populateLangMenu(){
-  lang.innerHTML = "";
-  current.availableLangs.forEach(l => { lang.innerHTML += `<option value="${l}">${l}</option>`; });
-}
-
-// Gestion saisons/épisodes/langue
-season.onchange = async () => {
-  current.season = season.value;
-  const e = await get(`${API}/tv/${current.id}/season/${current.season}?api_key=${KEY}&language=fr`);
+/* SAISONS / EPISODES */
+season.onchange = async ()=>{
+  const s=season.value;
+  const r=await get(`${API}/tv/${current.id}/season/${s}?api_key=${TMDB_KEY}&language=${lang.value}`);
   episode.innerHTML="<option>Épisode</option>";
-  e.episodes.forEach(ep=>{
-    episode.innerHTML += `<option value="${ep.episode_number}">Épisode ${ep.episode_number}</option>`;
+  r.episodes.forEach(e=>{
+    episode.innerHTML+=`<option value="${e.episode_number}">E${e.episode_number}</option>`;
   });
   episode.style.display="block";
-}
+};
 
-episode.onchange = () => { current.episode = episode.value; play(); updateSourceLabel(); }
-lang.onchange = () => { current.lang = lang.value; play(); updateSourceLabel(); }
+episode.onchange = ()=>{
+  playTrailer("tv",current.id,current.season,episode.value);
+};
 
-// Lecture avec fallback automatique
-function play(){
-  const iframe = document.createElement("iframe");
-  iframe.allow = "autoplay; fullscreen";
-  iframe.allowFullscreen = true;
-
-  let src;
-  if(current.type==="movie")
-    src = SOURCES.movie[sourceIndex](current.id) + `?audio=${current.lang.toLowerCase()}`;
-  else
-    src = SOURCES.tv[sourceIndex](current.id,current.season,current.episode) + `?audio=${current.lang.toLowerCase()}`;
-
-  playerBox.innerHTML = "";
-  document.getElementById('errorMsg').textContent = "";
-  playerBox.appendChild(iframe);
-  iframe.src = src;
-
-  iframe.onerror = () => {
-    sourceIndex++;
-    const max = current.type==="movie"?SOURCES.movie.length:SOURCES.tv.length;
-    if(sourceIndex < max){ play(); }
-    else { document.getElementById('errorMsg').textContent = "⚠️ Toutes les sources ont échoué."; }
+/* LECTURE LÉGALE (YouTube officiel) */
+async function playTrailer(type,id){
+  const r=await get(`${API}/${type}/${id}/videos?api_key=${TMDB_KEY}`);
+  const yt=r.results.find(v=>v.site==="YouTube");
+  if(!yt){
+    alert("Aucune vidéo officielle disponible.");
+    closePlayer();
+    return;
   }
+  iframe.src=`https://www.youtube.com/embed/${yt.key}?autoplay=1`;
 }
 
-function switchSource(){
-  sourceIndex++;
-  const max = current.type==="movie"?SOURCES.movie.length:SOURCES.tv.length;
-  if(sourceIndex >= max) sourceIndex = 0;
-  play();
-  updateSourceLabel();
-}
-
-function updateSourceLabel(){
-  const sources = current.type==="movie"?SOURCES.movie:SOURCES.tv;
-  sourceLabel.textContent = `Source: ${sourceIndex+1}/${sources.length} | Lang: ${current.lang}`;
-}
-
+/* PLAYER */
 function closePlayer(){
-  playerUI.style.display="none";
-  playerBox.innerHTML="";
-  document.getElementById('errorMsg').textContent = "";
+  player.style.display="none";
+  iframe.src="";
 }
 
-loadHome();
+/* LANGUE */
+lang.onchange=()=>{
+  loadTrending();
+};
+
+/* INIT */
+loadTrending();
 </script>
+
 </body>
 </html>
