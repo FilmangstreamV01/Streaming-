@@ -57,6 +57,15 @@
         .card-video .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30px; height: 30px; background: rgba(0,0,0,0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid white; }
         .card-video .video-title { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.8); padding: 5px 10px; font-size: 0.7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+        /* TV (NOUVEAU DESIGN AMÉLIORÉ) */
+        .card-tv { width: 260px; height: 146px; border: 1px solid #444; position: relative; background: #000; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .card-tv:hover { transform: scale(1.02); border-color: var(--red); }
+        .card-tv img { width: 100%; height: 100%; object-fit: contain; padding: 20px; background: white; }
+        .card-tv .tv-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; }
+        .card-tv:hover .tv-overlay { opacity: 1; }
+        .card-tv .tv-play { width: 50px; height: 50px; background: var(--red); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(229, 9, 20, 0.8); }
+        .card-tv .tv-title { position: absolute; bottom: 0; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); padding: 20px 10px 8px; font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; text-shadow: 2px 2px 4px black; }
+
         /* LIVE (NOUVEAU DESIGN) */
         .card-live { width: 240px; height: 135px; border: 1px solid #444; position: relative; }
         .card-live img { opacity: 0.8; transition: opacity 0.3s; }
@@ -121,6 +130,7 @@
                 <div class="pill active" onclick="scrollToSec('hero')">Accueil</div>
                 <div class="pill" onclick="scrollToSec('shortsSec')">Shorts</div>
                 <div class="pill" onclick="scrollToSec('vidSec')">Vidéos</div>
+                <div class="pill" onclick="scrollToSec('vodSec')">VOD</div>
                 <div class="pill" onclick="scrollToSec('liveSec')">Direct</div>
                 <div class="pill" onclick="scrollToSec('filmSec')">Films</div>
                 <div class="pill" onclick="scrollToSec('serieSec')">Séries</div>
@@ -142,7 +152,12 @@
             <h2><i class="fas fa-video" style="color:var(--dm-blue)"></i> Vidéos Dailymotion</h2><div class="row" id="dmVideoRow"></div>
         </section>
 
-        <!-- NOUVELLE SECTION LIVE -->
+        <!-- NOUVELLE SECTION STREAMING VOD -->
+        <section id="vodSec">
+            <h2><i class="fas fa-clapperboard" style="color:red"></i> Streaming VOD YouTube</h2><div class="row" id="ytVodRow"></div>
+            <h2><i class="fas fa-film" style="color:var(--dm-blue)"></i> Streaming VOD Dailymotion</h2><div class="row" id="dmVodRow"></div>
+        </section>
+
         <section id="liveSec">
             <h2><i class="fas fa-broadcast-tower" style="color:red"></i> Live YouTube</h2><div class="row" id="ytLiveRow"></div>
             <h2><i class="fas fa-satellite-dish" style="color:var(--dm-blue)"></i> Live Dailymotion</h2><div class="row" id="dmLiveRow"></div>
@@ -186,9 +201,9 @@
                 <div class="card card-std" onclick="openVideoLink('https://www.disneyplus.com')"><img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg" style="object-fit:contain; padding:10px"></div>
                 <!-- Crunchyroll (Exec dans le site) -->
                 <div class="card card-std" onclick="openVideoLink('https://www.crunchyroll.com')"><img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Crunchyroll_Logo.png" style="object-fit:contain; padding:10px"></div>
-                <!-- Anime Sama (Vrai Logo + Exec dans le site) -->
+                <!-- Anime Sama (IMAGE LOCALE) -->
                 <div class="card card-std" onclick="openVideoLink('https://anime-sama.store/')">
-                    <img src="https://cdn.statically.io/img/anime-sama.fr/wp-content/uploads/2021/01/AS-Logo-1.png" style="object-fit:contain; padding:5px" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                    <img src="images/anime-sama.png" style="object-fit:contain; padding:5px" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
                     <div class="img-fallback" style="background:#1a1a1a; color:white; font-size:1rem;">ANIME<br>SAMA</div>
                 </div>
             </div>
@@ -250,6 +265,8 @@
         }
     }
 
+     
+
     function initApp() {
         loadHero();
         loadTV();
@@ -272,10 +289,7 @@
         });
         searchAll("anime trailer 2025");
     }
-
-  
-
-    // --- FETCH AVEC ROTATION YOUTUBE ---
+// --- FETCH AVEC ROTATION YOUTUBE ---
     async function fetchYT(urlPart) {
         try {
             let key = YT_KEYS[currentKeyIdx];
@@ -337,15 +351,26 @@
         fetch(`https://api.dailymotion.com/videos?search=${q}&shorter_than=60&fields=id,title,thumbnail_720_url&limit=10`)
             .then(r=>r.json()).then(d => renderShorts('dmShortsRow', d.list, 'dm'));
 
-        // YT Long
-        let ytV = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q}&type=video&videoDuration=medium&maxResults=10`);
+        // YT Videos (TOUTES DURÉES - [0, +infini[)
+        // J'ai retiré videoDuration=medium pour avoir tout
+        let ytV = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q}&type=video&maxResults=10`);
         if(ytV && ytV.items) renderVideos('ytVideoRow', ytV.items, 'yt');
 
-        // DM Long
-        fetch(`https://api.dailymotion.com/videos?search=${q}&longer_than=60&fields=id,title,thumbnail_720_url&limit=10`)
+        // DM Videos (TOUTES DURÉES)
+        // J'ai retiré longer_than=60 pour avoir tout
+        fetch(`https://api.dailymotion.com/videos?search=${q}&fields=id,title,thumbnail_720_url&limit=10`)
             .then(r=>r.json()).then(d => renderVideos('dmVideoRow', d.list, 'dm'));
 
-        // --- NOUVEAU: RECHERCHE LIVE ---
+        // --- NOUVEAU: STREAMING VOD (Recherche spécifique) ---
+        // YT VOD (On cherche "full movie" ou "complet" pour simuler VOD)
+        let ytVod = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q} full movie&type=video&videoDuration=long&maxResults=10`);
+        if(ytVod && ytVod.items) renderVideos('ytVodRow', ytVod.items, 'yt');
+
+        // DM VOD (On cherche "film complet" ou "vod")
+        fetch(`https://api.dailymotion.com/videos?search=${q} film complet&longer_than=1200&fields=id,title,thumbnail_720_url&limit=10`)
+            .then(r=>r.json()).then(d => renderVideos('dmVodRow', d.list, 'dm'));
+
+
         // YT Live
         let ytL = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q}&type=video&eventType=live&maxResults=10`);
         if(ytL && ytL.items) renderLive('ytLiveRow', ytL.items, 'yt');
@@ -385,7 +410,6 @@
         }).join('');
     }
 
-    // --- NOUVEAU: RENDER LIVE ---
     function renderLive(id, list, source) {
         if(!list || list.length === 0) {
             document.getElementById(id).innerHTML = '<div style="color:#666; font-size:0.8rem; padding:10px">Aucun live trouvé pour le moment.</div>';
@@ -518,18 +542,23 @@
     }
 
     function loadTV() {
-        // VRAIS LOGOS TV
+        // IMAGES LOCALES + DESIGN AMÉLIORÉ
         const tvs = [
-            {n:"TF1", img:"https://upload.wikimedia.org/wikipedia/fr/thumb/3/3e/TF1_logo_2013.svg/1200px-TF1_logo_2013.svg.png"},
-            {n:"France 2", img:"https://upload.wikimedia.org/wikipedia/fr/thumb/8/86/France_2_2018.svg/1200px-France_2_2018.svg.png"},
-            {n:"M6", img:"https://upload.wikimedia.org/wikipedia/fr/thumb/9/91/M6_2009.svg/1200px-M6_2009.svg.png"},
-            {n:"Canal+", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Canal%2B_new_logo.svg/1200px-Canal%2B_new_logo.svg.png"},
-            {n:"Gulli", img:"https://upload.wikimedia.org/wikipedia/fr/thumb/8/82/Gulli_2017.svg/1200px-Gulli_2017.svg.png"},
-            {n:"W9", img:"https://upload.wikimedia.org/wikipedia/fr/thumb/4/4e/W9_2018.svg/1200px-W9_2018.svg.png"}
+            {n:"TF1", img:"images/tf1.png"},
+            {n:"France 2", img:"images/france2.png"},
+            {n:"M6", img:"images/m6.png"},
+            {n:"Canal+", img:"images/canalplus.png"},
+            {n:"Gulli", img:"images/gulli.png"},
+            {n:"W9", img:"images/w9.png"}
         ];
+        // Ouvre vavoo.to dans le site (openVideoLink)
         document.getElementById('tvRow').innerHTML = tvs.map(t => 
-            `<div class="card card-std" style="background:white" onclick="openVideoLink('https://vavoo.to')">
-                <img src="${t.img}" style="object-fit:contain; padding:10px">
+            `<div class="card card-tv" onclick="openVideoLink('https://vavoo.to')">
+                <img src="${t.img}" onerror="this.style.display='none'">
+                <div class="tv-overlay">
+                    <div class="tv-play"><i class="fas fa-play" style="color:white; font-size:1.2rem"></i></div>
+                </div>
+                <div class="tv-title">${t.n}</div>
              </div>`).join('');
     }
 
