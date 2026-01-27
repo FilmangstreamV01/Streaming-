@@ -3,258 +3,144 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FilmangStream • Legal</title>
-
-<!-- PWA -->
-<link rel="manifest" href="data:application/json,{
-  \"name\":\"FilmangStream\",
-  \"short_name\":\"Filmang\",
-  \"start_url\":\".\",
-  \"display\":\"standalone\",
-  \"background_color\":\"#000\",
-  \"theme_color\":\"#e50914\"
-}">
+<title>FilmangStream Vimeo</title>
 
 <style>
 :root{
-  --red:#e50914;
-  --bg:#0b0b0b;
-  --card:#161616;
-  --text:#fff;
-  --muted:#aaa;
+  --red:#e50914; --bg:#0b0b0b; --card:#161616; --text:#fff; --muted:#aaa;
 }
-
 *{box-sizing:border-box}
-
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:system-ui;
-}
-
-header{
-  position:sticky;
-  top:0;
-  z-index:10;
-  background:#000c;
-  padding:12px;
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-
-header h1{
-  color:var(--red);
-  margin:0;
-  font-size:20px;
-}
-
-input,select{
-  background:#222;
-  color:#fff;
-  border:none;
-  border-radius:20px;
-  padding:10px 14px;
-}
-
-.section{padding:14px}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
-  gap:14px;
-}
-
-.card{
-  background:var(--card);
-  border-radius:14px;
-  overflow:hidden;
-  cursor:pointer;
-  transition:.2s;
-}
-
-.card:hover{transform:scale(1.04)}
-
-.card img{width:100%;display:block}
-
-.card p{
-  margin:8px;
-  font-size:13px;
-  text-align:center;
-}
-
-.badge{
-  font-size:11px;
-  color:var(--muted);
-}
-
-/* PLAYER */
-#player{
-  position:fixed;
-  inset:0;
-  background:#000;
-  display:none;
-  flex-direction:column;
-  z-index:9999;
-}
-
-#playerTop{
-  padding:10px;
-  display:flex;
-  gap:8px;
-  align-items:center;
-}
-
-button{
-  background:#222;
-  color:#fff;
-  border:none;
-  padding:8px 12px;
-  border-radius:10px;
-}
-
-iframe{
-  flex:1;
-  width:100%;
-  border:none;
-}
+body{margin:0;font-family:system-ui;background:var(--bg);color:var(--text);}
+header{position:sticky;top:0;z-index:10;background:#000c;padding:12px;display:flex;gap:10px;align-items:center;}
+header h1{color:var(--red);margin:0;font-size:20px;}
+input,select{background:#222;color:#fff;border:none;border-radius:20px;padding:10px 14px;}
+.section{padding:14px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;}
+.card{background:var(--card);border-radius:14px;overflow:hidden;cursor:pointer;transition:.2s;}
+.card:hover{transform:scale(1.04);}
+.card img{width:100%;display:block;}
+.card p{margin:8px;font-size:13px;text-align:center;}
+.badge{font-size:11px;color:var(--muted);}
+#player{position:fixed;inset:0;background:#000;display:none;flex-direction:column;z-index:9999;}
+#playerTop{padding:10px;display:flex;gap:8px;align-items:center;}
+button{background:#222;color:#fff;border:none;padding:8px 12px;border-radius:10px;}
+iframe{flex:1;width:100%;border:none;}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>🎬 Filmang</h1>
-  <input id="search" placeholder="Rechercher un film ou une série">
-  <select id="lang">
-    <option value="fr">FR</option>
-    <option value="en">EN</option>
-  </select>
+<h1>🎬 Filmang</h1>
+<input id="search" placeholder="Rechercher un film ou série ou anime">
+<select id="lang">
+  <option value="fr">FR</option>
+  <option value="en">EN</option>
+</select>
 </header>
 
 <div class="section">
-  <h3>🔥 Tendances</h3>
-  <div id="trending" class="grid"></div>
+<h3>🔥 Tendances</h3>
+<div id="trending" class="grid"></div>
 </div>
 
 <div class="section">
-  <h3>🔍 Résultats</h3>
-  <div id="results" class="grid"></div>
+<h3>🔍 Résultats</h3>
+<div id="results" class="grid"></div>
+</div>
+
+<div class="section">
+<h3>🍥 Vimeo Animations & Anime CC</h3>
+<div id="vimeo" class="grid"></div>
 </div>
 
 <!-- PLAYER -->
 <div id="player">
   <div id="playerTop">
-    <button onclick="closePlayer()">⬅</button>
-    <select id="season" style="display:none"></select>
-    <select id="episode" style="display:none"></select>
+    <button onclick="closePlayer()">⬅ Retour</button>
   </div>
   <iframe id="iframe" allow="autoplay; fullscreen"></iframe>
 </div>
 
 <script>
-/* 🔑 CLÉ TMDB (celle que tu utilisais déjà avant) */
-const TMDB_KEY = "1073e4d36ef71f912da093a5eb38f091";
-const API = "https://api.themoviedb.org/3";
-const IMG = "https://image.tmdb.org/t/p/w500";
+// 🔑 Clé TMDB
+const TMDB_KEY="1073e4d36ef71f912da093a5eb38f091";
+const API="https://api.themoviedb.org/3";
+const IMG="https://image.tmdb.org/t/p/w500";
 
-let current = {};
+let current={};
 
-/* UTIL */
-const get = u => fetch(u).then(r=>r.json());
+const get=u=>fetch(u).then(r=>r.json());
 
-function card(container,item){
-  if(!item.poster_path) return;
+// Utilitaire pour créer une card
+function card(container,item,titleType){
+  if(!item.poster_path && !item.thumbnail) return;
   const d=document.createElement("div");
   d.className="card";
   d.innerHTML=`
-    <img src="${IMG+item.poster_path}">
-    <p>${item.title||item.name}<br><span class="badge">${item.media_type}</span></p>
+    <img src="${item.poster_path? IMG+item.poster_path : item.thumbnail}">
+    <p>${item.title||item.name}<br><span class="badge">${titleType}</span></p>
   `;
-  d.onclick=()=>open(item);
+  d.onclick=()=>openContent(item,titleType);
   container.appendChild(d);
 }
 
-/* TENDANCES */
+/* 🔹 TMDB Tendances */
 async function loadTrending(){
   const r = await get(`${API}/trending/all/week?api_key=${TMDB_KEY}&language=${lang.value}`);
   trending.innerHTML="";
-  r.results.forEach(x=>card(trending,x));
+  r.results.forEach(x=>card(trending,x,"TMDB"));
 }
 
-/* RECHERCHE */
-search.onkeydown = async e =>{
-  if(e.key!=="Enter")return;
+/* 🔹 Recherche */
+search.onkeydown=async e=>{
+  if(e.key!=="Enter") return;
   results.innerHTML="";
   const q=search.value.trim();
-  if(!q)return;
+  if(!q) return;
 
   const r=await get(`${API}/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(q)}&language=${lang.value}`);
-  r.results.forEach(x=>card(results,x));
+  r.results.forEach(x=>card(results,x,"TMDB"));
 };
 
-/* OUVERTURE CONTENU */
-async function open(item){
+/* 🔹 Vimeo CC Animations / Anime */
+const vimeoData=[
+  {title:"Big Buck Bunny",thumbnail:"https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",url:"https://player.vimeo.com/video/17466681"},
+  {title:"Elephants Dream",thumbnail:"https://orange.blender.org/wp-content/themes/od/images/ed_header.jpg",url:"https://player.vimeo.com/video/24281094"},
+  {title:"Sintel",thumbnail:"https://durian.blender.org/wp-content/uploads/2010/05/sintel_poster.jpg",url:"https://player.vimeo.com/video/69565484"},
+  {title:"Tears of Steel",thumbnail:"https://mango.blender.org/wp-content/uploads/2012/06/ToS_poster.jpg",url:"https://player.vimeo.com/video/74289686"}
+];
+function loadVimeo(){vimeo.innerHTML=""; vimeoData.forEach(f=>card(vimeo,f,"Vimeo"));}
+
+/* 🔹 OUVERTURE PLAYER */
+function openContent(item,type){
   current=item;
-  player.style.display="flex";
-  iframe.src="";
-  season.style.display="none";
-  episode.style.display="none";
-
-  if(item.media_type==="movie"){
-    playTrailer(item.media_type,item.id);
-  }else{
-    const tv=await get(`${API}/tv/${item.id}?api_key=${TMDB_KEY}&language=${lang.value}`);
-    season.innerHTML="<option>Saison</option>";
-    tv.seasons.forEach(s=>{
-      if(s.season_number>0)
-        season.innerHTML+=`<option value="${s.season_number}">S${s.season_number}</option>`;
+  if(type==="TMDB"){
+    get(`${API}/${item.media_type}/${item.id}/videos?api_key=${TMDB_KEY}`)
+    .then(r=>r.json())
+    .then(v=>{
+      const yt=v.results.find(x=>x.site==="YouTube");
+      if(yt) openPlayer(`https://www.youtube.com/embed/${yt.key}`,"youtube");
+      else alert("Pas de vidéo officielle");
     });
-    season.style.display="block";
+  } else {
+    openPlayer(item.url,"iframe");
   }
 }
 
-/* SAISONS / EPISODES */
-season.onchange = async ()=>{
-  const s=season.value;
-  const r=await get(`${API}/tv/${current.id}/season/${s}?api_key=${TMDB_KEY}&language=${lang.value}`);
-  episode.innerHTML="<option>Épisode</option>";
-  r.episodes.forEach(e=>{
-    episode.innerHTML+=`<option value="${e.episode_number}">E${e.episode_number}</option>`;
-  });
-  episode.style.display="block";
-};
-
-episode.onchange = ()=>{
-  playTrailer("tv",current.id,current.season,episode.value);
-};
-
-/* LECTURE LÉGALE (YouTube officiel) */
-async function playTrailer(type,id){
-  const r=await get(`${API}/${type}/${id}/videos?api_key=${TMDB_KEY}`);
-  const yt=r.results.find(v=>v.site==="YouTube");
-  if(!yt){
-    alert("Aucune vidéo officielle disponible.");
-    closePlayer();
-    return;
-  }
-  iframe.src=`https://www.youtube.com/embed/${yt.key}?autoplay=1`;
+function openPlayer(url,mode){
+  player.style.display="flex";
+  iframe.src=url;
 }
 
-/* PLAYER */
-function closePlayer(){
-  player.style.display="none";
-  iframe.src="";
-}
+function closePlayer(){player.style.display="none"; iframe.src="";}
 
 /* LANGUE */
-lang.onchange=()=>{
-  loadTrending();
-};
+lang.onchange=()=>{loadTrending();};
 
 /* INIT */
 loadTrending();
+loadVimeo();
 </script>
 
 </body>
