@@ -41,7 +41,6 @@
         .card { flex: 0 0 auto; border-radius: 10px; overflow: hidden; position: relative; background: #1a1a1a; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .card img { width: 100%; height: 100%; object-fit: cover; display: block; }
         
-        /* Fallback image (si erreur) */
         .img-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #222; color: #666; font-size: 0.7rem; font-weight: 700; text-align: center; padding: 5px; }
 
         /* Standard (Films/Séries/Animes) */
@@ -71,16 +70,13 @@
         /* --- OVERLAYS --- */
         #shortsOverlay, #videoOverlay, #catalogOverlay { display: none; position: fixed; inset: 0; background: black; z-index: 5000; }
         
-        /* Shorts Player */
         .shorts-feed { height: 100dvh; overflow-y: scroll; scroll-snap-type: y mandatory; }
         .short-item { height: 100dvh; width: 100%; scroll-snap-align: start; position: relative; background: #000; display: flex; align-items: center; justify-content: center; }
         .short-item iframe { width: 100%; height: 100%; border: none; }
         .btn-close-fixed { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.2); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 6000; cursor: pointer; color: white; }
 
-        /* Video Player */
         #videoFrame { width: 100%; height: 100%; border: none; }
 
-        /* Catalog (Voir Plus) */
         #catalogOverlay { background: #0a0a0a; z-index: 4000; padding: 0; display: none; flex-direction: column; }
         .cat-header { padding: 15px; border-bottom: 1px solid #333; background: #111; display: flex; flex-direction: column; gap: 10px; }
         .cat-controls { display: flex; align-items: center; gap: 10px; }
@@ -211,9 +207,18 @@
 
 <script>
     const TMDB = "1073e4d36ef71f912da093a5eb38f091";
-    const YT_KEY = "AIzaSyAc7d0U7_DcloYMLqeCdUUZD_M3ZLaEA7E"; 
     
-    // Etat du catalogue pour la pagination
+    // --- TES 6 CLÉS API YOUTUBE (ROTATION) ---
+    const YT_KEYS = [
+        "AIzaSyCo4xWGX9xjFwCoGqum17qvCpr5liZtOq4",
+        "AIzaSyAc7d0U7_DcloYMLqeCdUUZD_M3ZLaEA7E",
+        "AIzaSyCTfzR9KdN2QKLA7SrJkdmCvFaTYVPIs24",
+        "AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc",
+        "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY",
+        "AIzaSyBEos5Lzr0WbleEdtP_Gi7kMHcxaL9hhR0"
+    ];
+    let currentKeyIdx = 0;
+    
     let catState = { type: '', sort: '', page: 1, query: '' };
 
     function attemptLogin() {
@@ -247,7 +252,27 @@
         searchAll("anime trailer 2025");
     }
 
-    // --- CHARGEMENT DONNÉES ---
+    // --- FETCH AVEC ROTATION YOUTUBE ---
+    async function fetchYT(urlPart) {
+        try {
+            let key = YT_KEYS[currentKeyIdx];
+            let res = await fetch(`${urlPart}&key=${key}`);
+            let data = await res.json();
+            
+            if(data.error && (data.error.code === 403 || data.error.errors[0].reason === 'quotaExceeded')) {
+                currentKeyIdx++;
+                if(currentKeyIdx < YT_KEYS.length) {
+                    console.log("Clé épuisée, changement vers clé " + (currentKeyIdx+1));
+                    return fetchYT(urlPart);
+                } else {
+                    console.error("Toutes les clés sont épuisées.");
+                    return null;
+                }
+            }
+            return data;
+        } catch(e) { return null; }
+    }
+
     async function loadTMDB(id, type, cat, name) {
         let url = cat==='trending' ? `https://api.themoviedb.org/3/trending/${type}/week?api_key=${TMDB}&language=fr-FR` : `https://api.themoviedb.org/3/${type}/${cat}?api_key=${TMDB}&language=fr-FR`;
         try {
@@ -262,7 +287,6 @@
             document.getElementById(id).innerHTML = html;
         } catch(e) {}
     }
-
     async function loadKitsu(id, sort, name) {
         let url = sort==='upcoming' ? "https://kitsu.io/api/edge/anime?filter[status]=upcoming&page[limit]=10" : (sort==='trending' ? "https://kitsu.io/api/edge/trending/anime" : `https://kitsu.io/api/edge/anime?sort=${sort}&page[limit]=10`);
         try {
@@ -280,17 +304,20 @@
         } catch(e) {}
     }
 
-  // --- RECHERCHE ET CONTENU VIDÉO ---
     async function searchAll(q) {
-        // Shorts (Format Vertical)
-        fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q} shorts&type=video&videoDuration=short&maxResults=10&key=${YT_KEY}`)
-            .then(r=>r.json()).then(d => renderShorts('ytShortsRow', d.items, 'yt'));
+        // YT Shorts
+        let ytS = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q} shorts&type=video&videoDuration=short&maxResults=10`);
+        if(ytS && ytS.items) renderShorts('ytShortsRow', ytS.items, 'yt');
+        
+        // DM Shorts
         fetch(`https://api.dailymotion.com/videos?search=${q}&shorter_than=60&fields=id,title,thumbnail_720_url&limit=10`)
             .then(r=>r.json()).then(d => renderShorts('dmShortsRow', d.list, 'dm'));
 
-        // Vidéos (Format 16:9)
-        fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q}&type=video&videoDuration=medium&maxResults=10&key=${YT_KEY}`)
-            .then(r=>r.json()).then(d => renderVideos('ytVideoRow', d.items, 'yt'));
+        // YT Long
+        let ytV = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q}&type=video&videoDuration=medium&maxResults=10`);
+        if(ytV && ytV.items) renderVideos('ytVideoRow', ytV.items, 'yt');
+
+        // DM Long
         fetch(`https://api.dailymotion.com/videos?search=${q}&longer_than=60&fields=id,title,thumbnail_720_url&limit=10`)
             .then(r=>r.json()).then(d => renderVideos('dmVideoRow', d.list, 'dm'));
     }
@@ -325,12 +352,11 @@
         }).join('');
     }
 
-    // --- GESTION CATALOGUE (VOIR PLUS) ---
     function openCatalog(type, sort, name) {
         catState = { type, sort, page: 1, query: '' };
         document.getElementById('catTitle').innerText = name;
         document.getElementById('catSearchInput').value = '';
-        document.getElementById('catalogOverlay').style.display = 'flex'; // Use flex for column layout
+        document.getElementById('catalogOverlay').style.display = 'flex';
         fetchCatalog();
     }
 
@@ -373,7 +399,6 @@
                 </div>`;
             }).join('');
         } else {
-            // TMDB
             let url = query ? `https://api.themoviedb.org/3/search/${type}?api_key=${TMDB}&language=fr-FR&query=${query}&page=${page}` :
                       (sort === 'trending' ? `https://api.themoviedb.org/3/trending/${type}/week?api_key=${TMDB}&language=fr-FR&page=${page}` :
                       `https://api.themoviedb.org/3/${type}/${sort}?api_key=${TMDB}&language=fr-FR&page=${page}`);
@@ -388,7 +413,6 @@
         }
     }
 
-    // --- UTILS ---
     function playShorts(rowId, idx) {
         const items = window['data_'+rowId];
         const feed = document.getElementById('shortsFeed');
