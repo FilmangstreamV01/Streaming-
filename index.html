@@ -427,9 +427,25 @@
             }
         }
 
-        // Pour le bouton du Hero
+             // Pour le bouton du Hero
         function openSinglePlayer(id) {
             modal.style.display = 'flex';
             seriesPanel.style.display = 'none';
             if(player && player.loadVideoById) {
-                player.loadVideo
+                player.loadVideoById(id);
+            }
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+            if(player && player.stopVideo) {
+                player.stopVideo();
+            }
+        }
+
+        // Initialisation
+        renderCatalog(catalog);
+
+    </script>
+</body>
+</html>
