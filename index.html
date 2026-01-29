@@ -3,29 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FilmAngStream - Live</title>
+    <title>FilmAngStream - Live GitHub</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
     <style>
         body { background-color: #0a0a0b; color: white; font-family: sans-serif; margin: 0; padding: 20px; text-align: center; }
-        .header { padding: 40px 0; border-bottom: 2px solid #00adef; margin-bottom: 30px; }
-        h1 { color: #00adef; text-transform: uppercase; letter-spacing: 2px; }
-        .btn { background: #00adef; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn:hover { background: #0080af; }
-        #vimeo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: 30px auto; }
-        .video-card { background: #161618; border-radius: 12px; overflow: hidden; border: 1px solid #333; }
-        .player-container { position: relative; padding-top: 56.25%; }
-        .player-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-        .error-msg { background: #411; color: #f88; padding: 15px; border-radius: 8px; margin: 20px auto; max-width: 600px; display: none; }
+        .header { padding: 30px 0; border-bottom: 2px solid #00adef; margin-bottom: 20px; }
+        h1 { color: #00adef; margin: 0; }
+        .btn { background: #00adef; color: white; border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; }
+        #vimeo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 30px; }
+        .video-card { background: #161618; border-radius: 12px; overflow: hidden; border: 1px solid #333; padding-bottom: 10px; }
+        .player { position: relative; padding-top: 56.25%; }
+        .player iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .error-msg { background: #411; color: #f88; padding: 15px; border-radius: 8px; margin: 20px; display: none; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>FilmAngStream</h1>
+        <h1>FILMANGSTREAM</h1>
         <p>Ma Bibliothèque Vidéo Privée</p>
     </div>
 
@@ -39,7 +37,7 @@
         </div>
 
     <script>
-        // 1. CONFIGURATION FIREBASE (Vérifiée avec tes identifiants)
+        // 1. TA CONFIGURATION FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyA3J4K7ZMGYoWMTxBVlN5-Lsgb5orolLi0",
             authDomain: "filmangstream.firebaseapp.com",
@@ -55,44 +53,51 @@
 
         function login() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            // Utilisation de Redirect pour éviter les erreurs de Popup sur mobile
+            // Sur mobile/GitHub, signInWithRedirect est plus fiable que Popup
             firebase.auth().signInWithRedirect(provider);
         }
 
-        async function fetchVideos() {
+        async function chargerVideos() {
             const grid = document.getElementById('vimeo-grid');
             const errorBox = document.getElementById('error-box');
+
             try {
                 const response = await fetch('https://api.vimeo.com/me/videos', {
-                    headers: { 'Authorization': 'Bearer ' + VIM_TK.trim() }
+                    method: 'GET',
+                    headers: { 'Authorization': 'Bearer ' + VIM_TK }
                 });
+
                 const data = await response.json();
 
-                if (data.error) throw new Error(data.developer_message || "Token Invalide");
-
-                if (data.data) {
-                    grid.innerHTML = data.data.map(v => `
-                        <div class="video-card">
-                            <div class="player-container">
-                                <iframe src="https://player.vimeo.com/video/${v.uri.split('/')[2]}" frameborder="0" allowfullscreen></iframe>
-                            </div>
-                            <div style="padding:15px; font-weight:bold;">${v.name}</div>
-                        </div>
-                    `).join('');
+                if (data.data && data.data.length > 0) {
+                    grid.innerHTML = data.data.map(v => {
+                        const id = v.uri.split('/')[2];
+                        return `
+                            <div class="video-card">
+                                <div class="player">
+                                    <iframe src="https://player.vimeo.com/video/${id}" frameborder="0" allowfullscreen></iframe>
+                                </div>
+                                <p>${v.name}</p>
+                            </div>`;
+                    }).join('');
+                } else if (data.error) {
+                    errorBox.style.display = "block";
+                    errorBox.innerText = "Vimeo dit : " + data.error;
                 }
             } catch (err) {
-                errorBox.style.display = "block";
-                errorBox.innerText = "Erreur Vimeo : " + err.message;
+                console.error(err);
             }
         }
 
-        // Gestion du statut de connexion
-        firebase.auth().onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById('auth-section').innerHTML = `<h3>Bienvenue ${user.displayName}</h3><p>Accès autorisé à vos 6 clés API.</p>`;
+        // Vérifier si on revient d'une connexion Google
+        firebase.auth().getRedirectResult().then((result) => {
+            if (result.user) {
+                document.getElementById('auth-section').innerHTML = "Connecté : " + result.user.displayName;
             }
-            fetchVideos();
         });
+
+        // Charger les vidéos immédiatement
+        chargerVideos();
     </script>
 </body>
 </html>
