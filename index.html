@@ -31,7 +31,7 @@
     <div id="vimeo-grid"></div>
 
     <script>
-        // Ton Token Vimeo actuel
+        // Ton Token Vimeo
         const VIM_TK = "ZtDImh52MQIIWDo4IiLtVVcKu7SIiLpqIYEwKvtferpOZy5ltN5uW6ayed+syId/6sJctfRScopKdkJt9pi/JSFSgP87yfie3C2pcEY0/msCihm3xCVuh2z8XcqOLNal";
 
         async function chargerVideos() {
@@ -48,7 +48,6 @@
                 loader.style.display = 'none';
 
                 if (data.error) {
-                    // Si on a encore l'erreur "Something strange occurred"
                     throw new Error(data.developer_message || "Erreur de configuration Vimeo");
                 }
 
@@ -74,7 +73,6 @@
             }
         }
 
-        // Lancer le chargement immédiatement
         window.onload = chargerVideos;
     </script>
 </body>
