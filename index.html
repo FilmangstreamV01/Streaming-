@@ -3,217 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FILMANGSTREAM - Cinéma Immersif</title>
+    <title>FILMANGSTREAM - L'Expérience Cinéma Ultime</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --bg-dark: #050505; --accent-red: #e50914; --glass: rgba(255, 255, 255, 0.1); }
-        body { background: var(--bg-dark); color: white; font-family: 'Inter', -apple-system, sans-serif; margin: 0; padding-bottom: 50px; overflow-x: hidden; }
+        :root { --red: #ff0000; --deep-black: #020202; --card-bg: #111; }
+        
+        body { background: var(--deep-black); color: white; font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; overflow-x: hidden; }
 
-        /* --- HEADER --- */
-        header { position: sticky; top: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%); padding: 20px; z-index: 50; }
-        .app-title { color: var(--accent-red); font-weight: 900; font-size: 1.8rem; letter-spacing: 2px; text-align: center; margin-bottom: 15px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-        .search-bar { display: flex; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 12px; padding: 10px 20px; align-items: center; max-width: 600px; margin: 0 auto; border: 1px solid rgba(255,255,255,0.1); }
-        .search-bar input { background: transparent; border: none; color: white; width: 100%; margin-left: 10px; outline: none; }
+        header { 
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
+            padding: 25px; position: sticky; top: 0; z-index: 100;
+        }
+        .logo { 
+            color: var(--red); font-size: 2.2rem; font-weight: 900; text-align: center; 
+            letter-spacing: 5px; text-transform: uppercase; margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+        }
+        .search-container { 
+            max-width: 700px; margin: 0 auto; display: flex; 
+            background: rgba(255,255,255,0.08); border-radius: 50px; 
+            padding: 12px 25px; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .search-container input { background: transparent; border: none; color: white; width: 100%; outline: none; font-size: 1.1rem; }
 
-        /* --- HOME GRID --- */
-        .section-title { padding: 30px 20px 10px; font-size: 1.3rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }
-        .horizontal-list { display: flex; overflow-x: auto; gap: 15px; padding: 0 20px; scrollbar-width: none; }
-        .movie-card { min-width: 150px; cursor: pointer; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .movie-card:hover { transform: scale(1.1); z-index: 5; }
-        .poster { width: 100%; aspect-ratio: 2/3; border-radius: 12px; object-fit: cover; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .category-block { margin-bottom: 40px; }
+        .section-header { padding: 0 20px; font-size: 1.4rem; font-weight: bold; margin-bottom: 15px; border-left: 5px solid var(--red); margin-left: 20px; }
+        
+        .movie-scroller { display: flex; overflow-x: auto; gap: 20px; padding: 10px 25px; scrollbar-width: none; }
+        .movie-scroller::-webkit-scrollbar { display: none; }
 
-        /* --- VUE DÉTAILS AMÉLIORÉE --- */
-        #details-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 100; overflow-y: auto; display: none; animation: slideUp 0.4s ease-out; }
-        @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .item-card { 
+            min-width: 160px; cursor: pointer; transition: all 0.4s ease;
+            position: relative; border-radius: 15px; overflow: hidden;
+        }
+        .item-card:hover { transform: scale(1.1); box-shadow: 0 0 25px rgba(255,0,0,0.4); }
+        .item-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
+        .item-card .overlay-info { 
+            position: absolute; bottom: 0; width: 100%; padding: 10px;
+            background: linear-gradient(transparent, black); font-size: 0.8rem; text-align: center;
+        }
 
-        .hero-banner { position: relative; width: 100%; height: 60vh; background: #000; overflow: hidden; }
-        .hero-banner iframe { position: absolute; top: 50%; left: 50%; width: 130%; height: 130%; transform: translate(-50%, -50%); border: none; }
-        .hero-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, var(--bg-dark) 10%, transparent 90%); pointer-events: none; }
+        #details-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--deep-black); z-index: 200; overflow-y: auto; display: none;
+        }
+        
+        .video-hero { position: relative; width: 100%; height: 55vh; background: #000; }
+        .video-hero iframe { 
+            position: absolute; top: 50%; left: 50%; width: 115%; height: 115%; 
+            transform: translate(-50%, -50%); border: none; 
+        }
 
-        .back-circle { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; z-index: 110; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); }
+        .close-action { 
+            position: absolute; top: 30px; left: 30px; z-index: 210;
+            background: rgba(0,0,0,0.6); padding: 12px; border-radius: 50%; cursor: pointer;
+            border: 1px solid var(--red); color: var(--red);
+        }
 
-        .content-wrap { padding: 0 25px 50px; margin-top: -80px; position: relative; z-index: 5; }
-        .movie-badges { display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
-        .badge { background: var(--glass); padding: 5px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; border: 1px solid rgba(255,255,255,0.1); }
-        .badge.red { background: var(--accent-red); border: none; }
+        .details-body { padding: 30px; max-width: 1000px; margin: -50px auto 0; position: relative; z-index: 5; }
+        .main-info { display: flex; gap: 30px; align-items: flex-end; }
+        .detail-poster { width: 200px; border-radius: 15px; box-shadow: 0 0 30px rgba(0,0,0,0.8); border: 2px solid #222; }
+        
+        /* --- SYSTÈME DE NOTATION --- */
+        .rating-stars { margin: 10px 0; font-size: 1.5rem; color: #444; }
+        .rating-stars i { cursor: pointer; transition: 0.2s; }
+        .rating-stars i.active { color: #ffcc00; text-shadow: 0 0 10px rgba(255, 204, 0, 0.4); }
 
-        .action-row { display: flex; gap: 12px; margin: 25px 0; }
-        .btn-action { flex: 1; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
-        .btn-fav-large { background: white; color: black; }
-        .btn-share { background: var(--glass); color: white; border: 1px solid rgba(255,255,255,0.2); }
+        .meta-strip { display: flex; gap: 15px; margin: 15px 0; }
+        .meta-tag { background: #1a1a1a; padding: 6px 15px; border-radius: 5px; border: 1px solid #333; font-size: 0.9rem; font-weight: bold; }
+        
+        .streaming-links { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+            gap: 15px; margin: 30px 0; 
+        }
+        .stream-btn { 
+            background: #111; color: white; padding: 18px; border-radius: 12px; 
+            text-decoration: none; display: flex; align-items: center; justify-content: center; 
+            gap: 12px; font-weight: 800; border: 1px solid #222; transition: 0.3s;
+        }
+        .stream-btn:hover { background: var(--red); transform: translateY(-3px); }
 
-        .info-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-top: 30px; }
-        .cast-item { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-        .cast-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #333; }
-
-        .platform-card { background: #111; padding: 15px; border-radius: 12px; border: 1px solid #222; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: white; transition: 0.2s; }
-        .platform-card:hover { background: #1a1a1a; border-color: var(--accent-red); }
-
-        @media (max-width: 768px) { .info-grid { grid-template-columns: 1fr; } .hero-banner { height: 40vh; } }
+        .cast-section { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 30px; }
+        .actor-card { text-align: center; font-size: 0.8rem; }
+        .actor-img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; border: 2px solid var(--red); }
     </style>
 </head>
 <body>
 
     <div id="home-view">
         <header>
-            <div class="app-title">FILMANGSTREAM</div>
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" id="search-input" placeholder="Rechercher sur FILMANGSTREAM...">
+            <div class="logo">FILMANGSTREAM</div>
+            <div class="search-container">
+                <i class="fas fa-search" style="color: #666; margin-right: 15px;"></i>
+                <input type="text" id="search-input" placeholder="Films, Séries, Acteurs...">
             </div>
         </header>
 
-        <div id="home-content">
-            <div id="fav-row" style="display:none;">
-                <div class="section-title"><i class="fas fa-heart" style="color:var(--accent-red)"></i> Vos Favoris</div>
-                <div class="horizontal-list" id="list-favs"></div>
-            </div>
-            <div class="section-title">🔥 Tendances</div>
-            <div class="horizontal-list" id="list-trending"></div>
-            <div class="section-title">🎬 Action & Aventure</div>
-            <div class="horizontal-list" id="list-action"></div>
-            <div class="section-title">👽 Science-Fiction</div>
-            <div class="horizontal-list" id="list-scifi"></div>
-        </div>
+        <main id="main-content"></main>
     </div>
 
-    <div id="details-view">
-        <div class="back-circle" onclick="closeDetails()"><i class="fas fa-arrow-left"></i></div>
+    <div id="details-overlay">
+        <div class="close-action" onclick="closeDetails()"><i class="fas fa-times fa-lg"></i></div>
+        <div class="video-hero" id="player-view"></div>
         
-        <div class="hero-banner" id="hero-player"></div>
-        <div class="hero-overlay"></div>
-
-        <div class="content-wrap">
-            <h1 id="det-title" style="font-size: 2.5rem; margin: 0; font-weight: 900;"></h1>
-            
-            <div class="movie-badges">
-                <span class="badge red">TOP 10</span>
-                <span class="badge" id="det-year"></span>
-                <span class="badge" id="det-runtime"></span>
-                <span class="badge" style="color: #ffcc00;"><i class="fas fa-star"></i> <span id="det-vote"></span></span>
-                <span class="badge">4K HDR</span>
-            </div>
-
-            <div class="action-row">
-                <button class="btn-action btn-fav-large" onclick="toggleFavorite()"><i class="fas fa-plus"></i> Favoris</button>
-                <button class="btn-action btn-share" onclick="alert('Lien copié !')"><i class="fas fa-share-alt"></i> Partager</button>
-            </div>
-
-            <div class="info-grid">
+        <div class="details-body">
+            <div class="main-info">
+                <img id="det-poster" class="detail-poster" src="">
                 <div>
-                    <h3 style="color: #fff; margin-bottom: 10px;">Synopsis</h3>
-                    <p id="det-desc" style="color: #bbb; line-height: 1.7; font-size: 1rem;"></p>
+                    <h1 id="det-title" style="font-size: 3rem; margin: 0;"></h1>
                     
-                    <h3 style="color: #fff; margin: 30px 0 15px;">Distribution</h3>
-                    <div id="det-cast"></div>
-                </div>
+                    <div class="rating-stars" id="user-rating">
+                        <i class="fas fa-star" data-value="1"></i>
+                        <i class="fas fa-star" data-value="2"></i>
+                        <i class="fas fa-star" data-value="3"></i>
+                        <i class="fas fa-star" data-value="4"></i>
+                        <i class="fas fa-star" data-value="5"></i>
+                        <span style="font-size: 0.9rem; color: #888; margin-left: 10px;">Votre note</span>
+                    </div>
 
-                <div>
-                    <h3 style="color: #fff; margin-bottom: 15px;">Plateformes</h3>
-                    <a href="https://www.netflix.com" target="_blank" class="platform-card"><span>Netflix</span> <i class="fas fa-external-link-alt"></i></a>
-                    <a href="https://www.primevideo.com" target="_blank" class="platform-card"><span>Prime Video</span> <i class="fas fa-external-link-alt"></i></a>
-                    <a href="https://rakuten.tv" target="_blank" class="platform-card"><span>Rakuten TV</span> <i class="fas fa-external-link-alt"></i></a>
-                    <a href="https://www.france.tv" target="_blank" class="platform-card"><span>France TV</span> <i class="fas fa-external-link-alt"></i></a>
+                    <div class="meta-strip">
+                        <span class="meta-tag" id="det-year"></span>
+                        <span class="meta-tag" style="color: #ffcc00;"><i class="fas fa-star"></i> <span id="det-score"></span></span>
+                        <span class="meta-tag">ULTRA HD 4K</span>
+                    </div>
                 </div>
             </div>
 
-            <h3 style="color: #fff; margin-top: 40px;">Titres Similaires</h3>
-            <div class="horizontal-list" id="det-similar" style="padding: 0;"></div>
+            <div class="streaming-links">
+                <a href="https://www.netflix.com" class="stream-btn"><i class="fas fa-play"></i> Regarder sur Netflix</a>
+                <a href="https://www.primevideo.com" class="stream-btn"><i class="fas fa-play"></i> Prime Video</a>
+                <a href="https://www.plex.tv" class="stream-btn"><i class="fas fa-play"></i> Plex Media</a>
+                <a href="https://rakuten.tv" class="stream-btn"><i class="fas fa-play"></i> Rakuten TV</a>
+            </div>
+
+            <h2 style="border-bottom: 1px solid #222; padding-bottom: 10px;">Synopsis</h2>
+            <p id="det-overview" style="line-height: 1.8; color: #ccc; font-size: 1.1rem;"></p>
+
+            <h2 style="margin-top: 40px;">Casting Principal</h2>
+            <div id="det-cast" class="cast-section"></div>
+
+            <h2 style="margin-top: 40px;">Contenus Similaires</h2>
+            <div id="det-similar" class="movie-scroller" style="padding: 0;"></div>
         </div>
     </div>
 
     <script>
-        const API_KEY = '1073e4d36ef71f912da093a5eb38f091';
-        let favs = JSON.parse(localStorage.getItem('fams_favs')) || [];
-        let currentItem = null;
+        const KEY = '1073e4d36ef71f912da093a5eb38f091';
+        const IMG = 'https://image.tmdb.org/t/p/w500';
+
+        const categories = [
+            { name: "🔥 Les Tendances du Moment", url: "/trending/all/week" },
+            { name: "🎬 Action & Frissons", url: "/discover/movie?with_genres=28" },
+            { name: "👽 Science-Fiction & Futur", url: "/discover/movie?with_genres=878" },
+            { name: "👻 Horreur & Paranormal", url: "/discover/movie?with_genres=27" }
+        ];
 
         document.addEventListener('DOMContentLoaded', () => {
-            updateFavsDisplay();
-            fetchGroup('/trending/all/week', 'list-trending');
-            fetchGroup('/discover/movie?with_genres=28', 'list-action');
-            fetchGroup('/discover/movie?with_genres=878', 'list-scifi');
+            categories.forEach(cat => loadCategory(cat));
+            setupRatingSystem();
         });
 
-        async function fetchGroup(path, id) {
-            const r = await fetch(`https://api.themoviedb.org/3${path}${path.includes('?') ? '&' : '?'}api_key=${API_KEY}&language=fr-FR`);
-            const data = await r.json();
-            const container = document.getElementById(id);
-            data.results.forEach(m => {
-                if(!m.poster_path) return;
-                const card = createCard(m);
-                container.appendChild(card);
+        function setupRatingSystem() {
+            const stars = document.querySelectorAll('.rating-stars i');
+            stars.forEach(star => {
+                star.onclick = function() {
+                    const val = this.getAttribute('data-value');
+                    stars.forEach(s => s.classList.remove('active'));
+                    for(let i=0; i<val; i++) stars[i].classList.add('active');
+                    // Sauvegarde la note pour ce film
+                    localStorage.setItem('rating_' + currentMovieId, val);
+                }
             });
         }
 
-        function createCard(m) {
-            const div = document.createElement('div');
-            div.className = 'movie-card';
-            div.innerHTML = `<img class="poster" src="https://image.tmdb.org/t/p/w400${m.poster_path}">`;
-            div.onclick = () => openDetails(m.id, m.title ? 'movie' : 'tv');
-            return div;
+        let currentMovieId = null;
+
+        async function loadCategory(cat) {
+            const r = await fetch(`https://api.themoviedb.org/3${cat.url}${cat.url.includes('?') ? '&' : '?'}api_key=${KEY}&language=fr-FR`);
+            const data = await r.json();
+            const block = document.createElement('div');
+            block.className = 'category-block';
+            block.innerHTML = `<div class="section-header">${cat.name}</div><div class="movie-scroller"></div>`;
+            const scroller = block.querySelector('.movie-scroller');
+            data.results.forEach(m => {
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.innerHTML = `<img src="${IMG + m.poster_path}"><div class="overlay-info">${m.title || m.name}</div>`;
+                card.onclick = () => openDetails(m.id, m.title ? 'movie' : 'tv');
+                scroller.appendChild(card);
+            });
+            document.getElementById('main-content').appendChild(block);
         }
 
         async function openDetails(id, type) {
-            const r = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=fr-FR&append_to_response=videos,credits,similar`);
+            currentMovieId = id;
+            const r = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${KEY}&language=fr-FR&append_to_response=videos,credits,similar`);
             const data = await r.json();
-            currentItem = data;
 
             document.getElementById('det-title').innerText = data.title || data.name;
-            document.getElementById('det-desc').innerText = data.overview || "Pas de description disponible.";
+            document.getElementById('det-overview').innerText = data.overview;
             document.getElementById('det-year').innerText = (data.release_date || data.first_air_date || '').split('-')[0];
-            document.getElementById('det-vote').innerText = data.vote_average.toFixed(1);
-            document.getElementById('det-runtime').innerText = data.runtime ? `${data.runtime} min` : `${data.number_of_seasons} Saisons`;
+            document.getElementById('det-score').innerText = data.vote_average.toFixed(1);
+            document.getElementById('det-poster').src = IMG + data.poster_path;
+
+            // Reset et chargement de la note utilisateur
+            const stars = document.querySelectorAll('.rating-stars i');
+            const savedRating = localStorage.getItem('rating_' + id);
+            stars.forEach(s => s.classList.remove('active'));
+            if(savedRating) {
+                for(let i=0; i<savedRating; i++) stars[i].classList.add('active');
+            }
 
             // Casting
-            const castDiv = document.getElementById('det-cast');
-            castDiv.innerHTML = data.credits.cast.slice(0, 4).map(c => `
-                <div class="cast-item">
-                    <img class="cast-img" src="https://image.tmdb.org/t/p/w200${c.profile_path}" onerror="this.src='https://via.placeholder.com/40'">
-                    <span><b>${c.name}</b> (${c.character})</span>
+            document.getElementById('det-cast').innerHTML = data.credits.cast.slice(0, 4).map(c => `
+                <div class="actor-card">
+                    <img class="actor-img" src="https://image.tmdb.org/t/p/w200${c.profile_path}" onerror="this.src='https://via.placeholder.com/70'">
+                    <div><b>${c.name}</b></div>
                 </div>
             `).join('');
 
-            // Trailer sans contrôles
-            const trailer = data.videos.results.find(v => v.site === 'YouTube');
-            const player = document.getElementById('hero-player');
-            if(trailer) {
-                player.innerHTML = `<iframe src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&controls=0&modestbranding=1&rel=0&mute=1" allow="autoplay" allowfullscreen></iframe>`;
-            } else {
-                player.innerHTML = `<img src="https://image.tmdb.org/t/p/original${data.backdrop_path}" style="width:100%;height:100%;object-fit:cover;">`;
-            }
+            // Vidéo
+            const trailer = data.videos.results.find(v => v.site === 'YouTube' && v.type === 'Trailer');
+            const player = document.getElementById('player-view');
+            player.innerHTML = trailer ? `<iframe src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=0&controls=0&modestbranding=1&rel=0" allow="autoplay" allowfullscreen></iframe>` : `<img src="https://image.tmdb.org/t/p/original${data.backdrop_path}" style="width:100%;height:100%;object-fit:cover;">`;
 
             // Similaires
-            const similarDiv = document.getElementById('det-similar');
-            similarDiv.innerHTML = '';
-            data.similar.results.slice(0, 6).forEach(s => similarDiv.appendChild(createCard(s)));
+            const simContainer = document.getElementById('det-similar');
+            simContainer.innerHTML = '';
+            data.similar.results.slice(0, 6).forEach(s => {
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.innerHTML = `<img src="${IMG + s.poster_path}">`;
+                card.onclick = () => openDetails(s.id, 'movie');
+                simContainer.appendChild(card);
+            });
 
-            document.getElementById('details-view').style.display = 'block';
+            document.getElementById('details-overlay').style.display = 'block';
             window.scrollTo(0,0);
         }
 
-        function toggleFavorite() {
-            const idx = favs.findIndex(f => f.id === currentItem.id);
-            if(idx > -1) favs.splice(idx, 1);
-            else favs.push({id: currentItem.id, poster_path: currentItem.poster_path, title: currentItem.title || currentItem.name});
-            localStorage.setItem('fams_favs', JSON.stringify(favs));
-            updateFavsDisplay();
-        }
-
-        function updateFavsDisplay() {
-            const row = document.getElementById('list-favs');
-            const sec = document.getElementById('fav-row');
-            if(favs.length > 0) {
-                sec.style.display = 'block';
-                row.innerHTML = '';
-                favs.forEach(f => row.appendChild(createCard(f)));
-            } else {
-                sec.style.display = 'none';
-            }
-        }
-
         function closeDetails() {
-            document.getElementById('details-view').style.display = 'none';
-            document.getElementById('hero-player').innerHTML = '';
+            document.getElementById('details-overlay').style.display = 'none';
+            document.getElementById('player-view').innerHTML = '';
         }
     </script>
 </body>
