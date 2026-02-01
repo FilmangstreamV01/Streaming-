@@ -3,479 +3,373 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamTube - Cinéma Mondial</title>
+    <title>CineMax Pro | Cinema Experience</title>
     <style>
         :root {
-            --primary: #e50914;
-            --dark: #141414;
-            --gray: #333;
-            --text: #fff;
+            --accent: #e50914;
+            --bg: #050505;
+            --surface: #121212;
+            --text: #ffffff;
+            --radius: 8px;
         }
 
         body {
-            background-color: var(--dark);
+            background-color: var(--bg);
             color: var(--text);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             margin: 0;
-            padding: 0;
-            padding-bottom: 50px;
+            padding-top: 160px;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Navigation */
+        /* --- HEADER & RECHERCHE --- */
         header {
-            display: flex;
-            flex-direction: column;
-            padding: 15px 4%;
-            background: #000;
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            position: fixed;
+            top: 0; width: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.95) 80%, transparent);
+            z-index: 1000;
+            padding: 20px 0;
         }
 
-        .header-top {
+        .nav-container {
+            width: 90%;
+            margin: 0 auto;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin-bottom: 15px;
+            align-items: center;
         }
 
-        .logo { 
-            color: var(--primary); 
-            font-size: 2rem; 
-            font-weight: bold; 
-            text-transform: uppercase; 
-            letter-spacing: 2px;
-        }
-
-        /* Menu de navigation défilant */
-        nav {
-            display: flex;
-            overflow-x: auto;
-            white-space: nowrap;
-            padding-bottom: 5px;
-            gap: 10px;
-            scrollbar-width: none; /* Firefox */
-        }
-        nav::-webkit-scrollbar { display: none; } /* Chrome/Safari */
-
-        nav button {
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: #ddd;
-            padding: 8px 15px;
+        .logo {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: -1px;
             cursor: pointer;
-            font-size: 0.9rem;
-            border-radius: 20px;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
-        }
-        
-        nav button:hover, nav button.active { 
-            background: var(--text); 
-            color: var(--dark); 
-            font-weight: bold;
         }
 
-        /* Contenu */
-        #content-area { padding: 20px 4%; min-height: 80vh; }
-        
-        .section-title { 
-            margin-top: 10px; 
-            margin-bottom: 20px;
-            font-size: 1.8rem; 
-            border-left: 5px solid var(--primary);
-            padding-left: 15px;
+        .search-bar {
+            flex: 0 1 400px;
+            position: relative;
         }
+
+        .search-bar input {
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 12px 20px;
+            border-radius: 50px;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .search-bar input:focus {
+            background: rgba(255,255,255,0.2);
+            border-color: var(--accent);
+        }
+
+        /* --- CATEGORIES --- */
+        .categories {
+            width: 90%;
+            margin: 20px auto 0;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .categories::-webkit-scrollbar { display: none; }
+
+        .categories button {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #ccc;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.3s;
+        }
+
+        .categories button.active, .categories button:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* --- GRILLE DE FILMS --- */
+        .main-container { width: 90%; margin: 0 auto; }
 
         .movie-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
+            gap: 25px;
         }
 
         .movie-card {
-            background: #1f1f1f;
-            border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
             position: relative;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-
-        .movie-card:hover { 
-            transform: scale(1.05); 
-            z-index: 2; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-        }
-        
-        .movie-card img { 
-            width: 100%; 
-            height: 270px; 
-            object-fit: cover; 
-            opacity: 0.9;
-        }
-        
-        .movie-info { padding: 12px; }
-        .movie-title { 
-            font-size: 0.95rem; 
-            font-weight: bold; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            margin-bottom: 5px;
-        }
-        .movie-meta { font-size: 0.8rem; color: #aaa; }
-
-        /* Modal Lecteur */
-        #videoModal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 1000;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            overflow-y: auto;
-            padding-top: 20px;
-        }
-
-        .player-wrapper {
-            width: 90%;
-            max-width: 1000px;
-            aspect-ratio: 16/9;
-            background: #000;
-            box-shadow: 0 0 30px rgba(229, 9, 20, 0.3);
-            border-radius: 8px;
+            border-radius: var(--radius);
             overflow: hidden;
-        }
-        
-        iframe { width: 100%; height: 100%; border: none; }
-
-        .controls {
-            width: 90%;
-            max-width: 1000px;
-            margin-top: 20px;
-            background: #1a1a1a;
-            padding: 25px;
-            border-radius: 8px;
-            margin-bottom: 50px;
-        }
-
-        .controls h2 { margin-top: 0; color: var(--primary); }
-
-        .lang-section {
-            background: rgba(255,255,255,0.05);
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-
-        .lang-buttons { 
-            margin-top: 15px; 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 10px; 
-        }
-        
-        .btn-lang {
-            background: transparent;
-            border: 1px solid #555;
-            color: white;
-            padding: 8px 20px;
             cursor: pointer;
-            border-radius: 50px;
-            transition: 0.2s;
-            font-size: 0.9rem;
-        }
-        .btn-lang:hover { 
-            background: var(--text); 
-            color: var(--dark); 
-            border-color: var(--text); 
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            aspect-ratio: 2/3;
         }
 
-        /* Messages d'état */
-        #statusMessage {
-            margin-top: 15px;
-            font-weight: bold;
-            padding: 10px;
-            border-radius: 4px;
-            display: none; /* Caché par défaut */
+        .movie-card:hover {
+            transform: scale(1.08);
+            z-index: 10;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .error { background: rgba(255, 68, 68, 0.2); color: #ff4444; border: 1px solid #ff4444; }
-        .success { background: rgba(0, 200, 81, 0.2); color: #00c851; border: 1px solid #00c851; }
-        .loading { background: rgba(51, 181, 229, 0.2); color: #33b5e5; border: 1px solid #33b5e5; }
 
-        .close-modal {
-            position: absolute; top: 15px; right: 25px;
-            font-size: 40px; cursor: pointer; color: white;
-            z-index: 1100;
+        .movie-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .movie-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            padding: 20px 10px 10px;
+            opacity: 0;
             transition: 0.3s;
         }
-        .close-modal:hover { color: var(--primary); transform: rotate(90deg); }
 
-        /* Loader */
-        .loader {
-            border: 4px solid rgba(255,255,255,0.1);
-            border-left-color: var(--primary);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 50px auto;
+        .movie-card:hover .movie-overlay { opacity: 1; }
+
+        /* --- MODAL LECTEUR --- */
+        #playerModal {
             display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.98);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 40px 20px;
         }
 
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .modal-content {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .video-box {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            box-shadow: 0 0 50px rgba(229, 9, 20, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .movie-details {
+            margin-top: 30px;
+            display: flex;
+            gap: 30px;
+        }
+
+        .lang-selector {
+            background: var(--surface);
+            padding: 25px;
+            border-radius: 12px;
+            flex: 1;
+        }
+
+        .btn-lang {
+            background: #252525;
+            border: 1px solid #444;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 5px;
+            transition: 0.3s;
+        }
+
+        .btn-lang:hover { background: var(--accent); border-color: var(--accent); }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            font-size: 3rem;
+            cursor: pointer;
+            color: #888;
+        }
+        .close-modal:hover { color: white; }
+
+        #status { margin-top: 15px; font-weight: bold; }
 
     </style>
 </head>
 <body>
 
     <header>
-        <div class="header-top">
-            <div class="logo">StreamTube</div>
+        <div class="nav-container">
+            <div class="logo">CineMax Pro</div>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Rechercher un film..." onkeyup="if(event.key==='Enter') search()">
+            </div>
         </div>
-        <nav id="navMenu">
-            <button onclick="fetchMovies('Action', this)" class="active">Action</button>
-            <button onclick="fetchMovies('Drama', this)">Drame</button>
-            <button onclick="fetchMovies('Hollywood', this)">Hollywood</button>
-            <button onclick="fetchMovies('Nollywood', this)">Nollywood</button>
-            <button onclick="fetchMovies('Comedy', this)">Comédie</button>
-            <button onclick="fetchMovies('Horror', this)">Horreur</button>
-            <button onclick="fetchMovies('Romance', this)">Romance</button>
-            <button onclick="fetchMovies('Sci-Fi', this)">Science-Fiction</button>
-            <button onclick="fetchMovies('Thriller', this)">Thriller</button>
-            <button onclick="fetchMovies('Kung Fu', this)">Arts Martiaux</button>
-            <button onclick="fetchMovies('Anime', this)">Animation</button>
-        </nav>
+        <div class="categories" id="catList">
+            </div>
     </header>
 
-    <div id="content-area">
-        </div>
-    <div class="loader" id="mainLoader"></div>
+    <div class="main-container">
+        <div id="grid" class="movie-grid"></div>
+    </div>
 
-    <div id="videoModal">
-        <span class="close-modal" onclick="closeModal()">&times;</span>
-        
-        <div class="player-wrapper">
-            <div id="playerFrame"></div>
-        </div>
-
-        <div class="controls">
-            <h2 id="mTitle">Titre du film</h2>
-            <p id="mDesc" style="color:#ccc; font-size:0.9rem; line-height: 1.4;">Description du film...</p>
-            
-            <div class="lang-section">
-                <h3>🌍 Langues disponibles</h3>
-                <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 10px;">Cliquez pour rechercher ce film dans une autre langue :</p>
-                
-                <div class="lang-buttons">
-                    <button class="btn-lang" onclick="tryChangeLanguage('fr', 'Français')">🇫🇷 Français (VF)</button>
-                    <button class="btn-lang" onclick="tryChangeLanguage('en', 'Anglais')">🇺🇸 Anglais (VO)</button>
-                    <button class="btn-lang" onclick="tryChangeLanguage('es', 'Espagnol')">🇪🇸 Espagnol</button>
-                    <button class="btn-lang" onclick="tryChangeLanguage('de', 'Allemand')">🇩🇪 Allemand</button>
-                    <button class="btn-lang" onclick="tryChangeLanguage('hi', 'Hindi')">🇮🇳 Hindi</button>
-                    <button class="btn-lang" onclick="tryChangeLanguage('ar', 'Arabe')">🇸🇦 Arabe</button>
+    <div id="playerModal">
+        <span class="close-modal" onclick="closePlayer()">&times;</span>
+        <div class="modal-content">
+            <div class="video-box" id="vidContainer"></div>
+            <div class="movie-details">
+                <div class="lang-selector">
+                    <h1 id="mTitle" style="margin:0 0 10px 0;">Titre du film</h1>
+                    <p id="mOverview" style="color:#aaa; line-height:1.6;"></p>
+                    <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
+                    <h3>🌍 Langues disponibles sur YouTube</h3>
+                    <div id="langBtns">
+                        <button class="btn-lang" onclick="changeLanguage('fr')">Français (VF)</button>
+                        <button class="btn-lang" onclick="changeLanguage('en')">Anglais (VO)</button>
+                        <button class="btn-lang" onclick="changeLanguage('es')">Espagnol</button>
+                    </div>
+                    <div id="status"></div>
                 </div>
-                
-                <div id="statusMessage"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // ---------------------------------------------------------
-        // CONFIGURATION ET CLÉ API
-        // ---------------------------------------------------------
-        const API_KEY = 'AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc'; 
-        const BASE_URL = 'https://www.googleapis.com/youtube/v3/search';
+        const YT_KEY = 'AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc';
+        const TMDB_KEY = '1073e4d36ef71f912da093a5eb38f091';
         
-        let currentMovieOriginalTitle = "";
+        const genres = [
+            {id: 28, name: 'Action'},
+            {id: 18, name: 'Drama'},
+            {id: 35, name: 'Comedy'},
+            {id: 27, name: 'Horreur'},
+            {id: 10749, name: 'Romance'},
+            {id: 10751, name: 'Family'},
+            {id: 'nollywood', name: 'Nollywood'}
+        ];
 
-        // Initialisation au chargement
-        window.onload = () => fetchMovies('Action', document.querySelector('nav button'));
+        let currentTitle = "";
 
-        // ---------------------------------------------------------
-        // LOGIQUE PRINCIPALE : CHARGEMENT DES FILMS
-        // ---------------------------------------------------------
-        async function fetchMovies(genre, btnElement) {
-            // Gestion de l'interface (bouton actif)
-            if(btnElement) {
-                document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-                btnElement.classList.add('active');
-            }
+        // Initialisation
+        window.onload = () => {
+            renderCategories();
+            loadGenre(28); // Charge Action par défaut
+        };
 
-            const container = document.getElementById('content-area');
-            const loader = document.getElementById('mainLoader');
-            
-            container.innerHTML = ''; // Vider la grille
-            container.innerHTML = `<h2 class="section-title">Films : ${genre}</h2><div class="movie-grid" id="gridRef"></div>`;
-            const grid = document.getElementById('gridRef');
-            
-            loader.style.display = 'block'; // Afficher le chargement
-
-            // Construction de la requête intelligente
-            // On ajoute des mots clés pour filtrer les faux films
-            let queryKeywords = `full movie ${genre}`;
-            if(genre === 'Nollywood') queryKeywords = `nollywood movies latest full movie`;
-            if(genre === 'Hollywood') queryKeywords = `hollywood full movie english`;
-
-            const url = `${BASE_URL}?part=snippet&maxResults=25&q=${encodeURIComponent(queryKeywords)}&type=video&videoDuration=long&videoDefinition=high&key=${API_KEY}`;
-
-            try {
-                const res = await fetch(url);
-                const data = await res.json();
-                
-                loader.style.display = 'none'; // Cacher le chargement
-
-                if(data.error) {
-                    container.innerHTML += `<div style="color:red; padding:20px;">Erreur API: ${data.error.message} <br> (Vérifiez si le quota est dépassé)</div>`;
-                    return;
-                }
-
-                if(!data.items || data.items.length === 0) {
-                    container.innerHTML += `<div style="padding:20px;">Aucun film trouvé pour cette catégorie.</div>`;
-                    return;
-                }
-
-                displayGrid(grid, data.items);
-
-            } catch (e) {
-                console.error(e);
-                loader.style.display = 'none';
-                container.innerHTML += `<div style="color:red; padding:20px;">Erreur de connexion.</div>`;
-            }
+        function renderCategories() {
+            const catList = document.getElementById('catList');
+            genres.forEach(g => {
+                const btn = document.createElement('button');
+                btn.innerText = g.name;
+                btn.onclick = () => loadGenre(g.id, btn);
+                catList.appendChild(btn);
+            });
+            catList.firstChild.classList.add('active');
         }
 
-        // Affichage des cartes de films
-        function displayGrid(gridContainer, items) {
-            items.forEach(item => {
-                const vidTitle = item.snippet.title;
-                const vidId = item.id.videoId;
-                const thumb = item.snippet.thumbnails.high ? item.snippet.thumbnails.high.url : item.snippet.thumbnails.medium.url;
-                const desc = item.snippet.description;
-                const date = new Date(item.snippet.publishedAt).getFullYear();
+        async function loadGenre(genreId, btn) {
+            if(btn) {
+                document.querySelectorAll('.categories button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
 
-                // Nettoyage des chaînes pour éviter les bugs JS dans le onclick
-                const safeTitle = vidTitle.replace(/'/g, "&apos;").replace(/"/g, "&quot;");
-                const safeDesc = desc.replace(/'/g, "&apos;").replace(/"/g, "&quot;").replace(/\n/g, " ");
+            const grid = document.getElementById('grid');
+            grid.innerHTML = "";
 
-                // Filtrage basique : On n'affiche pas si pas d'image
-                if(thumb) {
-                    const card = document.createElement('div');
-                    card.className = 'movie-card';
-                    card.onclick = () => openPlayer(vidId, safeTitle, safeDesc);
-                    
-                    card.innerHTML = `
-                        <img src="${thumb}" alt="Cover">
-                        <div class="movie-info">
-                            <div class="movie-title">${vidTitle}</div>
-                            <div class="movie-meta">${date} • YouTube</div>
-                        </div>
-                    `;
-                    gridContainer.appendChild(card);
-                }
+            let url = "";
+            if(genreId === 'nollywood') {
+                url = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=Nollywood&language=fr-FR`;
+            } else {
+                url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&with_genres=${genreId}&language=fr-FR&sort_by=popularity.desc`;
+            }
+
+            const res = await fetch(url);
+            const data = await res.json();
+            
+            data.results.forEach(movie => {
+                if(!movie.poster_path) return;
+                const card = document.createElement('div');
+                card.className = 'movie-card';
+                card.innerHTML = `
+                    <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}">
+                    <div class="movie-overlay">
+                        <strong>${movie.title}</strong><br>
+                        <small>⭐ ${movie.vote_average}</small>
+                    </div>
+                `;
+                card.onclick = () => openPlayer(movie.title, movie.overview);
+                grid.appendChild(card);
             });
         }
 
-        // ---------------------------------------------------------
-        // LOGIQUE DU LECTEUR ET DES LANGUES
-        // ---------------------------------------------------------
-        function openPlayer(id, title, desc) {
-            const modal = document.getElementById('videoModal');
-            document.getElementById('mTitle').innerHTML = title; // innerHTML pour décoder les caractères spéciaux
-            document.getElementById('mDesc').innerHTML = desc;
+        async function search() {
+            const query = document.getElementById('searchInput').value;
+            if(!query) return;
+            const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(query)}&language=fr-FR`);
+            const data = await res.json();
             
-            // Reset de l'état
-            const statusDiv = document.getElementById('statusMessage');
-            statusDiv.style.display = 'none';
-            statusDiv.className = '';
-
-            // Nettoyage du titre pour la recherche future (retire les mots parasites)
-            // Ex: "Action Movie 2024 Full HD" -> devient le titre plus propre
-            currentMovieOriginalTitle = title
-                .replace(/full movie|film complet|official|hd|4k|1080p|english|french|francais|movie/gi, "")
-                .replace(/[()]/g, "") // Enlève les parenthèses
-                .trim();
-
-            if(currentMovieOriginalTitle.length < 3) currentMovieOriginalTitle = title; // Sécurité si on a trop nettoyé
-
-            loadIframe(id);
-            modal.style.display = 'flex';
+            const grid = document.getElementById('grid');
+            grid.innerHTML = "";
+            data.results.forEach(movie => {
+                if(!movie.poster_path) return;
+                const card = document.createElement('div');
+                card.className = 'movie-card';
+                card.innerHTML = `<img src="https://image.tmdb.org/t/p/w500${movie.poster_path}"><div class="movie-overlay"><strong>${movie.title}</strong></div>`;
+                card.onclick = () => openPlayer(movie.title, movie.overview);
+                grid.appendChild(card);
+            });
         }
 
-        function loadIframe(id) {
-            const frame = document.getElementById('playerFrame');
-            // autoplay=1 lance la vidéo, rel=0 évite les pubs concurrentes à la fin
-            frame.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1" allowfullscreen allow="autoplay"></iframe>`;
-        }
-
-        function closeModal() {
-            document.getElementById('videoModal').style.display = 'none';
-            document.getElementById('playerFrame').innerHTML = ''; // Stop le son
-        }
-
-        // Fonction de changement de langue avec vérification
-        async function tryChangeLanguage(langCode, langName) {
-            const statusDiv = document.getElementById('statusMessage');
+        async function openPlayer(title, overview) {
+            currentTitle = title;
+            document.getElementById('mTitle').innerText = title;
+            document.getElementById('mOverview').innerText = overview;
+            document.getElementById('playerModal').style.display = "block";
+            document.body.style.overflow = "hidden";
             
-            // Affichage état chargement
-            statusDiv.style.display = 'block';
-            statusDiv.className = 'loading';
-            statusDiv.innerText = `⏳ Recherche de "${currentMovieOriginalTitle}" en version ${langName}...`;
+            // Premier essai : chercher le film en VF par défaut sur YouTube
+            changeLanguage('fr');
+        }
 
-            // Création de la requête spécifique
-            let suffix = "";
-            switch(langCode) {
-                case 'fr': suffix = "complet en français"; break;
-                case 'es': suffix = "pelicula completa español"; break;
-                case 'de': suffix = "ganzer film deutsch"; break;
-                case 'it': suffix = "film completo italiano"; break;
-                case 'ar': suffix = "film kamil arabic"; break;
-                case 'hi': suffix = "full movie hindi dubbed"; break;
-                default: suffix = `full movie ${langName}`;
-            }
+        async function changeLanguage(lang) {
+            const status = document.getElementById('status');
+            status.style.color = "#33b5e5";
+            status.innerText = `🔍 Recherche de la version ${lang.toUpperCase()} sur YouTube...`;
 
-            // On cherche le titre + le mot clé de langue
-            const query = `${currentMovieOriginalTitle} ${suffix}`;
-            const url = `${BASE_URL}?part=snippet&maxResults=1&q=${encodeURIComponent(query)}&type=video&videoDuration=long&key=${API_KEY}`;
+            let q = `${currentTitle} film complet ${lang === 'fr' ? 'français' : lang === 'en' ? 'english' : 'español'}`;
+            const ytUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(q)}&type=video&videoDuration=long&key=${YT_KEY}`;
 
             try {
-                const res = await fetch(url);
+                const res = await fetch(ytUrl);
                 const data = await res.json();
-
-                if (!data.items || data.items.length === 0) {
-                    // Échec
-                    statusDiv.className = 'error';
-                    statusDiv.innerText = `❌ Désolé, aucune version ${langName} trouvée pour ce titre spécifique sur YouTube.`;
+                
+                if(data.items && data.items.length > 0) {
+                    const videoId = data.items[0].id.videoId;
+                    document.getElementById('vidContainer').innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allowfullscreen allow="autoplay"></iframe>`;
+                    status.style.color = "#00c851";
+                    status.innerText = "✅ Film trouvé ! Bonne séance.";
                 } else {
-                    // Succès
-                    const vid = data.items[0];
-                    statusDiv.className = 'success';
-                    statusDiv.innerHTML = `✅ Trouvé ! Chargement de : <i>${vid.snippet.title}</i>`;
-                    
-                    // Petite pause pour laisser l'utilisateur lire le message de succès avant de lancer
-                    setTimeout(() => {
-                        loadIframe(vid.id.videoId);
-                    }, 1000);
+                    status.style.color = "#ff4444";
+                    status.innerText = "❌ Désolé, ce contenu n'est pas encore disponible en version longue sur YouTube.";
                 }
-
-            } catch (error) {
-                statusDiv.className = 'error';
-                statusDiv.innerText = "Erreur technique lors de la recherche.";
+            } catch (e) {
+                status.innerText = "Erreur de connexion API.";
             }
         }
 
-        // Fermer le modal si on clique en dehors du contenu
-        window.onclick = function(event) {
-            const modal = document.getElementById('videoModal');
-            if (event.target == modal) {
-                closeModal();
-            }
+        function closePlayer() {
+            document.getElementById('playerModal').style.display = "none";
+            document.getElementById('vidContainer').innerHTML = "";
+            document.body.style.overflow = "auto";
         }
     </script>
 </body>
