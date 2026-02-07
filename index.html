@@ -188,7 +188,7 @@
             <h2><i class=”fas fa-heart”></i> VOD - Romance</h2><div class=”row” id=”vod_romance”></div>
             <h2><i class=”fas fa-users”></i> VOD - Famille</h2><div class=”row” id=”vod_family”></div>
             <h2><i class=”fas fa-globe-africa”></i> VOD - Nollywood & Afrique</h2><div class=”row” id=”vod_africa”></div>
-                            <h2><i class=”fas fa-child”></i> VOD - Enfants</h2><div class=”row” id=”vod_kids”></div>
+            <h2><i class=”fas fa-child”></i> VOD - Enfants</h2><div class=”row” id=”vod_kids”></div>
             <h2><i class=”fas fa-book”></i> VOD - Documentaire</h2><div class=”row” id=”vod_doc”></div>
             <h2><i class=”fas fa-graduation-cap”></i> VOD - Éducation</h2><div class=”row” id=”vod_edu”></div>
         </section>
@@ -214,7 +214,7 @@
         </section>
 
         <!-- ANIMES (KITSU) -->
-        <section id=”animeSec”>
+                        <section id=”animeSec”>
             <h2><i class=”fas fa-dragon”></i> Animes - Nouveautés</h2><div class=”row” id=”a_new”></div>
             <h2><i class=”fas fa-fire”></i> Animes - Populaires</h2><div class=”row” id=”a_pop”></div>
             <h2><i class=”fas fa-heart”></i> Animes - Aimés</h2><div class=”row” id=”a_like”></div>
@@ -411,7 +411,7 @@
 
     // --- LOGIQUE CONTENU MIXTE ---
     async function loadMixedContent(query) {
-        // 1. SHORTS 
+        // 1. SHORTS (YT + DM)
         let shorts = [];
         let ytS = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query} shorts&type=video&videoDuration=short&maxResults=25`);
         if(ytS && ytS.items) shorts.push(...ytS.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: ‘yt’})));
@@ -422,7 +422,7 @@
         globalShortsList = shuffle(shorts); // Stockage global pour l’infini
         renderShortsRows(globalShortsList);
 
-        // 2. VIDEOS 
+        // 2. VIDEOS (YT + DM)
         let videos = [];
         let ytV = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&maxResults=15`);
         if(ytV && ytV.items) videos.push(...ytV.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: ‘yt’})));
@@ -432,10 +432,11 @@
         
         renderMixedCards(’mixedVideosRow’, shuffle(videos), ‘video’);
 
-        // 3. LIVES 
+        // 3. LIVES (YT + DM)
         let lives = [];
         let ytL = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=live news&type=video&eventType=live&maxResults=10`);
         if(ytL && ytL.items) lives.push(...ytL.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: ‘yt’})));
+
         let dmL = await fetch(`https://api.dailymotion.com/videos?search=live&flags=live_onair&fields=id,title,thumbnail_720_url&limit=10`).then(r=>r.json());
         if(dmL && dmL.list) lives.push(...dmL.list.map(i => ({id: i.id, title: i.title, img: i.thumbnail_720_url, src: ‘dm’})));
         
@@ -487,6 +488,7 @@
     }
 
     // --- TMDB & KITSU LOGIC ---
+    
     async function loadTMDB(id, type, cat, name) {
         let url = cat===’trending’ ? `https://api.themoviedb.org/3/trending/${type}/week?api_key=${TMDB}&language=fr-FR` : `https://api.themoviedb.org/3/${type}/${cat}?api_key=${TMDB}&language=fr-FR`;
         try {
@@ -681,7 +683,7 @@
                 div.className = 'short-item';
                 div.id = `slide-${startIdx + i}`;
                 feed.appendChild(div);
-                });
+            });
         }
     }
 
@@ -806,7 +808,7 @@
                     <img src="https://image.tmdb.org/t/p/w300${m.poster_path}" onerror="this.style.display='none'; this.nextElementSibling.nextElementSibling.style.display='flex'">
                     <div class="card-title">${m.title||m.name}</div>
                 </div>`).join('');
-        }
+          }
     }
 
     function initStars() {
@@ -840,6 +842,3 @@
 </script>
 </body>
 </html>
-
-                                                          
-    
