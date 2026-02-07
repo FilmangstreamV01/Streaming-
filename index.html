@@ -3,374 +3,693 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CineMax Pro | Cinema Experience</title>
+    <title>CineMax Pro | Ultimate Streaming</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --accent: #e50914;
-            --bg: #050505;
-            --surface: #121212;
+            --primary: #E50914;
+            --bg: #141414;
+            --surface: #1f1f1f;
             --text: #ffffff;
-            --radius: 8px;
+            --text-dim: #b3b3b3;
         }
+
+        * { box-sizing: border-box; }
 
         body {
             background-color: var(--bg);
             color: var(--text);
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Montserrat', sans-serif;
             margin: 0;
-            padding-top: 160px;
-            -webkit-font-smoothing: antialiased;
+            padding: 0;
+            overflow-x: hidden;
         }
 
-        /* --- HEADER & RECHERCHE --- */
-        header {
+        /* --- NAVIGATION --- */
+        nav {
             position: fixed;
             top: 0; width: 100%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.95) 80%, transparent);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
             z-index: 1000;
-            padding: 20px 0;
-        }
-
-        .nav-container {
-            width: 90%;
-            margin: 0 auto;
+            padding: 15px 4%;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            transition: 0.3s background;
         }
+        nav.scrolled { background: #000; }
 
         .logo {
-            font-size: 2rem;
-            font-weight: 900;
-            color: var(--accent);
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: -1px;
             cursor: pointer;
+            margin-right: 40px;
         }
 
-        .search-bar {
-            flex: 0 1 400px;
-            position: relative;
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            flex-grow: 1;
         }
 
-        .search-bar input {
-            width: 100%;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 12px 20px;
-            border-radius: 50px;
+        .nav-links button {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+        .nav-links button:hover, .nav-links button.active { color: white; }
+
+        .search-box {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid white;
+            padding: 5px 10px;
+            display: flex;
+            align-items: center;
+        }
+        .search-box input {
+            background: transparent;
+            border: none;
             color: white;
             outline: none;
-            transition: 0.3s;
+            width: 0;
+            transition: 0.4s;
         }
+        .search-box:hover input, .search-box input:focus { width: 200px; }
 
-        .search-bar input:focus {
-            background: rgba(255,255,255,0.2);
-            border-color: var(--accent);
-        }
-
-        /* --- CATEGORIES --- */
-        .categories {
-            width: 90%;
-            margin: 20px auto 0;
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-        .categories::-webkit-scrollbar { display: none; }
-
-        .categories button {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #ccc;
-            padding: 8px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: 0.3s;
-        }
-
-        .categories button.active, .categories button:hover {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-        }
-
-        /* --- GRILLE DE FILMS --- */
-        .main-container { width: 90%; margin: 0 auto; }
-
-        .movie-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 25px;
-        }
-
-        .movie-card {
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 80vh;
             position: relative;
-            border-radius: var(--radius);
-            overflow: hidden;
-            cursor: pointer;
-            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            aspect-ratio: 2/3;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            padding: 0 4%;
         }
-
-        .movie-card:hover {
-            transform: scale(1.08);
-            z-index: 10;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .movie-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .movie-overlay {
+        .hero::after {
+            content: '';
             position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0,0,0,0.9));
-            padding: 20px 10px 10px;
-            opacity: 0;
-            transition: 0.3s;
+            inset: 0;
+            background: linear-gradient(to top, var(--bg) 0%, transparent 60%),
+                        linear-gradient(to right, rgba(0,0,0,0.8) 0%, transparent 50%);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            max-width: 600px;
+        }
+        .hero-title { font-size: 3.5rem; font-weight: 800; margin-bottom: 10px; line-height: 1.1; }
+        .hero-desc { color: var(--text-dim); font-size: 1.1rem; margin-bottom: 20px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        .btn {
+            padding: 10px 25px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            display: inline-flex; align-items: center; gap: 10px;
+            transition: 0.2s;
+        }
+        .btn-primary { background: white; color: black; }
+        .btn-primary:hover { background: rgba(255,255,255,0.8); }
+        .btn-secondary { background: rgba(109, 109, 110, 0.7); color: white; margin-left: 10px; }
+        .btn-secondary:hover { background: rgba(109, 109, 110, 0.4); }
+
+        /* --- SECTIONS & CAROUSELS --- */
+        .section-title {
+            padding: 0 4%;
+            margin-top: 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #e5e5e5;
         }
 
-        .movie-card:hover .movie-overlay { opacity: 1; }
+        .carousel-container {
+            padding: 10px 4%;
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: none; 
+            padding-bottom: 30px;
+        }
+        .carousel-container::-webkit-scrollbar { display: none; }
 
-        /* --- MODAL LECTEUR --- */
-        #playerModal {
+        .card {
+            display: inline-block;
+            width: 200px;
+            margin-right: 10px;
+            border-radius: 4px;
+            transition: 0.3s;
+            cursor: pointer;
+            position: relative;
+            aspect-ratio: 2/3;
+            overflow: hidden;
+        }
+        .card img { width: 100%; height: 100%; object-fit: cover; }
+        .card:hover { transform: scale(1.1); z-index: 100; box-shadow: 0 0 20px rgba(0,0,0,0.8); }
+
+        /* --- MODAL --- */
+        .modal {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.98);
             z-index: 2000;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
             overflow-y: auto;
-            padding: 40px 20px;
+            animation: fadeIn 0.3s;
         }
 
         .modal-content {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        .video-box {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: #000;
-            box-shadow: 0 0 50px rgba(229, 9, 20, 0.2);
-            border-radius: 12px;
+            background: #181818;
+            width: 90%;
+            max-width: 1000px;
+            margin: 50px auto;
+            border-radius: 10px;
             overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            position: relative;
         }
 
-        .movie-details {
-            margin-top: 30px;
-            display: flex;
-            gap: 30px;
+        .close-btn {
+            position: absolute; top: 15px; right: 20px;
+            background: #181818; color: white;
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 10; font-size: 1.5rem;
         }
 
-        .lang-selector {
-            background: var(--surface);
-            padding: 25px;
-            border-radius: 12px;
-            flex: 1;
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            background: black;
         }
+        .video-wrapper iframe, .video-wrapper .placeholder {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
+        }
+        .placeholder {
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column;
+            background-size: cover;
+            background-position: center;
+        }
+        .placeholder::before { content:''; position:absolute; inset:0; background:rgba(0,0,0,0.6); }
+        .play-big {
+            z-index: 2; font-size: 4rem; color: white; cursor: pointer;
+            transition: 0.3s; opacity: 0.8;
+        }
+        .play-big:hover { transform: scale(1.1); opacity: 1; color: var(--primary); }
 
-        .btn-lang {
-            background: #252525;
-            border: 1px solid #444;
+        .modal-info { padding: 30px; }
+        .modal-meta { display: flex; gap: 15px; color: #46d369; font-weight: bold; margin-bottom: 15px; }
+        .modal-desc { color: #fff; line-height: 1.6; font-size: 1rem; margin-bottom: 20px; }
+
+        /* --- CONTROLS & EPISODES --- */
+        .controls-area {
+            background: #222;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .lang-tabs { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .lang-btn {
+            padding: 8px 16px;
+            background: #333;
+            border: 1px solid #555;
             color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
+            border-radius: 4px;
             cursor: pointer;
-            margin: 5px;
-            transition: 0.3s;
         }
+        .lang-btn:hover, .lang-btn.active { background: var(--primary); border-color: var(--primary); }
 
-        .btn-lang:hover { background: var(--accent); border-color: var(--accent); }
-
-        .close-modal {
-            position: absolute;
-            top: 20px;
-            right: 40px;
-            font-size: 3rem;
+        .episode-list {
+            display: none; /* Hidden for movies */
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .episode-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #333;
             cursor: pointer;
-            color: #888;
+            transition: 0.2s;
         }
-        .close-modal:hover { color: white; }
+        .episode-item:hover { background: #333; }
+        .ep-num { font-size: 1.2rem; color: #888; margin-right: 15px; width: 30px; }
+        .ep-img { width: 100px; height: 56px; object-fit: cover; border-radius: 4px; margin-right: 15px; background: #333; }
+        .ep-info h4 { margin: 0 0 5px 0; font-size: 0.95rem; }
+        .ep-info p { margin: 0; font-size: 0.8rem; color: #aaa; }
 
-        #status { margin-top: 15px; font-weight: bold; }
+        .status-msg { margin-top: 10px; font-weight: bold; font-size: 0.9rem; }
+        .status-loading { color: #33b5e5; }
+        .status-success { color: #00c851; }
+        .status-error { color: #ff4444; }
 
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2rem; }
+            .nav-links { display: none; } /* Simplification pour mobile */
+            .modal-content { width: 100%; margin: 0; height: 100%; border-radius: 0; }
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="nav-container">
-            <div class="logo">CineMax Pro</div>
-            <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="Rechercher un film..." onkeyup="if(event.key==='Enter') search()">
+    <nav id="navbar">
+        <div class="logo" onclick="app.loadSection('home')">CINEMAX</div>
+        <div class="nav-links">
+            <button onclick="app.loadSection('home')" class="active">Accueil</button>
+            <button onclick="app.loadSection('series')">Séries</button>
+            <button onclick="app.loadSection('movies')">Films</button>
+            <button onclick="app.loadSection('anime')">Anime & Manga</button>
+            <button onclick="app.loadSection('african')">African Movies</button>
+            <button onclick="app.loadSection('docs')">Documentaires</button>
+        </div>
+        <div class="search-box">
+            <span>🔍</span>
+            <input type="text" placeholder="Titres, personnes, genres" onkeyup="if(event.key==='Enter') app.search(this.value)">
+        </div>
+    </nav>
+
+    <!-- Hero Section Dynamique -->
+    <div id="hero" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title" id="heroTitle">Chargement...</h1>
+            <p class="hero-desc" id="heroDesc"></p>
+            <div style="margin-top: 20px;">
+                <button class="btn btn-primary" id="heroPlayBtn">▶ Lecture</button>
+                <button class="btn btn-secondary" id="heroInfoBtn">ℹ Plus d'infos</button>
             </div>
         </div>
-        <div class="categories" id="catList">
-            </div>
-    </header>
-
-    <div class="main-container">
-        <div id="grid" class="movie-grid"></div>
     </div>
 
-    <div id="playerModal">
-        <span class="close-modal" onclick="closePlayer()">&times;</span>
+    <!-- Conteneur principal pour les catégories -->
+    <div id="mainContent" style="padding-bottom: 50px;"></div>
+
+    <!-- MODAL PLAYER -->
+    <div id="playerModal" class="modal">
         <div class="modal-content">
-            <div class="video-box" id="vidContainer"></div>
-            <div class="movie-details">
-                <div class="lang-selector">
-                    <h1 id="mTitle" style="margin:0 0 10px 0;">Titre du film</h1>
-                    <p id="mOverview" style="color:#aaa; line-height:1.6;"></p>
-                    <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
-                    <h3>🌍 Langues disponibles sur YouTube</h3>
-                    <div id="langBtns">
-                        <button class="btn-lang" onclick="changeLanguage('fr')">Français (VF)</button>
-                        <button class="btn-lang" onclick="changeLanguage('en')">Anglais (VO)</button>
-                        <button class="btn-lang" onclick="changeLanguage('es')">Espagnol</button>
+            <div class="close-btn" onclick="app.closeModal()">&times;</div>
+            
+            <!-- Zone Vidéo -->
+            <div class="video-wrapper" id="videoContainer">
+                <!-- Iframe ou Placeholder sera injecté ici -->
+            </div>
+
+            <div class="modal-info">
+                <div class="modal-meta">
+                    <span id="mMatch">98% Match</span>
+                    <span id="mYear">2023</span>
+                    <span id="mRating">16+</span>
+                </div>
+                <h2 id="mTitle" style="margin: 0 0 10px 0; font-size: 2rem;">Titre</h2>
+                <p id="mOverview" class="modal-desc">Description...</p>
+
+                <!-- Zone de Contrôle -->
+                <div class="controls-area">
+                    <h3 style="margin-top:0">🌍 Langue & Audio</h3>
+                    <div class="lang-tabs" id="langTabs">
+                        <!-- Boutons générés par JS -->
                     </div>
-                    <div id="status"></div>
+                    <div id="statusMsg" class="status-msg"></div>
+
+                    <!-- Liste des épisodes (Visible uniquement pour les séries) -->
+                    <div id="episodesArea" style="display:none;">
+                        <h3 style="margin-top:20px; border-top:1px solid #444; padding-top:20px;">📺 Épisodes (Saison 1)</h3>
+                        <div class="episode-list" id="epList"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const YT_KEY = 'AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc';
-        const TMDB_KEY = '1073e4d36ef71f912da093a5eb38f091';
-        
-        const genres = [
-            {id: 28, name: 'Action'},
-            {id: 18, name: 'Drama'},
-            {id: 35, name: 'Comedy'},
-            {id: 27, name: 'Horreur'},
-            {id: 10749, name: 'Romance'},
-            {id: 10751, name: 'Family'},
-            {id: 'nollywood', name: 'Nollywood'}
-        ];
+        // --- CONFIGURATION ---
+        const API_KEY = '1073e4d36ef71f912da093a5eb38f091'; // TMDB Key
+        const YT_KEY = 'AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc'; // YouTube Key (Attention aux quotas)
+        const BASE_URL = 'https://api.themoviedb.org/3';
+        const IMG_URL = 'https://image.tmdb.org/t/p/w500';
+        const IMG_ORIG = 'https://image.tmdb.org/t/p/original';
 
-        let currentTitle = "";
-
-        // Initialisation
-        window.onload = () => {
-            renderCategories();
-            loadGenre(28); // Charge Action par défaut
-        };
-
-        function renderCategories() {
-            const catList = document.getElementById('catList');
-            genres.forEach(g => {
-                const btn = document.createElement('button');
-                btn.innerText = g.name;
-                btn.onclick = () => loadGenre(g.id, btn);
-                catList.appendChild(btn);
-            });
-            catList.firstChild.classList.add('active');
-        }
-
-        async function loadGenre(genreId, btn) {
-            if(btn) {
-                document.querySelectorAll('.categories button').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            }
-
-            const grid = document.getElementById('grid');
-            grid.innerHTML = "";
-
-            let url = "";
-            if(genreId === 'nollywood') {
-                url = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=Nollywood&language=fr-FR`;
-            } else {
-                url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&with_genres=${genreId}&language=fr-FR&sort_by=popularity.desc`;
-            }
-
-            const res = await fetch(url);
-            const data = await res.json();
+        // --- STATE MANAGEMENT ---
+        const app = {
+            currentSection: 'home',
+            currentMovie: null,
+            currentSeason: 1,
             
-            data.results.forEach(movie => {
-                if(!movie.poster_path) return;
-                const card = document.createElement('div');
-                card.className = 'movie-card';
-                card.innerHTML = `
-                    <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}">
-                    <div class="movie-overlay">
-                        <strong>${movie.title}</strong><br>
-                        <small>⭐ ${movie.vote_average}</small>
-                    </div>
-                `;
-                card.onclick = () => openPlayer(movie.title, movie.overview);
-                grid.appendChild(card);
-            });
-        }
+            init: function() {
+                window.addEventListener('scroll', () => {
+                    const nav = document.getElementById('navbar');
+                    if(window.scrollY > 50) nav.classList.add('scrolled');
+                    else nav.classList.remove('scrolled');
+                });
+                this.loadSection('home');
+            },
 
-        async function search() {
-            const query = document.getElementById('searchInput').value;
-            if(!query) return;
-            const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(query)}&language=fr-FR`);
-            const data = await res.json();
-            
-            const grid = document.getElementById('grid');
-            grid.innerHTML = "";
-            data.results.forEach(movie => {
-                if(!movie.poster_path) return;
-                const card = document.createElement('div');
-                card.className = 'movie-card';
-                card.innerHTML = `<img src="https://image.tmdb.org/t/p/w500${movie.poster_path}"><div class="movie-overlay"><strong>${movie.title}</strong></div>`;
-                card.onclick = () => openPlayer(movie.title, movie.overview);
-                grid.appendChild(card);
-            });
-        }
+            // --- NAVIGATION & LOADING ---
+            loadSection: async function(section) {
+                this.currentSection = section;
+                document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+                // Highlight active button logic could be added here
+                
+                const main = document.getElementById('mainContent');
+                main.innerHTML = ''; // Clear
+                
+                let categories = [];
 
-        async function openPlayer(title, overview) {
-            currentTitle = title;
-            document.getElementById('mTitle').innerText = title;
-            document.getElementById('mOverview').innerText = overview;
-            document.getElementById('playerModal').style.display = "block";
-            document.body.style.overflow = "hidden";
-            
-            // Premier essai : chercher le film en VF par défaut sur YouTube
-            changeLanguage('fr');
-        }
+                if(section === 'home') {
+                    await this.loadHero();
+                    categories = [
+                        { title: "Tendances Actuelles", url: `/trending/all/week?language=fr-FR` },
+                        { title: "Films d'Action", url: `/discover/movie?with_genres=28&language=fr-FR` },
+                        { title: "Séries Populaires", url: `/discover/tv?sort_by=popularity.desc&language=fr-FR` },
+                        { title: "Animation Japonaise", url: `/discover/tv?with_genres=16&with_original_language=ja&language=fr-FR` }
+                    ];
+                } else if (section === 'series') {
+                    categories = [
+                        { title: "Séries US", url: `/discover/tv?with_original_language=en&language=fr-FR` },
+                        { title: "K-Dramas", url: `/discover/tv?with_original_language=ko&language=fr-FR` },
+                        { title: "Comédies", url: `/discover/tv?with_genres=35&language=fr-FR` },
+                        { title: "Crime & Mystère", url: `/discover/tv?with_genres=80&language=fr-FR` }
+                    ];
+                } else if (section === 'movies') {
+                    categories = [
+                        { title: "Blockbusters", url: `/movie/top_rated?language=fr-FR` },
+                        { title: "Horreur", url: `/discover/movie?with_genres=27&language=fr-FR` },
+                        { title: "Romance", url: `/discover/movie?with_genres=10749&language=fr-FR` }
+                    ];
+                } else if (section === 'anime') {
+                    categories = [
+                        { title: "Anime Shonen", url: `/discover/tv?with_genres=16&with_keywords=210024&language=fr-FR` },
+                        { title: "Films d'Animation", url: `/discover/movie?with_genres=16&with_original_language=ja&language=fr-FR` },
+                        { title: "Anime Action", url: `/discover/tv?with_genres=16&with_genres=28&language=fr-FR` }
+                    ];
+                } else if (section === 'african') {
+                    // Astuce: Filter by region or language
+                    categories = [
+                        { title: "African Movies & Series", url: `/discover/movie?with_original_language=sw|yo|ha|ig|af&sort_by=popularity.desc` },
+                        { title: "Nollywood (Nigeria)", url: `/discover/movie?with_origin_country=NG&sort_by=release_date.desc` },
+                        { title: "South African Cinema", url: `/discover/movie?with_origin_country=ZA` }
+                    ];
+                } else if (section === 'docs') {
+                    categories = [
+                        { title: "Documentaires Nature", url: `/discover/movie?with_genres=99&language=fr-FR` },
+                        { title: "Éducatif Enfants", url: `/discover/movie?with_genres=10751,99&language=fr-FR` },
+                        { title: "Histoire & Culture", url: `/discover/tv?with_genres=99&language=fr-FR` }
+                    ];
+                }
 
-        async function changeLanguage(lang) {
-            const status = document.getElementById('status');
-            status.style.color = "#33b5e5";
-            status.innerText = `🔍 Recherche de la version ${lang.toUpperCase()} sur YouTube...`;
+                // Render Categories
+                for (let cat of categories) {
+                    await this.renderRow(cat.title, cat.url);
+                }
+            },
 
-            let q = `${currentTitle} film complet ${lang === 'fr' ? 'français' : lang === 'en' ? 'english' : 'español'}`;
-            const ytUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(q)}&type=video&videoDuration=long&key=${YT_KEY}`;
+            loadHero: async function() {
+                
 
-            try {
-                const res = await fetch(ytUrl);
+               
+
+
+
+
+
+
+
+
+
+
+
+
+ // Fetch a random trending movie for hero
+                const res = await fetch(`${BASE_URL}/trending/movie/day?api_key=${API_KEY}&language=fr-FR`);
+                const data = await res.json();
+                const movie = data.results[Math.floor(Math.random() * 5)]; // Top 5
+
+                const hero = document.getElementById('hero');
+                hero.style.backgroundImage = `url(${IMG_ORIG}${movie.backdrop_path})`;
+                document.getElementById('heroTitle').innerText = movie.title;
+                document.getElementById('heroDesc').innerText = movie.overview;
+                
+                document.getElementById('heroPlayBtn').onclick = () => this.openModal(movie, 'movie');
+                document.getElementById('heroInfoBtn').onclick = () => this.openModal(movie, 'movie');
+            },
+
+            renderRow: async function(title, url) {
+                const res = await fetch(`${BASE_URL}${url}&api_key=${API_KEY}`);
                 const data = await res.json();
                 
-                if(data.items && data.items.length > 0) {
-                    const videoId = data.items[0].id.videoId;
-                    document.getElementById('vidContainer').innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allowfullscreen allow="autoplay"></iframe>`;
-                    status.style.color = "#00c851";
-                    status.innerText = "✅ Film trouvé ! Bonne séance.";
-                } else {
-                    status.style.color = "#ff4444";
-                    status.innerText = "❌ Désolé, ce contenu n'est pas encore disponible en version longue sur YouTube.";
-                }
-            } catch (e) {
-                status.innerText = "Erreur de connexion API.";
-            }
-        }
+                if(!data.results || data.results.length === 0) return;
 
-        function closePlayer() {
-            document.getElementById('playerModal').style.display = "none";
-            document.getElementById('vidContainer').innerHTML = "";
-            document.body.style.overflow = "auto";
-        }
+                const container = document.getElementById('mainContent');
+                
+                const section = document.createElement('div');
+                section.innerHTML = `<h3 class="section-title">${title}</h3>`;
+                
+                const row = document.createElement('div');
+                row.className = 'carousel-container';
+
+                data.results.forEach(item => {
+                    if(item.poster_path) {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        card.innerHTML = `<img src="${IMG_URL}${item.poster_path}" alt="${item.title || item.name}">`;
+                        // Determine type (tv or movie)
+                        const type = item.name ? 'tv' : 'movie';
+                        card.onclick = () => this.openModal(item, type);
+                        row.appendChild(card);
+                    }
+                });
+
+                section.appendChild(row);
+                container.appendChild(section);
+            },
+
+            search: async function(query) {
+                if(!query) return;
+                const main = document.getElementById('mainContent');
+                main.innerHTML = '<h3 class="section-title">Résultats de recherche</h3><div class="carousel-container" id="searchResults" style="flex-wrap:wrap; white-space:normal;"></div>';
+                
+                const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=fr-FR`);
+                const data = await res.json();
+                
+                const grid = document.getElementById('searchResults');
+                data.results.forEach(item => {
+                    if(item.poster_path && (item.media_type === 'movie' || item.media_type === 'tv')) {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        card.style.marginBottom = "20px";
+                        card.innerHTML = `<img src="${IMG_URL}${item.poster_path}">`;
+                        card.onclick = () => this.openModal(item, item.media_type);
+                        grid.appendChild(card);
+                    }
+                });
+            },
+
+            // --- MODAL & PLAYER LOGIC ---
+            openModal: async function(item, type) {
+                this.currentMovie = item;
+                const modal = document.getElementById('playerModal');
+                const vidContainer = document.getElementById('videoContainer');
+                
+                // Reset UI
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                document.getElementById('statusMsg').innerText = "";
+                document.getElementById('episodesArea').style.display = "none";
+                
+                // Set Info
+                document.getElementById('mTitle').innerText = item.title || item.name;
+                document.getElementById('mOverview').innerText = item.overview || "Aucune description disponible.";
+                document.getElementById('mYear').innerText = (item.release_date || item.first_air_date || "").substring(0,4);
+                
+                // Placeholder Image with Play Button
+                vidContainer.innerHTML = `
+                    <div class="placeholder" style="background-image: url(${IMG_ORIG}${item.backdrop_path || item.poster_path})">
+                        <div class="play-big" onclick="app.playMainContent('${type}')">▶</div>
+                        <p style="z-index:2; color:white; margin-top:10px;">Lancer la lecture</p>
+                    </div>
+                `;
+
+                // Setup Language Buttons
+                this.setupLangButtons(type);
+
+                // If Series, Load Episodes
+                if(type === 'tv') {
+                    this.loadEpisodes(item.id);
+                }
+            },
+
+            setupLangButtons: function(type) {
+                const container = document.getElementById('langTabs');
+                container.innerHTML = '';
+                
+                const langs = [
+                    {code: 'vo', label: 'Original (VO)'},
+                    {code: 'fr', label: 'Français (VF)'},
+                    {code: 'en', label: 'Anglais (English)'},
+                    {code: 'es', label: 'Espagnol'}
+                ];
+
+                langs.forEach(l => {
+                    const btn = document.createElement('button');
+                    btn.className = 'lang-btn';
+                    btn.innerText = l.label;
+                    btn.onclick = () => {
+                        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        this.playContentByLang(l.code, type);
+                    };
+                    container.appendChild(btn);
+                });
+            },
+
+            playMainContent: function(type) {
+                // Default: Try French, fallback to Original
+                this.playContentByLang('fr', type);
+            },
+
+            playContentByLang: async function(lang, type) {
+                const status = document.getElementById('statusMsg');
+                const container = document.getElementById('videoContainer');
+                
+                status.className = 'status-msg status-loading';
+                status.innerText = `🔍 Recherche du contenu en ${lang.toUpperCase()}...`;
+
+                const title = this.currentMovie.title || this.currentMovie.name;
+                let query = "";
+
+                // Construction de la requête YouTube intelligente
+                if(type === 'movie') {
+                    if(lang === 'vo') query = `${title} full movie original`;
+                    else if(lang === 'fr') query = `${title} film complet français`;
+                    else query = `${title} full movie ${lang}`;
+                } else {
+                    // Pour les séries, on cherche le trailer général ou S01E01 si pas d'épisode spécifique sélectionné
+                    query = `${title} trailer ${lang}`;
+                }
+
+                // Si c'est un animé
+                if(this.currentSection === 'anime') {
+                    query = `${title} episode 1 ${lang === 'fr' ? 'vostfr' : 'english sub'}`;
+                }
+
+                await this.fetchAndEmbedYouTube(query, container, status);
+            },
+
+            loadEpisodes: async function(tvId) {
+                const epList = document.getElementById('epList');
+                const area = document.getElementById('episodesArea');
+                epList.innerHTML = '<div style="color:#888; padding:10px;">Chargement des épisodes...</div>';
+                area.style.display = 'block';
+
+                // Fetch Season 1 details
+                const res = await fetch(`${BASE_URL}/tv/${tvId}/season/1?api_key=${API_KEY}&language=fr-FR`);
+                const data = await res.json();
+
+                if(!data.episodes) {
+                    epList.innerHTML = "Info épisodes indisponible.";
+                    return;
+                }
+
+                epList.innerHTML = '';
+                data.episodes.forEach(ep => {
+                    const div = document.createElement('div');
+                    div.className = 'episode-item';
+                    const img = ep.still_path ? IMG_URL + ep.still_path : '';
+                    div.innerHTML = `
+                        <span class="ep-num">${ep.episode_number}</span>
+                        <img class="ep-img" src="${img}" onerror="this.style.display='none'">
+                        <div class="ep-info">
+                            <h4>${ep.name}</h4>
+                            <p>${ep.runtime ? ep.runtime + 'm' : ''} - ${ep.overview ? ep.overview.substring(0, 60)+'...' : ''}</p>
+                        </div>
+                    `;
+                    div.onclick = () => this.playEpisode(ep);
+                    epList.appendChild(div);
+                });
+            },
+
+            playEpisode: async function(ep) {
+                const status = document.getElementById('statusMsg');
+                const container = document.getElementById('videoContainer');
+                const showTitle = this.currentMovie.name;
+                
+                // Scroll to top
+                container.scrollIntoView({behavior: "smooth"});
+
+                status.className = 'status-msg status-loading';
+                status.innerText = `Lecture: S01E${ep.episode_number} - ${ep.name}...`;
+
+                // Recherche précise pour l'épisode
+                // Ex: "Naruto Shippuden Season 1 Episode 5 full"
+                const query = `${showTitle} Season 1 Episode ${ep.episode_number} full episode`;
+                
+                await this.fetchAndEmbedYouTube(query, container, status);
+            },
+
+            fetchAndEmbedYouTube: async function(query, container, status) {
+                try {
+                    // Note: videoDuration='long' filtre les shorts/trailers courts pour essayer de trouver le film
+                    // Mais pour les trailers, on enlève ce filtre.
+                    let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(query)}&type=video&key=${YT_KEY}`;
+                    
+                    // Si on cherche un film complet, on préfère les vidéos longues (> 20 min)
+                    if(query.includes('full movie')) {
+                        url += `&videoDuration=long`;
+                    }
+
+                    const res = await fetch(url);
+                    const data = await res.json();
+
+                    if(data.error) {
+                        throw new Error(data.error.message);
+                    }
+
+                    if(data.items && data.items.length > 0) {
+                        const videoId = data.items[0].id.videoId;
+                        const videoTitle = data.items[0].snippet.title;
+                        
+                        container.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
+                        
+                        status.className = 'status-msg status-success';
+                        status.innerText = `✅ Lecture en cours : "${videoTitle}"`;
+                    } else {
+                        status.className = 'status-msg status-error';
+                        status.innerText = `❌ Contenu introuvable dans cette langue/format sur YouTube. Essayez une autre langue.`;
+                        // Ne pas effacer le player si une vidéo jouait déjà, ou remettre le placeholder
+                    }
+                } catch (e) {
+                    console.error(e);
+                    status.className = 'status-msg status-error';
+                    status.innerText = "⚠️ Erreur API ou Quota dépassé. (Utilisez votre propre clé YouTube)";
+                }
+            },
+
+            closeModal: function() {
+                document.getElementById('playerModal').style.display = 'none';
+                document.getElementById('videoContainer').innerHTML = ''; // Stop video
+                document.body.style.overflow = 'auto';
+            }
+        };
+
+        // Start App
+        window.onload = () => app.init();
+
     </script>
 </body>
 </html>
+
+
+            
