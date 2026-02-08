@@ -48,29 +48,37 @@
         
         /* SHORTS */
         .card-short { width: 110px; height: 195px; border: 1px solid #333; }
-        .card-short .badge-short { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; padding: 2px 4px; border-radius: 3px; font-size: 0.6rem; font-weight: bold; }
+        /* Masquer les badges sources */
+        .badge-source, .badge-short { display: none !important; }
+        
         .card-short .short-title { position: absolute; bottom: 0; background: rgba(0,0,0,0.8); width: 100%; padding: 5px; font-size: 0.65rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* VIDEOS & LIVES */
-        .card-video { width: 220px; height: 124px; border: 1px solid #333; }
+        /* VIDEOS & LIVES (Même design réduit) */
+        .card-video { width: 200px; height: 112px; border: 1px solid #333; }
         .card-video .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30px; height: 30px; background: rgba(0,0,0,0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid white; }
         .card-video .video-title { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.8); padding: 5px 10px; font-size: 0.7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .card-video .badge-source { position: absolute; top: 5px; left: 5px; font-size: 0.6rem; padding: 2px 5px; border-radius: 3px; font-weight: bold; }
+        
+        /* Live Badge specific */
+        .live-tag { position: absolute; top: 5px; right: 5px; background: var(--red); color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.6rem; font-weight: 800; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
 
-        /* TV (CSS ONLY DESIGN) */
+        /* TV (DESIGN STYLÉ) */
         .card-tv-css { 
             width: 160px; height: 100px; 
-            background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
-            border: 1px solid #444; border-radius: 12px;
+            background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+            border: 1px solid #333; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
             position: relative; transition: 0.3s;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            overflow: hidden;
         }
         .card-tv-css:hover { border-color: var(--red); transform: scale(1.05); }
-        .card-tv-css .tv-name { font-weight: 900; font-size: 1.1rem; text-align: center; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); z-index: 2; }
-        .card-tv-css::before { content:''; position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(229,9,20,0.2), transparent); z-index: 1; }
+        .card-tv-css .tv-name { font-weight: 900; font-size: 1rem; text-align: center; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,1); z-index: 2; padding: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .card-tv-css::before { content:''; position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(255,255,255,0.05), transparent); z-index: 1; }
+        .card-tv-css .tv-bg { position: absolute; inset: 0; object-fit: cover; opacity: 0.3; filter: blur(2px); z-index: 0; }
         
         .card-more { background: var(--gray); display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed #444; width: 130px; height: 195px; }
+        .card-more-video { width: 200px; height: 112px; border: 2px dashed #444; background: var(--gray); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 10px; color: #888; font-size: 0.8rem; font-weight: bold; }
 
         /* --- HERO --- */
         #hero { height: 450px; position: relative; overflow: hidden; margin-bottom: -20px; }
@@ -88,7 +96,7 @@
         .short-item iframe { width: 100%; height: 100%; border: none; }
         .btn-close-fixed { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.2); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 6000; cursor: pointer; color: white; backdrop-filter: blur(5px); }
 
-        /* --- DETAILS VIEW (FROM CODE 2, ADAPTED) --- */
+        /* --- DETAILS VIEW --- */
         #details-view { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: var(--black); z-index: 6000; display: none; overflow-y: auto;
@@ -101,9 +109,9 @@
         .stars i.active { color: #ffcc00; }
         .meta-info { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .tag { background: #222; padding: 5px 12px; border-radius: 5px; font-size: 0.8rem; font-weight: bold; color: #ccc; }
-        .cast-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 15px; margin: 20px 0; }
+        .cast-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 15px; margin: 20px 0; }
         .cast-item { text-align: center; font-size: 0.7rem; color: #ccc; }
-        .cast-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-bottom: 5px; border: 1px solid #333; }
+        .cast-img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-bottom: 5px; border: 1px solid #333; }
         .grid-links { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
         .btn-link { background: #111; color: white; padding: 12px; text-align: center; border-radius: 8px; text-decoration: none; font-size: 0.8rem; font-weight: bold; border: 1px solid #222; transition: 0.3s; }
         .btn-link:hover { border-color: var(--red); background: #1a1a1a; }
@@ -115,7 +123,8 @@
         .cat-header { padding: 15px; border-bottom: 1px solid #333; background: #111; display: flex; flex-direction: column; gap: 10px; }
         .cat-controls { display: flex; align-items: center; gap: 10px; }
         .cat-search { flex: 1; background: #222; border: 1px solid #444; padding: 10px; border-radius: 8px; color: white; }
-        .cat-grid { flex: 1; overflow-y: auto; padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; align-content: start; }
+        .cat-lang-select { background: #222; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; display: none; }
+        .cat-grid { flex: 1; overflow-y: auto; padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; align-content: start; }
         .cat-footer { padding: 15px; border-top: 1px solid #333; background: #111; display: flex; justify-content: center; gap: 20px; }
         .btn-pg { background: var(--red); border: none; color: white; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
         .btn-pg:disabled { background: #333; cursor: not-allowed; }
@@ -149,7 +158,7 @@
                 <div class="pill" onclick="scrollToSec('shortsSec')">Shorts</div>
                 <div class="pill" onclick="scrollToSec('vidSec')">Vidéos</div>
                 <div class="pill" onclick="scrollToSec('vodSec')">VOD</div>
-                <div class="pill" onclick="scrollToSec('liveSec')">Direct</div>
+                <div class="pill" onclick="scrollToSec('liveSec')">Live</div>
                 <div class="pill" onclick="scrollToSec('filmSec')">Films</div>
                 <div class="pill" onclick="scrollToSec('serieSec')">Séries</div>
                 <div class="pill" onclick="scrollToSec('animeSec')">Animes</div>
@@ -161,36 +170,40 @@
         <!-- HERO SLIDER -->
         <section id="hero" style="padding:0"><div class="hero-slider" id="heroRow"></div></section>
 
-        <!-- SHORTS (MIXED) -->
+        <!-- SHORTS (2 LIGNES) -->
         <section id="shortsSec">
-            <h2><i class="fab fa-youtube"></i> Shorts (Mixte)</h2>
+            <h2><i class="fab fa-youtube"></i> Shorts</h2>
             <div class="row" id="shortsRow1"></div>
             <div class="row" id="shortsRow2"></div>
         </section>
 
-        <!-- VIDEOS (MIXED) -->
+        <!-- VIDEOS (2 LIGNES, VIRAL FIRST) -->
         <section id="vidSec">
-            <h2><i class="fas fa-play-circle"></i> Vidéos (YouTube & Dailymotion)</h2>
-            <div class="row" id="mixedVideosRow"></div>
+            <h2><i class="fas fa-play-circle"></i> Vidéos</h2>
+            <div class="row" id="videosRow1"></div>
+            <div class="row" id="videosRow2"></div>
         </section>
 
-        <!-- LIVES (MIXED) -->
+        <!-- LIVES (2 LIGNES, DESIGN VIDEO) -->
         <section id="liveSec">
-            <h2><i class="fas fa-broadcast-tower"></i> En Direct (Mixte)</h2>
-            <div class="row" id="mixedLiveRow"></div>
+            <h2><i class="fas fa-broadcast-tower"></i> Live</h2>
+            <div class="row" id="liveRow1"></div>
+            <div class="row" id="liveRow2"></div>
         </section>
 
-        <!-- VOD CATEGORIES (YT/DM FULL MOVIES) -->
+        <!-- VOD CATEGORIES -->
         <section id="vodSec">
             <h2><i class="fas fa-film"></i> VOD - Action</h2><div class="row" id="vod_action"></div>
             <h2><i class="fas fa-ghost"></i> VOD - Horreur</h2><div class="row" id="vod_horror"></div>
             <h2><i class="fas fa-laugh"></i> VOD - Comédie</h2><div class="row" id="vod_comedy"></div>
+            <h2><i class="fas fa-dragon"></i> VOD - Animé</h2><div class="row" id="vod_anime"></div>
+            <h2><i class="fas fa-book-open"></i> VOD - Manga</h2><div class="row" id="vod_manga"></div>
+            <h2><i class="fas fa-theater-masks"></i> VOD - Drama</h2><div class="row" id="vod_drama"></div>
+            <h2><i class="fas fa-child"></i> VOD - Cartoon</h2><div class="row" id="vod_cartoon"></div>
             <h2><i class="fas fa-heart"></i> VOD - Romance</h2><div class="row" id="vod_romance"></div>
             <h2><i class="fas fa-users"></i> VOD - Famille</h2><div class="row" id="vod_family"></div>
             <h2><i class="fas fa-globe-africa"></i> VOD - Nollywood & Afrique</h2><div class="row" id="vod_africa"></div>
-            <h2><i class="fas fa-child"></i> VOD - Enfants</h2><div class="row" id="vod_kids"></div>
             <h2><i class="fas fa-book"></i> VOD - Documentaire</h2><div class="row" id="vod_doc"></div>
-            <h2><i class="fas fa-graduation-cap"></i> VOD - Éducation</h2><div class="row" id="vod_edu"></div>
         </section>
 
         <!-- FILMS (TMDB) -->
@@ -236,7 +249,7 @@
 
         <!-- TV (OFFICIEL) -->
         <section id="tvSec">
-            <h2><i class="fas fa-broadcast-tower"></i> Chaînes TV Officielles</h2>
+            <h2><i class="fas fa-broadcast-tower"></i> Chaînes TV</h2>
             <div class="row" id="tvRow"></div>
         </section>
 
@@ -249,7 +262,9 @@
         <div class="shorts-feed" id="shortsFeed"></div>
     </div>
 
-    <!-- DETAILS VIEW (INTEGRATED FROM CODE 2) -->
+
+
+    <!-- DETAILS VIEW -->
     <div id="details-view">
         <div class="btn-close-fixed" onclick="closeDetails()"><i class="fas fa-times"></i></div>
         <div class="player-container" id="player-container"></div>
@@ -299,6 +314,13 @@
             <div class="cat-controls">
                 <div class="btn-close-fixed" style="position:relative; top:0; left:0; width:35px; height:35px;" onclick="document.getElementById('catalogOverlay').style.display='none'"><i class="fas fa-arrow-left"></i></div>
                 <h3 id="catTitle" style="margin:0; font-size:1rem; flex:1">Catégorie</h3>
+                <select id="catLangSelect" class="cat-lang-select" onchange="applyLangFilter()">
+                    <option value="">Toutes Langues</option>
+                    <option value="french">Français</option>
+                    <option value="english">Anglais</option>
+                    <option value="spanish">Espagnol</option>
+                    <option value="japanese">Japonais</option>
+                </select>
             </div>
             <input type="text" id="catSearchInput" class="cat-search" placeholder="Rechercher dans cette section...">
         </div>
@@ -311,7 +333,6 @@
 
 <script>
     const TMDB = "1073e4d36ef71f912da093a5eb38f091";
-    // Clés API YouTube (Rotation)
     const YT_KEYS = [
         "AIzaSyCo4xWGX9xjFwCoGqum17qvCpr5liZtOq4",
         "AIzaSyAc7d0U7_DcloYMLqeCdUUZD_M3ZLaEA7E",
@@ -323,8 +344,8 @@
     let currentKeyIdx = 0;
     
     // Etats globaux
-    let catState = { type: '', sort: '', page: 1, query: '' };
-    let globalShortsList = []; // Pour le scroll infini
+    let catState = { type: '', sort: '', page: 1, query: '', sectionQuery: '' };
+    let globalShortsList = [];
     let activeDetailsId = null;
 
     function attemptLogin() {
@@ -335,9 +356,7 @@
         }
     }
 
-    function logout() {
-        location.reload();
-    }
+    function logout() { location.reload(); }
 
     function initApp() {
         loadHero();
@@ -374,7 +393,7 @@
         });
 
         // Chargement Mixte (Shorts, Videos, Lives)
-        loadMixedContent("trailer");
+        loadMixedContent();
         
         // Chargement VOD Catégories
         const vodCats = [
@@ -382,7 +401,8 @@
             {id:'vod_comedy', q:'comedy full movie'}, {id:'vod_romance', q:'romance full movie'},
             {id:'vod_family', q:'family full movie'}, {id:'vod_africa', q:'nollywood african movies'},
             {id:'vod_kids', q:'cartoon kids full movie'}, {id:'vod_doc', q:'documentary full'},
-            {id:'vod_edu', q:'education learning video'}
+            {id:'vod_anime', q:'anime full movie'}, {id:'vod_manga', q:'manga movie'},
+            {id:'vod_drama', q:'drama full movie'}, {id:'vod_cartoon', q:'cartoon full movie'}
         ];
         vodCats.forEach(v => loadVODCategory(v.id, v.q));
     }
@@ -411,81 +431,79 @@
     }
 
     // --- LOGIQUE CONTENU MIXTE ---
-    async function loadMixedContent(query) {
-        // 1. SHORTS (YT + DM)
+    async function loadMixedContent() {
+        // 1. SHORTS (40 items, 2 lignes)
         let shorts = [];
-        let ytS = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query} shorts&type=video&videoDuration=short&maxResults=25`);
+        let ytS = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=shorts viral&type=video&videoDuration=short&maxResults=40`);
         if(ytS && ytS.items) shorts.push(...ytS.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'})));
         
-        let dmS = await fetch(`https://api.dailymotion.com/videos?search=${query}&shorter_than=60&fields=id,title,thumbnail_720_url&limit=25`).then(r=>r.json());
+        let dmS = await fetch(`https://api.dailymotion.com/videos?search=shorts&shorter_than=60&fields=id,title,thumbnail_720_url&limit=20`).then(r=>r.json());
         if(dmS && dmS.list) shorts.push(...dmS.list.map(i => ({id: i.id, title: i.title, img: i.thumbnail_720_url, src: 'dm'})));
         
-        globalShortsList = shuffle(shorts); // Stockage global pour l'infini
+        globalShortsList = shuffle(shorts);
         renderShortsRows(globalShortsList);
 
-        // 2. VIDEOS (YT + DM)
+        // 2. VIDEOS (40 items, 2 lignes)
         let videos = [];
-        let ytV = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&maxResults=15`);
+        let ytV = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=viral video&type=video&maxResults=40`);
         if(ytV && ytV.items) videos.push(...ytV.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'})));
         
-        let dmV = await fetch(`https://api.dailymotion.com/videos?search=${query}&fields=id,title,thumbnail_720_url&limit=15`).then(r=>r.json());
-        if(dmV && dmV.list) videos.push(...dmV.list.map(i => ({id: i.id, title: i.title, img: i.thumbnail_720_url, src: 'dm'})));
-        
-        renderMixedCards('mixedVideosRow', shuffle(videos), 'video');
+        // Ligne 1: Viral (YT)
+        renderMixedCards('videosRow1', videos.slice(0, 20), 'video');
+        // Ligne 2: Mixte
+        renderMixedCards('videosRow2', videos.slice(20), 'video');
 
-        // 3. LIVES (YT + DM)
+        // 3. LIVES (40 items, 2 lignes)
         let lives = [];
-        let ytL = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=live news&type=video&eventType=live&maxResults=10`);
+        let ytL = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=live news gaming&type=video&eventType=live&maxResults=40`);
         if(ytL && ytL.items) lives.push(...ytL.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'})));
 
-        let dmL = await fetch(`https://api.dailymotion.com/videos?search=live&flags=live_onair&fields=id,title,thumbnail_720_url&limit=10`).then(r=>r.json());
+        let dmL = await fetch(`https://api.dailymotion.com/videos?search=live&flags=live_onair&fields=id,title,thumbnail_720_url&limit=20`).then(r=>r.json());
         if(dmL && dmL.list) lives.push(...dmL.list.map(i => ({id: i.id, title: i.title, img: i.thumbnail_720_url, src: 'dm'})));
         
-        renderMixedCards('mixedLiveRow', shuffle(lives), 'live');
+        lives = shuffle(lives);
+        renderMixedCards('liveRow1', lives.slice(0, 20), 'live');
+        
+        // Ligne 2 + Bouton voir plus
+        let row2 = lives.slice(20);
+        let html2 = row2.map(v => createCardHTML(v, 'live')).join('');
+        html2 += `<div class="card card-more-video" onclick="openCatalog('live','mixed','Direct', 'live')"><i class="fas fa-plus"></i><span>Voir plus</span></div>`;
+        document.getElementById('liveRow2').innerHTML = html2;
     }
 
     async function loadVODCategory(elId, query) {
         let vods = [];
-        // YT VOD
-        let yt = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&videoDuration=long&maxResults=10`);
+        let yt = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&videoDuration=long&maxResults=20`);
         if(yt && yt.items) vods.push(...yt.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'})));
-        // DM VOD
-        let dm = await fetch(`https://api.dailymotion.com/videos?search=${query}&longer_than=1200&fields=id,title,thumbnail_720_url&limit=10`).then(r=>r.json());
-        if(dm && dm.list) vods.push(...dm.list.map(i => ({id: i.id, title: i.title, img: i.thumbnail_720_url, src: 'dm'})));
-
-        renderMixedCards(elId, shuffle(vods), 'video');
+        
+        let html = vods.map(v => createCardHTML(v, 'video')).join('');
+        html += `<div class="card card-more-video" onclick="openCatalog('vod','mixed','VOD ${query}', '${query}')"><i class="fas fa-plus"></i><span>Voir plus</span></div>`;
+        document.getElementById(elId).innerHTML = html;
     }
 
-    // --- RENDERING ---
+    // --- RENDERING HELPERS ---
     function renderShortsRows(list) {
-        // Diviser en 2 lignes
         let half = Math.ceil(list.length / 2);
-        let row1 = list.slice(0, half);
-        let row2 = list.slice(half);
-
         const buildHtml = (items, offset) => items.map((v, i) => `
             <div class="card card-short" onclick="playShorts(${offset + i})">
-                <div class="badge-short" style="background:${v.src==='dm'?'var(--dm-blue)':'red'}">${v.src.toUpperCase()}</div>
                 <img src="${v.img}">
                 <div class="short-title">${v.title}</div>
             </div>`).join('');
+        document.getElementById('shortsRow1').innerHTML = buildHtml(list.slice(0, half), 0);
+        document.getElementById('shortsRow2').innerHTML = buildHtml(list.slice(half), half);
+    }
 
-        document.getElementById('shortsRow1').innerHTML = buildHtml(row1, 0);
-        document.getElementById('shortsRow2').innerHTML = buildHtml(row2, half);
+    function createCardHTML(v, type) {
+        let url = v.src==='yt' ? `https://www.youtube.com/embed/${v.id}?autoplay=1` : `https://www.dailymotion.com/embed/video/${v.id}?autoplay=1`;
+        return `<div class="card card-video" onclick="openSimplePlayer('${url}', '${v.title.replace(/'/g, "&apos;")}')">
+            <img src="${v.img}" style="width:100%; height:100%; object-fit:cover;">
+            ${type==='live' ? '<div class="live-tag">LIVE</div>' : '<div class="play-icon"><i class="fas fa-play" style="color:white; font-size:12px"></i></div>'}
+            <div class="video-title">${v.title}</div>
+        </div>`;
     }
 
     function renderMixedCards(elId, list, type) {
-        document.getElementById(elId).innerHTML = list.map(v => {
-            let url = v.src==='yt' ? `https://www.youtube.com/embed/${v.id}?autoplay=1` : `https://www.dailymotion.com/embed/video/${v.id}?autoplay=1`;
-            // Pour les VOD, on ouvre le player simple (pas de détails TMDB car ce sont des vidéos YT/DM)
-            // Mais pour uniformiser, on utilise le player simple overlay
-            return `<div class="card ${type==='live'?'card-live':'card-video'}" onclick="openSimplePlayer('${url}')">
-                <div class="badge-source" style="background:${v.src==='dm'?'var(--dm-blue)':'red'}; color:white">${v.src.toUpperCase()}</div>
-                <img src="${v.img}" style="width:100%; height:100%; object-fit:cover;">
-                ${type==='live' ? '<div class="live-badge" style="position:absolute;top:5px;right:5px;background:red;color:white;padding:2px 5px;font-size:0.6rem;font-weight:bold">LIVE</div>' : '<div class="play-icon"><i class="fas fa-play" style="color:white; font-size:12px"></i></div>'}
-                <div class="${type==='live'?'live-title':'video-title'}" style="position:absolute;bottom:0;background:rgba(0,0,0,0.8);width:100%;padding:5px;font-size:0.7rem;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${v.title}</div>
-            </div>`;
-        }).join('');
+        document.getElementById(elId).innerHTML = list.map(v => createCardHTML(v, type)).join('');
     }
 
     // --- TMDB & KITSU LOGIC ---
@@ -493,7 +511,7 @@
         let url = cat==='trending' ? `https://api.themoviedb.org/3/trending/${type}/week?api_key=${TMDB}&language=fr-FR` : `https://api.themoviedb.org/3/${type}/${cat}?api_key=${TMDB}&language=fr-FR`;
         try {
             let r = await fetch(url); let d = await r.json();
-            let html = d.results.slice(0,15).map(m => `
+            let html = d.results.slice(0,20).map(m => `
                 <div class="card card-std" onclick="openDetails('${m.id}', '${type}', 'tmdb')">
                     <img src="https://image.tmdb.org/t/p/w300${m.poster_path}" onerror="this.style.display='none'; this.nextElementSibling.nextElementSibling.style.display='flex'">
                     <div class="card-title">${m.title||m.name}</div>
@@ -505,7 +523,7 @@
     }
 
     async function loadKitsu(id, sort, name) {
-        let url = sort==='upcoming' ? "https://kitsu.io/api/edge/anime?filter[status]=upcoming&page[limit]=15" : (sort==='trending' ? "https://kitsu.io/api/edge/trending/anime" : `https://kitsu.io/api/edge/anime?sort=${sort}&page[limit]=15`);
+        let url = sort==='upcoming' ? "https://kitsu.io/api/edge/anime?filter[status]=upcoming&page[limit]=20" : (sort==='trending' ? "https://kitsu.io/api/edge/trending/anime" : `https://kitsu.io/api/edge/anime?sort=${sort}&page[limit]=20`);
         try {
             let r = await fetch(url); let d = await r.json();
             let html = d.data.map(a => {
@@ -521,13 +539,12 @@
         } catch(e) {}
     }
 
-    // --- DETAILS VIEW LOGIC (THE "CODE 2" PART) ---
+    // --- DETAILS VIEW LOGIC ---
     async function openDetails(id, type, source) {
         activeDetailsId = id;
         const view = document.getElementById('details-view');
         const player = document.getElementById('player-container');
         
-        // Reset UI
         document.getElementById('m-title').innerText = "Chargement...";
         document.getElementById('m-desc').innerText = "";
         document.getElementById('m-cast').innerHTML = "";
@@ -537,7 +554,6 @@
         view.style.display = 'block';
 
         if(source === 'tmdb') {
-            // TMDB Fetch
             let r = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${TMDB}&language=fr-FR&append_to_response=videos,credits,similar`);
             let m = await r.json();
 
@@ -546,25 +562,16 @@
             document.getElementById('m-year').innerText = (m.release_date || m.first_air_date || "").split('-')[0];
             document.getElementById('m-vote').innerText = `⭐ ${m.vote_average.toFixed(1)}`;
 
-            // Trailer (Langue originale si possible, sinon premier dispo)
-            // On cherche un trailer, si possible pas en FR pour respecter "langue originale" ou juste le premier
             let trailer = m.videos.results.find(v => v.type === 'Trailer') || m.videos.results[0];
-            if(trailer) {
-                player.innerHTML = `<iframe src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=0&rel=0" allow="autoplay; fullscreen"></iframe>`;
-            } else {
-                 player.innerHTML = `<img src="https://image.tmdb.org/t/p/original${m.backdrop_path}" style="width:100%;height:100%;object-fit:cover;">`;
-            }
+            player.innerHTML = trailer ? `<iframe src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=0&rel=0" allow="autoplay; fullscreen"></iframe>` : `<img src="https://image.tmdb.org/t/p/original${m.backdrop_path}" style="width:100%;height:100%;object-fit:cover;">`;
 
-            // Casting
             if(m.credits && m.credits.cast) {
-                document.getElementById('m-cast').innerHTML = m.credits.cast.slice(0, 8).map(c => `
+                document.getElementById('m-cast').innerHTML = m.credits.cast.slice(0, 10).map(c => `
                     <div class="cast-item">
                         <img class="cast-img" src="https://image.tmdb.org/t/p/w200${c.profile_path}" onerror="this.src='https://via.placeholder.com/60'">
                         <div>${c.name}</div>
                     </div>`).join('');
             }
-
-            // Similar
             if(m.similar && m.similar.results) {
                 document.getElementById('m-similar').innerHTML = m.similar.results.slice(0, 10).map(s => `
                     <div class="card card-std" onclick="openDetails('${s.id}', '${type}', 'tmdb')">
@@ -574,7 +581,6 @@
             }
 
         } else if (source === 'kitsu') {
-            // Kitsu Fetch
             let r = await fetch(`https://kitsu.io/api/edge/anime/${id}`);
             let d = await r.json();
             let a = d.data.attributes;
@@ -584,17 +590,21 @@
             document.getElementById('m-year').innerText = a.startDate ? a.startDate.split('-')[0] : '';
             document.getElementById('m-vote').innerText = `⭐ ${a.averageRating ? (a.averageRating/20).toFixed(1) : '?'}`;
 
-            if(a.youtubeVideoId) {
-                player.innerHTML = `<iframe src="https://www.youtube.com/embed/${a.youtubeVideoId}?autoplay=1&mute=0&rel=0" allow="autoplay; fullscreen"></iframe>`;
-            } else {
-                player.innerHTML = `<img src="${a.coverImage ? a.coverImage.original : (a.posterImage?a.posterImage.original:'')}" style="width:100%;height:100%;object-fit:cover;">`;
-            }
+            player.innerHTML = a.youtubeVideoId ? `<iframe src="https://www.youtube.com/embed/${a.youtubeVideoId}?autoplay=1&mute=0&rel=0" allow="autoplay; fullscreen"></iframe>` : `<img src="${a.coverImage ? a.coverImage.original : (a.posterImage?a.posterImage.original:'')}" style="width:100%;height:100%;object-fit:cover;">`;
             
-            // Pas de casting facile via Kitsu simple endpoint, on laisse vide ou on met un placeholder
-            document.getElementById('m-cast').innerHTML = "<div style='color:#666; width:100%; text-align:center'>Info casting non dispo</div>";
-            document.getElementById('m-similar').innerHTML = ""; // Kitsu similar nécessite une autre requête complexe
+            // Fetch Casting Kitsu
+           try {
+                let cRes = await fetch(`https://kitsu.io/api/edge/anime/${id}/characters?include=character&page[limit]=10`);
+                let cData = await cRes.json();
+                if(cData.included) {
+                    document.getElementById('m-cast').innerHTML = cData.included.map(char => `
+                        <div class="cast-item">
+                            <img class="cast-img" src="${char.attributes.image?.original || 'https://via.placeholder.com/60'}" onerror="this.src='https://via.placeholder.com/60'">
+                            <div>${char.attributes.name}</div>
+                        </div>`).join('');
+                }
+            } catch(e) { document.getElementById('m-cast').innerHTML = "<small>Casting indisponible</small>"; }
         }
-
         resetStars(localStorage.getItem('vote_' + id));
     }
 
@@ -603,88 +613,59 @@
         document.getElementById('player-container').innerHTML = '';
     }
 
-    function openSimplePlayer(url) {
-        // Pour les vidéos YT/DM simples
+    function openSimplePlayer(url, title) {
         document.getElementById('details-view').style.display = 'block';
         document.getElementById('player-container').innerHTML = `<iframe src="${url}" allow="autoplay; fullscreen"></iframe>`;
-        document.getElementById('m-title').innerText = "Vidéo";
+        document.getElementById('m-title').innerText = title || "Vidéo";
         document.getElementById('m-desc').innerText = "";
         document.getElementById('m-cast').innerHTML = "";
         document.getElementById('m-similar').innerHTML = "";
     }
 
-// --- INFINITE SHORTS PLAYER ---
+    // --- INFINITE SHORTS ---
     function playShorts(startIndex) {
         const feed = document.getElementById('shortsFeed');
         document.getElementById('shortsOverlay').style.display = 'block';
-        
-        // Rendu initial
         renderFeed(globalShortsList);
-
-        // Scroll to start
         setTimeout(() => {
             const el = document.getElementById(`slide-${startIndex}`);
-            if(el) {
-                el.scrollIntoView();
-                loadSlideFrame(startIndex);
-            }
+            if(el) { el.scrollIntoView(); loadSlideFrame(startIndex); }
         }, 100);
-
-        // Scroll Listener pour "Infini" (Simulation)
         let timeout;
         feed.onscroll = () => {
             clearTimeout(timeout);
             timeout = setTimeout(() => {
                 let index = Math.round(feed.scrollTop / window.innerHeight);
                 loadSlideFrame(index);
-                
-                // Si on arrive à la fin de la liste actuelle, on recharge des shorts aléatoires
-                if(index >= globalShortsList.length - 2) {
-                    appendMoreShorts();
-                }
+                if(index >= globalShortsList.length - 2) appendMoreShorts();
             }, 100);
         };
     }
 
     function renderFeed(list) {
-        const feed = document.getElementById('shortsFeed');
-        // On ne vide pas tout si on append, mais ici pour simplifier on regenère ou on ajoute
-        // Pour simplifier : on génère tout le HTML actuel
-        feed.innerHTML = list.map((it, i) => `<div class="short-item" id="slide-${i}" data-src="${it.src}" data-id="${it.id}"></div>`).join('');
+        document.getElementById('shortsFeed').innerHTML = list.map((it, i) => `<div class="short-item" id="slide-${i}" data-src="${it.src}" data-id="${it.id}"></div>`).join('');
     }
 
     function loadSlideFrame(index) {
         if(!globalShortsList[index]) return;
         const item = globalShortsList[index];
         const slide = document.getElementById(`slide-${index}`);
-        
-        // Nettoyer les autres slides pour perf
-        document.querySelectorAll('.short-item iframe').forEach(ifr => {
-            if(ifr.parentElement.id !== `slide-${index}`) ifr.remove();
-        });
-
+        document.querySelectorAll('.short-item iframe').forEach(ifr => { if(ifr.parentElement.id !== `slide-${index}`) ifr.remove(); });
         if(slide && !slide.querySelector('iframe')) {
-            let src = item.src === 'yt' ? 
-                `https://www.youtube.com/embed/${item.id}?autoplay=1&rel=0&controls=0&loop=1&playlist=${item.id}` : 
-                `https://www.dailymotion.com/embed/video/${item.id}?autoplay=1&controls=0&ui-start-screen-info=false`;
+            let src = item.src === 'yt' ? `https://www.youtube.com/embed/${item.id}?autoplay=1&rel=0&controls=0&loop=1&playlist=${item.id}` : `https://www.dailymotion.com/embed/video/${item.id}?autoplay=1&controls=0&ui-start-screen-info=false`;
             slide.innerHTML = `<iframe src="${src}" allow="autoplay"></iframe>`;
         }
     }
 
     async function appendMoreShorts() {
-        // Fetch random shorts again to simulate infinity
         let newShorts = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=shorts random&type=video&videoDuration=short&maxResults=10`);
         if(newShorts && newShorts.items) {
             let mapped = newShorts.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'}));
             let startIdx = globalShortsList.length;
             globalShortsList.push(...mapped);
-            
-            const feed = document.getElementById('shortsFeed');
             mapped.forEach((it, i) => {
-                let div = document.createElement('div');
-                div.className = 'short-item';
-                div.id = `slide-${startIdx + i}`;
-                feed.appendChild(div);
+                let div = document.createElement('div'); div.className = 'short-item'; div.id = `slide-${startIdx + i}`;
+                document.getElementById('shortsFeed').appendChild(div);
             });
         }
     }
@@ -694,70 +675,66 @@
         document.getElementById('shortsFeed').innerHTML = '';
     }
 
-    // --- HERO SLIDER (20 items mixed) ---
+    // --- HERO SLIDER ---
     function loadHero() {
         Promise.all([
             fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB}&language=fr-FR&page=1`),
             fetch(`https://api.themoviedb.org/3/trending/tv/week?api_key=${TMDB}&language=fr-FR`),
             fetch(`https://kitsu.io/api/edge/trending/anime`)
         ]).then(async ([r1, r2, r3]) => {
-            const d1 = await r1.json(); 
-            const d2 = await r2.json();
-            const d3 = await r3.json();
-            
+            const d1 = await r1.json(); const d2 = await r2.json(); const d3 = await r3.json();
             let slides = [];
-            // Mix content
             d1.results.slice(0,7).forEach(m => slides.push({img: "https://image.tmdb.org/t/p/original"+m.backdrop_path, t: m.title, id: m.id, type: 'movie', src:'tmdb'}));
             d2.results.slice(0,7).forEach(s => slides.push({img: "https://image.tmdb.org/t/p/original"+s.backdrop_path, t: s.name, id: s.id, type: 'tv', src:'tmdb'}));
             d3.data.slice(0,6).forEach(a => slides.push({img: a.attributes.coverImage?.original || a.attributes.posterImage?.original, t: a.attributes.canonicalTitle, id: a.id, type: 'anime', src:'kitsu'}));
-            
-            slides = shuffle(slides); // Randomize order
-
+            slides = shuffle(slides);
             document.getElementById('heroRow').innerHTML = slides.map(s => `
                 <div class="hero-slide">
                     <img src="${s.img}">
                     <div class="hero-content">
                         <div class="hero-title">${s.t}</div>
-                        <button class="btn-watch-hero" onclick="openDetails('${s.id}', '${s.type}', '${s.src}')">
-                            <i class="fas fa-play"></i> REGARDER
-                        </button>
+                        <button class="btn-watch-hero" onclick="openDetails('${s.id}', '${s.type}', '${s.src}')"><i class="fas fa-play"></i> REGARDER</button>
                     </div>
                 </div>`).join('');
-            
-            let i=0; 
-            setInterval(()=>{ 
-                i=(i+1)%slides.length; 
-                document.getElementById('heroRow').style.transform=`translateX(-${i*100}%)`;
-            }, 6000);
+            let i=0; setInterval(()=>{ i=(i+1)%slides.length; document.getElementById('heroRow').style.transform=`translateX(-${i*100}%)`; }, 6000);
         });
     }
 
-    // --- TV SECTION (OFFICIAL LINKS, CSS DESIGN) ---
+    // --- TV SECTION ---
     function loadTV() {
         const tvs = [
-            {n:"TF1", url:"https://www.tf1.fr/tf1/direct"},
-            {n:"France 2", url:"https://www.france.tv/france-2/direct.html"},
-            {n:"France 3", url:"https://www.france.tv/france-3/direct.html"},
-            {n:"M6", url:"https://www.6play.fr/m6/direct"},
-            {n:"Arte", url:"https://www.arte.tv/fr/direct/"},
-            {n:"Gulli", url:"https://www.6play.fr/gulli/direct"},
-            {n:"W9", url:"https://www.6play.fr/w9/direct"},
-            {n:"TMC", url:"https://www.tf1.fr/tmc/direct"},
-            {n:"RMC Story", url:"https://www.rmcbfmplay.com/direct-tv/rmc-story"}
+            {n:"TF1", url:"https://www.tf1.fr/tf1/direct"}, {n:"France 2", url:"https://www.france.tv/france-2/direct.html"},
+            {n:"France 3", url:"https://www.france.tv/france-3/direct.html"}, {n:"M6", url:"https://www.6play.fr/m6/direct"},
+            {n:"Arte", url:"https://www.arte.tv/fr/direct/"}, {n:"C8", url:"https://www.canalplus.com/chaines/c8"},
+            {n:"W9", url:"https://www.6play.fr/w9/direct"}, {n:"TMC", url:"https://www.tf1.fr/tmc/direct"},
+            {n:"TFX", url:"https://www.tf1.fr/tfx/direct"}, {n:"NRJ 12", url:"https://www.nrj-play.fr/nrj12/direct"},
+            {n:"L'Équipe", url:"https://www.lequipe.fr/lachainelequipe/"}, {n:"RMC Story", url:"https://www.rmcbfmplay.com/direct-tv/rmc-story"},
+            {n:"RMC Découverte", url:"https://www.rmcbfmplay.com/direct-tv/rmc-decouverte"}, {n:"Chérie 25", url:"https://www.nrj-play.fr/cherie25/direct"},
+            {n:"Pluto TV", url:"https://pluto.tv/fr/live-tv/"}, {n:"Rakuten TV", url:"https://rakuten.tv/fr/live_channels"},
+            {n:"BFM TV", url:"https://www.bfmtv.com/en-direct/"}, {n:"CNews", url:"https://www.cnews.fr/le-direct"}
         ];
         
-        document.getElementById('tvRow').innerHTML = tvs.map(t => 
-            `<div class="card card-tv-css" onclick="openLink('${t.url}')">
-                <div class="tv-name">${t.n}</div>
-             </div>`).join('');
+        let html = tvs.slice(0, 10).map(t => `<div class="card card-tv-css" onclick="openLink('${t.url}')"><div class="tv-name">${t.n}</div></div>`).join('');
+        html += `<div class="card card-tv-css" style="border-style:dashed" onclick="openCatalog('tv','list','Chaînes TV', 'tv')"><div class="tv-name"><i class="fas fa-plus"></i> Voir plus</div></div>`;
+        document.getElementById('tvRow').innerHTML = html;
+        
+        // Stocker la liste complète pour le catalogue
+        window.fullTvList = tvs;
     }
 
     // --- CATALOG & UTILS ---
-    function openCatalog(type, sort, name) {
-        catState = { type, sort, page: 1, query: '' };
+    function openCatalog(type, sort, name, queryContext) {
+        catState = { type, sort, page: 1, query: '', sectionQuery: queryContext || '' };
         document.getElementById('catTitle').innerText = name;
         document.getElementById('catSearchInput').value = '';
+        document.getElementById('catLangSelect').style.display = (type === 'vod' || type === 'live') ? 'block' : 'none';
+        document.getElementById('catLangSelect').value = '';
         document.getElementById('catalogOverlay').style.display = 'flex';
+        fetchCatalog();
+    }
+
+    function applyLangFilter() {
+        catState.page = 1;
         fetchCatalog();
     }
 
@@ -781,8 +758,36 @@
         grid.innerHTML = '<div style="color:white; width:100%; text-align:center">Chargement...</div>';
         document.getElementById('prevBtn').disabled = (catState.page === 1);
 
-        const { type, sort, page, query } = catState;
+        const { type, sort, page, query, sectionQuery } = catState;
+        const lang = document.getElementById('catLangSelect').value;
+
+        if (type === 'tv') {
+            // TV Static List
+            let filtered = window.fullTvList;
+            if(query) filtered = filtered.filter(t => t.n.toLowerCase().includes(query.toLowerCase()));
+            grid.innerHTML = filtered.map(t => `<div class="card card-tv-css" style="width:100%; height:120px" onclick="openLink('${t.url}')"><div class="tv-name">${t.n}</div></div>`).join('');
+            document.getElementById('prevBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'none';
+            return;
+        }
+
+        if (type === 'vod' || type === 'live') {
+            // YT/DM Search based
+            let searchQuery = (query || sectionQuery) + (lang ? ` ${lang}` : '');
+            let yt = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchQuery}&type=video&maxResults=20`);
+            if(yt && yt.items) {
+                grid.innerHTML = yt.items.map(i => {
+                     let url = `https://www.youtube.com/embed/${i.id.videoId}?autoplay=1`;
+                     return `<div class="card card-video" style="width:100%; height:150px" onclick="openSimplePlayer('${url}', '${i.snippet.title.replace(/'/g, "&apos;")}')">
+                        <img src="${i.snippet.thumbnails.high.url}" style="width:100%; height:100%; object-fit:cover;">
+                        <div class="video-title" style="font-size:0.8rem">${i.snippet.title}</div>
+                     </div>`;
+                }).join('');
+            }
+            return;
+        }
         
+        // TMDB / Kitsu Standard
         if (type === 'anime') {
             let offset = (page - 1) * 20;
             let url = query ? `https://kitsu.io/api/edge/anime?filter[text]=${query}&page[limit]=20&page[offset]=${offset}` :
@@ -793,7 +798,7 @@
             let r = await fetch(url); let d = await r.json();
             grid.innerHTML = d.data.map(a => {
                 let img = a.attributes.posterImage?.medium;
-                return `<div class="card card-std" onclick="openDetails('${a.id}', 'anime', 'kitsu')">
+                return `<div class="card card-std" style="width:100%; height:220px" onclick="openDetails('${a.id}', 'anime', 'kitsu')">
                     <img src="${img||''}" onerror="this.style.display='none'; this.nextElementSibling.nextElementSibling.style.display='flex'">
                     <div class="card-title">${a.attributes.canonicalTitle}</div>
                     <div class="img-fallback" style="display:${img?'none':'flex'}; position:absolute; inset:0;">${a.attributes.canonicalTitle}</div>
@@ -806,7 +811,7 @@
 
             let r = await fetch(url); let d = await r.json();
             grid.innerHTML = d.results.map(m => `
-                <div class="card card-std" onclick="openDetails('${m.id}', '${type}', 'tmdb')">
+                <div class="card card-std" style="width:100%; height:220px" onclick="openDetails('${m.id}', '${type}', 'tmdb')">
                     <img src="https://image.tmdb.org/t/p/w300${m.poster_path}" onerror="this.style.display='none'; this.nextElementSibling.nextElementSibling.style.display='flex'">
                     <div class="card-title">${m.title||m.name}</div>
                 </div>`).join('');
