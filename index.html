@@ -48,21 +48,18 @@
         
         /* SHORTS */
         .card-short { width: 110px; height: 195px; border: 1px solid #333; }
-        /* Masquer les badges sources */
         .badge-source, .badge-short { display: none !important; }
-        
         .card-short .short-title { position: absolute; bottom: 0; background: rgba(0,0,0,0.8); width: 100%; padding: 5px; font-size: 0.65rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* VIDEOS & LIVES (Même design réduit) */
+        /* VIDEOS & LIVES */
         .card-video { width: 200px; height: 112px; border: 1px solid #333; }
         .card-video .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30px; height: 30px; background: rgba(0,0,0,0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid white; }
         .card-video .video-title { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.8); padding: 5px 10px; font-size: 0.7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        /* Live Badge specific */
         .live-tag { position: absolute; top: 5px; right: 5px; background: var(--red); color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.6rem; font-weight: 800; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
 
-        /* TV (DESIGN STYLÉ) */
+        /* TV */
         .card-tv-css { 
             width: 160px; height: 100px; 
             background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
@@ -123,7 +120,7 @@
         .cat-header { padding: 15px; border-bottom: 1px solid #333; background: #111; display: flex; flex-direction: column; gap: 10px; }
         .cat-controls { display: flex; align-items: center; gap: 10px; }
         .cat-search { flex: 1; background: #222; border: 1px solid #444; padding: 10px; border-radius: 8px; color: white; }
-        .cat-lang-select { background: #222; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; display: none; }
+        .cat-lang-select { background: #222; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; display: none; max-width: 120px; }
         .cat-grid { flex: 1; overflow-y: auto; padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; align-content: start; }
         .cat-footer { padding: 15px; border-top: 1px solid #333; background: #111; display: flex; justify-content: center; gap: 20px; }
         .btn-pg { background: var(--red); border: none; color: white; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
@@ -151,7 +148,7 @@
             </div>
             <div class="search-bar">
                 <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Rechercher...">
+                <input type="text" id="searchInput" placeholder="Rechercher (Shorts & Vidéos)...">
             </div>
             <nav>
                 <div class="pill active" onclick="scrollToSec('hero')">Accueil</div>
@@ -193,6 +190,9 @@
 
         <!-- VOD CATEGORIES -->
         <section id="vodSec">
+            <h2><i class="fas fa-child"></i> VOD - Enfant</h2><div class="row" id="vod_kids"></div>
+            <h2><i class="fas fa-graduation-cap"></i> VOD - Éducation</h2><div class="row" id="vod_education"></div>
+            <h2><i class="fas fa-flask"></i> VOD - Science</h2><div class="row" id="vod_science"></div>
             <h2><i class="fas fa-film"></i> VOD - Action</h2><div class="row" id="vod_action"></div>
             <h2><i class="fas fa-ghost"></i> VOD - Horreur</h2><div class="row" id="vod_horror"></div>
             <h2><i class="fas fa-laugh"></i> VOD - Comédie</h2><div class="row" id="vod_comedy"></div>
@@ -262,8 +262,6 @@
         <div class="shorts-feed" id="shortsFeed"></div>
     </div>
 
-
-
     <!-- DETAILS VIEW -->
     <div id="details-view">
         <div class="btn-close-fixed" onclick="closeDetails()"><i class="fas fa-times"></i></div>
@@ -289,11 +287,14 @@
                 <small id="rating-text">Notez ce contenu</small>
             </div>
 
-            <h2 class="sub-title">Synopsis</h2>
-            <p class="synopsis" id="m-desc"></p>
+            <!-- Sections conditionnelles -->
+            <div id="full-details-section">
+                <h2 class="sub-title">Synopsis</h2>
+                <p class="synopsis" id="m-desc"></p>
 
-            <h2 class="sub-title">Casting Principal</h2>
-            <div class="cast-grid" id="m-cast"></div>
+                <h2 class="sub-title">Casting Principal</h2>
+                <div class="cast-grid" id="m-cast"></div>
+            </div>
 
             <h2 class="sub-title">Regarder sur</h2>
             <div class="grid-links">
@@ -315,11 +316,29 @@
                 <div class="btn-close-fixed" style="position:relative; top:0; left:0; width:35px; height:35px;" onclick="document.getElementById('catalogOverlay').style.display='none'"><i class="fas fa-arrow-left"></i></div>
                 <h3 id="catTitle" style="margin:0; font-size:1rem; flex:1">Catégorie</h3>
                 <select id="catLangSelect" class="cat-lang-select" onchange="applyLangFilter()">
-                    <option value="">Toutes Langues</option>
-                    <option value="french">Français</option>
-                    <option value="english">Anglais</option>
-                    <option value="spanish">Espagnol</option>
-                    <option value="japanese">Japonais</option>
+                    <option value="">Toutes les langues</option>
+                    <option value="fr">Français</option>
+                    <option value="en">Anglais</option>
+                    <option value="es">Espagnol</option>
+                    <option value="de">Allemand</option>
+                    <option value="it">Italien</option>
+                    <option value="pt">Portugais</option>
+                    <option value="ru">Russe</option>
+                    <option value="ja">Japonais</option>
+                    <option value="ko">Coréen</option>
+                    <option value="zh">Chinois</option>
+                    <option value="ar">Arabe</option>
+                    <option value="hi">Hindi</option>
+                    <option value="tr">Turc</option>
+                    <option value="nl">Néerlandais</option>
+                    <option value="pl">Polonais</option>
+                    <option value="sv">Suédois</option>
+                    <option value="no">Norvégien</option>
+                    <option value="da">Danois</option>
+                    <option value="fi">Finnois</option>
+                    <option value="id">Indonésien</option>
+                    <option value="th">Thaï</option>
+                    <option value="vi">Vietnamien</option>
                 </select>
             </div>
             <input type="text" id="catSearchInput" class="cat-search" placeholder="Rechercher dans cette section...">
@@ -397,10 +416,14 @@
         
         // Chargement VOD Catégories
         const vodCats = [
+            {id:'vod_kids', q:'dessin animé complet francais enfant'},
+            {id:'vod_education', q:'documentaire éducatif enfant c\'est pas sorcier'},
+            {id:'vod_science', q:'expérience scientifique électronique informatique archéologie'},
             {id:'vod_action', q:'action full movie'}, {id:'vod_horror', q:'horror full movie'},
             {id:'vod_comedy', q:'comedy full movie'}, {id:'vod_romance', q:'romance full movie'},
-            {id:'vod_family', q:'family full movie'}, {id:'vod_africa', q:'nollywood african movies'},
-            {id:'vod_kids', q:'cartoon kids full movie'}, {id:'vod_doc', q:'documentary full'},
+            {id:'vod_family', q:'family full movie'}, 
+            {id:'vod_africa', q:'nollywood benin cote d\'ivoire cameroon movies'},
+            {id:'vod_doc', q:'documentary full'},
             {id:'vod_anime', q:'anime full movie'}, {id:'vod_manga', q:'manga movie'},
             {id:'vod_drama', q:'drama full movie'}, {id:'vod_cartoon', q:'cartoon full movie'}
         ];
@@ -430,45 +453,49 @@
         return array;
     }
 
-    // --- LOGIQUE CONTENU MIXTE ---
-    async function loadMixedContent() {
-        // 1. SHORTS (40 items, 2 lignes)
+    // --- LOGIQUE CONTENU MIXTE (Recherche incluse) ---
+    async function loadMixedContent(searchQuery = '') {
+        // 1. SHORTS
+        let shortsQ = searchQuery ? `${searchQuery} shorts` : 'shorts viral';
         let shorts = [];
-        let ytS = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=shorts viral&type=video&videoDuration=short&maxResults=40`);
+        let ytS = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${shortsQ}&type=video&videoDuration=short&maxResults=40`);
         if(ytS && ytS.items) shorts.push(...ytS.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'})));
         
-        let dmS = await fetch(`https://api.dailymotion.com/videos?search=shorts&shorter_than=60&fields=id,title,thumbnail_720_url&limit=20`).then(r=>r.json());
-        if(dmS && dmS.list) shorts.push(...dmS.list.map(i => ({id: i.id, title: i.title, img: i.thumbnail_720_url, src: 'dm'})));
+        if(!searchQuery) { // Dailymotion fallback only if no search (simple logic)
+            let dmS = await fetch(`https://api.dailymotion.com/videos?search=shorts&shorter_than=60&fields=id,title,thumbnail_720_url&limit=20`).then(r=>r.json());
+            if(dmS && dmS.list) shorts.push(...dmS.list.map(i => ({id: i.id, title: i.title, img: i.thumbnail_720_url, src: 'dm'})));
+        }
         
         globalShortsList = shuffle(shorts);
         renderShortsRows(globalShortsList);
 
-        // 2. VIDEOS (40 items, 2 lignes)
+        // 2. VIDEOS
+        let videoQ = searchQuery ? searchQuery : 'viral video';
         let videos = [];
-        let ytV = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=viral video&type=video&maxResults=40`);
+        let ytV = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${videoQ}&type=video&maxResults=40`);
         if(ytV && ytV.items) videos.push(...ytV.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'})));
         
-        // Ligne 1: Viral (YT)
         renderMixedCards('videosRow1', videos.slice(0, 20), 'video');
-        // Ligne 2: Mixte
         renderMixedCards('videosRow2', videos.slice(20), 'video');
 
-        // 3. LIVES (40 items, 2 lignes)
-        let lives = [];
-        let ytL = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=live news gaming&type=video&eventType=live&maxResults=40`);
-        if(ytL && ytL.items) lives.push(...ytL.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'})));
+        // 3. LIVES (Non affecté par la recherche principale selon la demande, sauf si on est dans la section live)
+        // Ici on charge juste le contenu par défaut pour la page d'accueil
+        if(!searchQuery) {
+            let lives = [];
+            let ytL = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=live news gaming&type=video&eventType=live&maxResults=40`);
+            if(ytL && ytL.items) lives.push(...ytL.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'})));
 
-        let dmL = await fetch(`https://api.dailymotion.com/videos?search=live&flags=live_onair&fields=id,title,thumbnail_720_url&limit=20`).then(r=>r.json());
-        if(dmL && dmL.list) lives.push(...dmL.list.map(i => ({id: i.id, title: i.title, img: i.thumbnail_720_url, src: 'dm'})));
-        
-        lives = shuffle(lives);
-        renderMixedCards('liveRow1', lives.slice(0, 20), 'live');
-        
-        // Ligne 2 + Bouton voir plus
-        let row2 = lives.slice(20);
-        let html2 = row2.map(v => createCardHTML(v, 'live')).join('');
-        html2 += `<div class="card card-more-video" onclick="openCatalog('live','mixed','Direct', 'live')"><i class="fas fa-plus"></i><span>Voir plus</span></div>`;
-        document.getElementById('liveRow2').innerHTML = html2;
+            let dmL = await fetch(`https://api.dailymotion.com/videos?search=live&flags=live_onair&fields=id,title,thumbnail_720_url&limit=20`).then(r=>r.json());
+            if(dmL && dmL.list) lives.push(...dmL.list.map(i => ({id: i.id, title: i.title, img: i.thumbnail_720_url, src: 'dm'})));
+            
+            lives = shuffle(lives);
+            renderMixedCards('liveRow1', lives.slice(0, 20), 'live');
+            
+            let row2 = lives.slice(20);
+            let html2 = row2.map(v => createCardHTML(v, 'live')).join('');
+            html2 += `<div class="card card-more-video" onclick="openCatalog('live','mixed','Direct', 'live')"><i class="fas fa-plus"></i><span>Voir plus</span></div>`;
+            document.getElementById('liveRow2').innerHTML = html2;
+        }
     }
 
     async function loadVODCategory(elId, query) {
@@ -545,81 +572,28 @@
         const view = document.getElementById('details-view');
         const player = document.getElementById('player-container');
         
-        document.getElementById('m-title').innerText = "Chargement...";
-        document.getElementById('m-desc').innerText = "";
-        document.getElementById('m-cast').innerHTML = "";
-        document.getElementById('m-similar').innerHTML = "";
-        player.innerHTML = '<div style="width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center">Chargement...</div>';
-
-        view.style.display = 'block';
-
-        if(source === 'tmdb') {
-            let r = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${TMDB}&language=fr-FR&append_to_response=videos,credits,similar`);
-            let m = await r.json();
-
-            document.getElementById('m-title').innerText = m.title || m.name;
-            document.getElementById('m-desc').innerText = m.overview || "Pas de description.";
-            document.getElementById('m-year').innerText = (m.release_date || m.first_air_date || "").split('-')[0];
-            document.getElementById('m-vote').innerText = `⭐ ${m.vote_average.toFixed(1)}`;
-
-            let trailer = m.videos.results.find(v => v.type === 'Trailer') || m.videos.results[0];
-            player.innerHTML = trailer ? `<iframe src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=0&rel=0" allow="autoplay; fullscreen"></iframe>` : `<img src="https://image.tmdb.org/t/p/original${m.backdrop_path}" style="width:100%;height:100%;object-fit:cover;">`;
-
-            if(m.credits && m.credits.cast) {
-                document.getElementById('m-cast').innerHTML = m.credits.cast.slice(0, 10).map(c => `
-                    <div class="cast-item">
-                        <img class="cast-img" src="https://image.tmdb.org/t/p/w200${c.profile_path}" onerror="this.src='https://via.placeholder.com/60'">
-                        <div>${c.name}</div>
-                    </div>`).join('');
-            }
-            if(m.similar && m.similar.results) {
-                document.getElementById('m-similar').innerHTML = m.similar.results.slice(0, 10).map(s => `
-                    <div class="card card-std" onclick="openDetails('${s.id}', '${type}', 'tmdb')">
-                        <img src="https://image.tmdb.org/t/p/w200${s.poster_path}">
-                        <div class="card-title">${s.title||s.name}</div>
-                    </div>`).join('');
-            }
-
-        } else if (source === 'kitsu') {
-            let r = await fetch(`https://kitsu.io/api/edge/anime/${id}`);
-            let d = await r.json();
-            let a = d.data.attributes;
-
-            document.getElementById('m-title').innerText = a.canonicalTitle;
-            document.getElementById('m-desc').innerText = a.synopsis;
-            document.getElementById('m-year').innerText = a.startDate ? a.startDate.split('-')[0] : '';
-            document.getElementById('m-vote').innerText = `⭐ ${a.averageRating ? (a.averageRating/20).toFixed(1) : '?'}`;
-
-            player.innerHTML = a.youtubeVideoId ? `<iframe src="https://www.youtube.com/embed/${a.youtubeVideoId}?autoplay=1&mute=0&rel=0" allow="autoplay; fullscreen"></iframe>` : `<img src="${a.coverImage ? a.coverImage.original : (a.posterImage?a.posterImage.original:'')}" style="width:100%;height:100%;object-fit:cover;">`;
-            
-            // Fetch Casting Kitsu
-           try {
-                let cRes = await fetch(`https://kitsu.io/api/edge/anime/${id}/characters?include=character&page[limit]=10`);
-                let cData = await cRes.json();
-                if(cData.included) {
-                    document.getElementById('m-cast').innerHTML = cData.included.map(char => `
-                        <div class="cast-item">
-                            <img class="cast-img" src="${char.attributes.image?.original || 'https://via.placeholder.com/60'}" onerror="this.src='https://via.placeholder.com/60'">
-                            <div>${char.attributes.name}</div>
-                        </div>`).join('');
-                }
-            } catch(e) { document.getElementById('m-cast').innerHTML = "<small>Casting indisponible</small>"; }
-        }
-        resetStars(localStorage.getItem('vote_' + id));
-    }
-
-    function closeDetails() {
-        document.getElementById('details-view').style.display = 'none';
-        document.getElementById('player-container').innerHTML = '';
-    }
-
-    function openSimplePlayer(url, title) {
-        document.getElementById('details-view').style.display = 'block';
-        document.getElementById('player-container').innerHTML = `<iframe src="${url}" allow="autoplay; fullscreen"></iframe>`;
+        // Masquer synopsis et casting pour les vidéos/VOD
+        document.getElementById('full-details-section').style.display = 'none';
+        
         document.getElementById('m-title').innerText = title || "Vidéo";
-        document.getElementById('m-desc').innerText = "";
-        document.getElementById('m-cast').innerHTML = "";
-        document.getElementById('m-similar').innerHTML = "";
+        document.getElementById('m-year').innerText = "";
+        document.getElementById('m-vote').innerText = "";
+        
+        // Charger titres similaires basés sur le titre
+        document.getElementById('m-similar').innerHTML = '<div style="color:#666; width:100%; text-align:center">Chargement des suggestions...</div>';
+        
+        let sim = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${title}&type=video&maxResults=10`);
+        if(sim && sim.items) {
+             document.getElementById('m-similar').innerHTML = sim.items.map(i => {
+                 let vUrl = `https://www.youtube.com/embed/${i.id.videoId}?autoplay=1`;
+                 return `<div class="card card-video" onclick="openSimplePlayer('${vUrl}', '${i.snippet.title.replace(/'/g, "&apos;")}')">
+                    <img src="${i.snippet.thumbnails.high.url}" style="width:100%; height:100%; object-fit:cover;">
+                    <div class="video-title">${i.snippet.title}</div>
+                 </div>`;
+             }).join('');
+        } else {
+             document.getElementById('m-similar').innerHTML = '';
+        }
     }
 
     // --- INFINITE SHORTS ---
@@ -717,8 +691,6 @@
         let html = tvs.slice(0, 10).map(t => `<div class="card card-tv-css" onclick="openLink('${t.url}')"><div class="tv-name">${t.n}</div></div>`).join('');
         html += `<div class="card card-tv-css" style="border-style:dashed" onclick="openCatalog('tv','list','Chaînes TV', 'tv')"><div class="tv-name"><i class="fas fa-plus"></i> Voir plus</div></div>`;
         document.getElementById('tvRow').innerHTML = html;
-        
-        // Stocker la liste complète pour le catalogue
         window.fullTvList = tvs;
     }
 
@@ -762,7 +734,6 @@
         const lang = document.getElementById('catLangSelect').value;
 
         if (type === 'tv') {
-            // TV Static List
             let filtered = window.fullTvList;
             if(query) filtered = filtered.filter(t => t.n.toLowerCase().includes(query.toLowerCase()));
             grid.innerHTML = filtered.map(t => `<div class="card card-tv-css" style="width:100%; height:120px" onclick="openLink('${t.url}')"><div class="tv-name">${t.n}</div></div>`).join('');
@@ -772,10 +743,24 @@
         }
 
         if (type === 'vod' || type === 'live') {
-            // YT/DM Search based
-            let searchQuery = (query || sectionQuery) + (lang ? ` ${lang}` : '');
-            let yt = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchQuery}&type=video&maxResults=20`);
-            if(yt && yt.items) {
+            // Logique de recherche stricte par section
+            let searchQuery = "";
+            
+            // Si c'est la section LIVE, on force eventType=live et on ignore les autres contextes
+            if(type === 'live') {
+                // Si l'utilisateur tape une recherche, on cherche dans les lives. Sinon on prend le contexte par défaut (live news...)
+                searchQuery = (query ? query : sectionQuery) + (lang ? ` ${lang}` : '');
+            } else {
+                // Pour VOD/Vidéo, on combine la recherche utilisateur avec le contexte de la section (ex: "action movie")
+                // Si l'utilisateur cherche "Batman" dans la section "Action", ça devient "Batman action full movie"
+                searchQuery = (query ? `${query} ${sectionQuery}` : sectionQuery) + (lang ? ` ${lang}` : '');
+            }
+
+            let liveParam = (type === 'live') ? '&eventType=live' : '&videoDuration=long';
+            
+            let yt = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchQuery}&type=video${liveParam}&maxResults=20`);
+            
+            if(yt && yt.items && yt.items.length > 0) {
                 grid.innerHTML = yt.items.map(i => {
                      let url = `https://www.youtube.com/embed/${i.id.videoId}?autoplay=1`;
                      return `<div class="card card-video" style="width:100%; height:150px" onclick="openSimplePlayer('${url}', '${i.snippet.title.replace(/'/g, "&apos;")}')">
@@ -783,6 +768,8 @@
                         <div class="video-title" style="font-size:0.8rem">${i.snippet.title}</div>
                      </div>`;
                 }).join('');
+            } else {
+                grid.innerHTML = '<div style="color:white; width:100%; text-align:center; padding:20px;">Aucun résultats trouvés</div>';
             }
             return;
         }
@@ -840,6 +827,7 @@
     function openLink(url) { window.open(url, '_blank'); }
     function scrollToSec(id) { document.getElementById(id).scrollIntoView({behavior:'smooth', block:'center'}); }
     
+    // Barre de recherche principale : Shorts et Vidéos uniquement
     document.getElementById('searchInput').addEventListener('keypress', (e) => {
         if(e.key==='Enter') {
             loadMixedContent(e.target.value);
