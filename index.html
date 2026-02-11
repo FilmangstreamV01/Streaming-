@@ -48,7 +48,6 @@
         
         /* SHORTS */
         .card-short { width: 110px; height: 195px; border: 1px solid #333; }
-        .badge-source, .badge-short { display: none !important; }
         .card-short .short-title { position: absolute; bottom: 0; background: rgba(0,0,0,0.8); width: 100%; padding: 5px; font-size: 0.65rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         /* VIDEOS & LIVES */
@@ -263,7 +262,7 @@
     </div>
 
     <!-- DETAILS VIEW -->
-    <div id="details-view">
+     <div id="details-view">
         <div class="btn-close-fixed" onclick="closeDetails()"><i class="fas fa-times"></i></div>
         <div class="player-container" id="player-container"></div>
         
@@ -352,6 +351,8 @@
 
 <script>
     const TMDB = "1073e4d36ef71f912da093a5eb38f091";
+    // ATTENTION : Si les vidéos ne chargent pas, c'est que les clés API YouTube sont épuisées.
+    // Vous devrez en générer une nouvelle sur Google Cloud Console.
     const YT_KEYS = [
         "AIzaSyCo4xWGX9xjFwCoGqum17qvCpr5liZtOq4",
         "AIzaSyAc7d0U7_DcloYMLqeCdUUZD_M3ZLaEA7E",
@@ -455,13 +456,13 @@
 
     // --- LOGIQUE CONTENU MIXTE (Recherche incluse) ---
     async function loadMixedContent(searchQuery = '') {
-        // 1. SHORTS
+        // 1. SHORTS (Toujours videoDuration=short)
         let shortsQ = searchQuery ? `${searchQuery} shorts` : 'shorts viral';
         let shorts = [];
         let ytS = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${shortsQ}&type=video&videoDuration=short&maxResults=40`);
         if(ytS && ytS.items) shorts.push(...ytS.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'})));
         
-        if(!searchQuery) { // Dailymotion fallback only if no search (simple logic)
+        if(!searchQuery) { 
             let dmS = await fetch(`https://api.dailymotion.com/videos?search=shorts&shorter_than=60&fields=id,title,thumbnail_720_url&limit=20`).then(r=>r.json());
             if(dmS && dmS.list) shorts.push(...dmS.list.map(i => ({id: i.id, title: i.title, img: i.thumbnail_720_url, src: 'dm'})));
         }
@@ -469,17 +470,17 @@
         globalShortsList = shuffle(shorts);
         renderShortsRows(globalShortsList);
 
-        // 2. VIDEOS
+        // 2. VIDEOS (CORRECTION ICI: Ajout de videoDuration=medium pour éviter les shorts)
         let videoQ = searchQuery ? searchQuery : 'viral video';
         let videos = [];
-        let ytV = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${videoQ}&type=video&maxResults=40`);
+        // videoDuration=medium force les vidéos entre 4 et 20 minutes (évite les shorts < 1min)
+        let ytV = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${videoQ}&type=video&videoDuration=medium&maxResults=40`);
         if(ytV && ytV.items) videos.push(...ytV.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'})));
         
         renderMixedCards('videosRow1', videos.slice(0, 20), 'video');
         renderMixedCards('videosRow2', videos.slice(20), 'video');
 
-        // 3. LIVES (Non affecté par la recherche principale selon la demande, sauf si on est dans la section live)
-        // Ici on charge juste le contenu par défaut pour la page d'accueil
+        // 3. LIVES
         if(!searchQuery) {
             let lives = [];
             let ytL = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=live news gaming&type=video&eventType=live&maxResults=40`);
@@ -521,8 +522,10 @@
     }
 
     function createCardHTML(v, type) {
-        let url = v.src==='yt' ? `https://www.youtube.com/embed/${v.id}?autoplay=1` : `https://www.dailymotion.com/embed/video/${v.id}?autoplay=1`;
-        return `<div class="card card-video" onclick="openSimplePlayer('${url}', '${v.title.replace(/'/g, "&apos;")}')">
+        // CORRECTION : On ne passe plus l'URL complète dans onclick pour éviter les bugs de guillemets
+        // On passe l'ID et la source ('yt' ou 'dm')
+        let safeTitle = v.title.replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+        return `<div class="card card-video" onclick="openSimplePlayer('${v.id}', '${v.src}', '${safeTitle}')">
             <img src="${v.img}" style="width:100%; height:100%; object-fit:cover;">
             ${type==='live' ? '<div class="live-tag">LIVE</div>' : '<div class="play-icon"><i class="fas fa-play" style="color:white; font-size:12px"></i></div>'}
             <div class="video-title">${v.title}</div>
@@ -566,27 +569,110 @@
         } catch(e) {}
     }
 
+    
     // --- DETAILS VIEW LOGIC ---
     async function openDetails(id, type, source) {
         activeDetailsId = id;
         const view = document.getElementById('details-view');
         const player = document.getElementById('player-container');
         
-        // Masquer synopsis et casting pour les vidéos/VOD
+        document.getElementById('full-details-section').style.display = 'block';
+
+        document.getElementById('m-title').innerText = "Chargement...";
+        document.getElementById('m-desc').innerText = "";
+        document.getElementById('m-cast').innerHTML = "";
+        document.getElementById('m-similar').innerHTML = "";
+        player.innerHTML = '<div style="width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center">Chargement...</div>';
+
+        view.style.display = 'block';
+
+        if(source === 'tmdb') {
+            let r = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${TMDB}&language=fr-FR&append_to_response=videos,credits,similar`);
+            let m = await r.json();
+
+            document.getElementById('m-title').innerText = m.title || m.name;
+            document.getElementById('m-desc').innerText = m.overview || "Pas de description.";
+            document.getElementById('m-year').innerText = (m.release_date || m.first_air_date || "").split('-')[0];
+            document.getElementById('m-vote').innerText = `⭐ ${m.vote_average.toFixed(1)}`;
+
+            let trailer = m.videos.results.find(v => v.type === 'Trailer') || m.videos.results[0];
+            player.innerHTML = trailer ? `<iframe src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=0&rel=0" allow="autoplay; fullscreen"></iframe>` : `<img src="https://image.tmdb.org/t/p/original${m.backdrop_path}" style="width:100%;height:100%;object-fit:cover;">`;
+
+            if(m.credits && m.credits.cast) {
+                document.getElementById('m-cast').innerHTML = m.credits.cast.slice(0, 10).map(c => `
+                    <div class="cast-item">
+                        <img class="cast-img" src="https://image.tmdb.org/t/p/w200${c.profile_path}" onerror="this.src='https://via.placeholder.com/60'">
+                        <div>${c.name}</div>
+                    </div>`).join('');
+            }
+            if(m.similar && m.similar.results) {
+                document.getElementById('m-similar').innerHTML = m.similar.results.slice(0, 10).map(s => `
+                    <div class="card card-std" onclick="openDetails('${s.id}', '${type}', 'tmdb')">
+                        <img src="https://image.tmdb.org/t/p/w200${s.poster_path}">
+                        <div class="card-title">${s.title||s.name}</div>
+                    </div>`).join('');
+            }
+
+        } else if (source === 'kitsu') {
+            let r = await fetch(`https://kitsu.io/api/edge/anime/${id}`);
+            let d = await r.json();
+            let a = d.data.attributes;
+
+            document.getElementById('m-title').innerText = a.canonicalTitle;
+            document.getElementById('m-desc').innerText = a.synopsis;
+            document.getElementById('m-year').innerText = a.startDate ? a.startDate.split('-')[0] : '';
+            document.getElementById('m-vote').innerText = `⭐ ${a.averageRating ? (a.averageRating/20).toFixed(1) : '?'}`;
+
+            player.innerHTML = a.youtubeVideoId ? `<iframe src="https://www.youtube.com/embed/${a.youtubeVideoId}?autoplay=1&mute=0&rel=0" allow="autoplay; fullscreen"></iframe>` : `<img src="${a.coverImage ? a.coverImage.original : (a.posterImage?a.posterImage.original:'')}" style="width:100%;height:100%;object-fit:cover;">`;
+            
+           try {
+                let cRes = await fetch(`https://kitsu.io/api/edge/anime/${id}/characters?include=character&page[limit]=10`);
+                let cData = await cRes.json();
+                if(cData.included) {
+                    document.getElementById('m-cast').innerHTML = cData.included.map(char => `
+                        <div class="cast-item">
+                            <img class="cast-img" src="${char.attributes.image?.original || 'https://via.placeholder.com/60'}" onerror="this.src='https://via.placeholder.com/60'">
+                            <div>${char.attributes.name}</div>
+                        </div>`).join('');
+                }
+            } catch(e) { document.getElementById('m-cast').innerHTML = "<small>Casting indisponible</small>"; }
+        }
+        resetStars(localStorage.getItem('vote_' + id));
+    }
+
+    function closeDetails() {
+        document.getElementById('details-view').style.display = 'none';
+        document.getElementById('player-container').innerHTML = '';
+    }
+
+    // CORRECTION MAJEURE : Fonction modifiée pour accepter ID et Source au lieu de l'URL brute
+    async function openSimplePlayer(id, src, title) {
+        document.getElementById('details-view').style.display = 'block';
+        
+        let embedUrl = "";
+        if(src === 'yt') embedUrl = `https://www.youtube.com/embed/${id}?autoplay=1`;
+        else if(src === 'dm') embedUrl = `https://www.dailymotion.com/embed/video/${id}?autoplay=1`;
+        
+        // On force le rafraîchissement du conteneur pour garantir l'affichage
+        const pContainer = document.getElementById('player-container');
+        pContainer.innerHTML = ''; 
+        setTimeout(() => {
+             pContainer.innerHTML = `<iframe src="${embedUrl}" allow="autoplay; fullscreen"></iframe>`;
+        }, 50);
+
         document.getElementById('full-details-section').style.display = 'none';
         
         document.getElementById('m-title').innerText = title || "Vidéo";
         document.getElementById('m-year').innerText = "";
         document.getElementById('m-vote').innerText = "";
         
-        // Charger titres similaires basés sur le titre
         document.getElementById('m-similar').innerHTML = '<div style="color:#666; width:100%; text-align:center">Chargement des suggestions...</div>';
         
         let sim = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${title}&type=video&maxResults=10`);
         if(sim && sim.items) {
              document.getElementById('m-similar').innerHTML = sim.items.map(i => {
-                 let vUrl = `https://www.youtube.com/embed/${i.id.videoId}?autoplay=1`;
-                 return `<div class="card card-video" onclick="openSimplePlayer('${vUrl}', '${i.snippet.title.replace(/'/g, "&apos;")}')">
+                 let safeTitle = i.snippet.title.replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+                 return `<div class="card card-video" onclick="openSimplePlayer('${i.id.videoId}', 'yt', '${safeTitle}')">
                     <img src="${i.snippet.thumbnails.high.url}" style="width:100%; height:100%; object-fit:cover;">
                     <div class="video-title">${i.snippet.title}</div>
                  </div>`;
@@ -743,16 +829,10 @@
         }
 
         if (type === 'vod' || type === 'live') {
-            // Logique de recherche stricte par section
             let searchQuery = "";
-            
-            // Si c'est la section LIVE, on force eventType=live et on ignore les autres contextes
             if(type === 'live') {
-                // Si l'utilisateur tape une recherche, on cherche dans les lives. Sinon on prend le contexte par défaut (live news...)
                 searchQuery = (query ? query : sectionQuery) + (lang ? ` ${lang}` : '');
             } else {
-                // Pour VOD/Vidéo, on combine la recherche utilisateur avec le contexte de la section (ex: "action movie")
-                // Si l'utilisateur cherche "Batman" dans la section "Action", ça devient "Batman action full movie"
                 searchQuery = (query ? `${query} ${sectionQuery}` : sectionQuery) + (lang ? ` ${lang}` : '');
             }
 
@@ -762,8 +842,8 @@
             
             if(yt && yt.items && yt.items.length > 0) {
                 grid.innerHTML = yt.items.map(i => {
-                     let url = `https://www.youtube.com/embed/${i.id.videoId}?autoplay=1`;
-                     return `<div class="card card-video" style="width:100%; height:150px" onclick="openSimplePlayer('${url}', '${i.snippet.title.replace(/'/g, "&apos;")}')">
+                     let safeTitle = i.snippet.title.replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+                     return `<div class="card card-video" style="width:100%; height:150px" onclick="openSimplePlayer('${i.id.videoId}', 'yt', '${safeTitle}')">
                         <img src="${i.snippet.thumbnails.high.url}" style="width:100%; height:100%; object-fit:cover;">
                         <div class="video-title" style="font-size:0.8rem">${i.snippet.title}</div>
                      </div>`;
