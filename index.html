@@ -2,918 +2,119 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FilmangStream Pro - Ultimate</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentification FilmangstreamV01</title>
+    
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
     <style>
-        :root { --red: #e50914; --black: #000000; --dark: #121212; --gray: #2a2a2a; --text: #fff; --dm-blue: #0062ff; }
-        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--black); color: var(--text); font-family: 'Montserrat', sans-serif; padding-top: 140px; overflow-x: hidden; }
-
-        /* --- AUTH --- */
-        #authOverlay { position: fixed; inset: 0; background: radial-gradient(circle, #222 0%, #000 100%); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-box { background: rgba(30,30,30,0.95); padding: 40px; border-radius: 20px; width: 100%; max-width: 380px; text-align: center; border: 1px solid #333; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; }
-        .auth-box h1 { color: var(--red); font-weight: 900; font-size: 1.8rem; margin-bottom: 30px; letter-spacing: 1px; }
-        .auth-input { width: 100%; background: #000; border: 1px solid #444; color: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 1rem; text-align: center; }
-        .btn-enter { width: 100%; background: var(--red); color: white; border: none; padding: 15px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 1rem; text-transform: uppercase; }
-
-        /* --- HEADER & NAV --- */
-        #mainContent { display: none; }
-        header { position: fixed; top: 0; width: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid #222; }
-        .header-top { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; }
-        .logo { font-size: 1.2rem; font-weight: 900; color: var(--red); letter-spacing: -1px; cursor: pointer; }
-        .search-bar { padding: 0 20px 10px; position: relative; }
-        .search-bar input { width: 100%; background: var(--gray); border: none; padding: 12px 15px 12px 40px; border-radius: 8px; color: white; font-family: inherit; }
-        .search-bar i { position: absolute; left: 32px; top: 12px; color: #888; }
-        nav { display: flex; gap: 10px; overflow-x: auto; padding: 10px 20px; scrollbar-width: none; }
-        .pill { background: var(--gray); padding: 8px 16px; border-radius: 20px; white-space: nowrap; font-size: 0.75rem; font-weight: 700; color: #bbb; cursor: pointer; transition: 0.2s; }
-        .pill.active { background: var(--text); color: var(--black); }
-
-        /* --- LAYOUT GLOBAL --- */
-        section { padding: 30px 0 10px 20px; }
-        h2 { font-size: 1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-        h2 i { color: var(--red); }
-        .row { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 20px; scrollbar-width: none; align-items: flex-start; }
-
-        /* --- CARDS --- */
-        .card { flex: 0 0 auto; border-radius: 10px; overflow: hidden; position: relative; background: #1a1a1a; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .img-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #222; color: #666; font-size: 0.7rem; font-weight: 700; text-align: center; padding: 5px; }
-
-        /* Standard (Films/Séries/Animes) */
-        .card-std { width: 130px; height: 195px; }
-        .card-std .card-title { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(0deg, black, transparent); padding: 20px 5px 5px; font-size: 0.7rem; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        /* SHORTS */
-        .card-short { width: 110px; height: 195px; border: 1px solid #333; }
-        .card-short .short-title { position: absolute; bottom: 0; background: rgba(0,0,0,0.8); width: 100%; padding: 5px; font-size: 0.65rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        /* VIDEOS & LIVES */
-        .card-video { width: 200px; height: 112px; border: 1px solid #333; }
-        .card-video .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30px; height: 30px; background: rgba(0,0,0,0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid white; }
-        .card-video .video-title { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.8); padding: 5px 10px; font-size: 0.7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        .live-tag { position: absolute; top: 5px; right: 5px; background: var(--red); color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.6rem; font-weight: 800; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-
-        /* TV */
-        .card-tv-css { 
-            width: 160px; height: 100px; 
-            background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
-            border: 1px solid #333; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            position: relative; transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            overflow: hidden;
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: #333;
         }
-        .card-tv-css:hover { border-color: var(--red); transform: scale(1.05); }
-        .card-tv-css .tv-name { font-weight: 900; font-size: 1rem; text-align: center; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,1); z-index: 2; padding: 5px; text-transform: uppercase; letter-spacing: 1px; }
-        .card-tv-css::before { content:''; position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(255,255,255,0.05), transparent); z-index: 1; }
-        .card-tv-css .tv-bg { position: absolute; inset: 0; object-fit: cover; opacity: 0.3; filter: blur(2px); z-index: 0; }
-        
-        .card-more { background: var(--gray); display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed #444; width: 130px; height: 195px; }
-        .card-more-video { width: 200px; height: 112px; border: 2px dashed #444; background: var(--gray); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 10px; color: #888; font-size: 0.8rem; font-weight: bold; }
-
-        /* --- HERO --- */
-        #hero { height: 450px; position: relative; overflow: hidden; margin-bottom: -20px; }
-        .hero-slider { display: flex; height: 100%; transition: transform 0.5s ease-out; }
-        .hero-slide { min-width: 100%; position: relative; }
-        .hero-slide img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
-        .hero-content { position: absolute; bottom: 60px; left: 20px; max-width: 85%; }
-        .hero-title { font-size: 2rem; font-weight: 900; margin-bottom: 15px; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); line-height: 1.1; }
-        .btn-watch-hero { background: var(--red); color: white; border: none; padding: 10px 25px; border-radius: 5px; font-weight: 800; cursor: pointer; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(229,9,20,0.5); }
-
-        /* --- OVERLAYS --- */
-        #shortsOverlay { display: none; position: fixed; inset: 0; background: black; z-index: 5000; }
-        .shorts-feed { height: 100dvh; overflow-y: scroll; scroll-snap-type: y mandatory; }
-        .short-item { height: 100dvh; width: 100%; scroll-snap-align: start; position: relative; background: #000; display: flex; align-items: center; justify-content: center; }
-        .short-item iframe { width: 100%; height: 100%; border: none; }
-        .btn-close-fixed { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.2); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 6000; cursor: pointer; color: white; backdrop-filter: blur(5px); }
-
-        /* --- DETAILS VIEW --- */
-        #details-view { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: var(--black); z-index: 6000; display: none; overflow-y: auto;
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 100%;
+            max-width: 350px;
         }
-        .player-container { position: relative; width: 100%; padding-top: 56.25%; background: #000; overflow: hidden; }
-        .player-container iframe, .player-container img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; object-fit: cover; }
-        .details-content { padding: 20px; width: 100%; max-width: 800px; margin: 0 auto; }
-        .rating-box { display: flex; flex-direction: column; align-items: center; margin: 20px 0; padding: 15px; background: #111; border-radius: 12px; border: 1px solid #222; }
-        .stars { font-size: 1.8rem; color: #333; margin-bottom: 5px; }
-        .stars i.active { color: #ffcc00; }
-        .meta-info { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .tag { background: #222; padding: 5px 12px; border-radius: 5px; font-size: 0.8rem; font-weight: bold; color: #ccc; }
-        .cast-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 15px; margin: 20px 0; }
-        .cast-item { text-align: center; font-size: 0.7rem; color: #ccc; }
-        .cast-img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-bottom: 5px; border: 1px solid #333; }
-        .grid-links { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
-        .btn-link { background: #111; color: white; padding: 12px; text-align: center; border-radius: 8px; text-decoration: none; font-size: 0.8rem; font-weight: bold; border: 1px solid #222; transition: 0.3s; }
-        .btn-link:hover { border-color: var(--red); background: #1a1a1a; }
-        h2.sub-title { font-size: 1.1rem; border-bottom: 1px solid #222; padding-bottom: 10px; margin-top: 30px; color: var(--red); }
-        p.synopsis { color: #ccc; line-height: 1.6; font-size: 0.95rem; text-align: left; }
-
-        /* --- CATALOG OVERLAY --- */
-        #catalogOverlay { display: none; position: fixed; inset: 0; background: #0a0a0a; z-index: 4000; flex-direction: column; }
-        .cat-header { padding: 15px; border-bottom: 1px solid #333; background: #111; display: flex; flex-direction: column; gap: 10px; }
-        .cat-controls { display: flex; align-items: center; gap: 10px; }
-        .cat-search { flex: 1; background: #222; border: 1px solid #444; padding: 10px; border-radius: 8px; color: white; }
-        .cat-lang-select { background: #222; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; display: none; max-width: 120px; }
-        .cat-grid { flex: 1; overflow-y: auto; padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; align-content: start; }
-        .cat-footer { padding: 15px; border-top: 1px solid #333; background: #111; display: flex; justify-content: center; gap: 20px; }
-        .btn-pg { background: var(--red); border: none; color: white; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        .btn-pg:disabled { background: #333; cursor: not-allowed; }
-
+        h2 { margin-bottom: 10px; color: #1a73e8; }
+        p { font-size: 14px; color: #666; margin-bottom: 30px; }
+        
+        #profile-area {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .user-pic {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 3px solid #1a73e8;
+            margin-bottom: 15px;
+        }
+        .logout-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #f1f3f4;
+            border: 1px solid #dadce0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .logout-btn:hover { background: #e8eaed; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <!-- LOGIN -->
-    <div id="authOverlay">
-        <div class="auth-box">
-            <h1>FILMANGSTREAM</h1>
-            <input type="email" id="userEmail" class="auth-input" placeholder="Votre email...">
-            <button class="btn-enter" onclick="attemptLogin()">ENTRER</button>
+    <div class="login-card">
+        <div id="login-header">
+            <h2>FilmangstreamV01</h2>
+            <p>Connectez-vous pour accéder à votre espace</p>
+        </div>
+
+        <div id="g_id_onload"
+             data-client_id="302097598278-r0clncpouup6lbfp1pqc05v9t1s3aaao.apps.googleusercontent.com"
+             data-callback="handleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+
+        <div class="g_id_signin" 
+             data-type="standard" 
+             data-shape="rectangular" 
+             data-theme="filled_blue" 
+             data-text="signin_with" 
+             data-size="large" 
+             data-logo_alignment="left">
+        </div>
+
+        <div id="profile-area">
+            <img id="u-pic" class="user-pic" src="" alt="Profil">
+            <h3 id="u-name"></h3>
+            <p id="u-email"></p>
+            <button class="logout-btn" onclick="location.reload()">Déconnexion</button>
         </div>
     </div>
 
-    <!-- MAIN APP -->
-    <div id="mainContent">
-        <header>
-            <div class="header-top">
-                <div class="logo" onclick="location.reload()">FILMANGSTREAM</div>
-                <i class="fas fa-user-circle" style="font-size:1.5rem; color:#666; cursor:pointer;" onclick="logout()"></i>
-            </div>
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Rechercher (Shorts & Vidéos)...">
-            </div>
-            <nav>
-                <div class="pill active" onclick="scrollToSec('hero')">Accueil</div>
-                <div class="pill" onclick="scrollToSec('shortsSec')">Shorts</div>
-                <div class="pill" onclick="scrollToSec('vidSec')">Vidéos</div>
-                <div class="pill" onclick="scrollToSec('vodSec')">VOD</div>
-                <div class="pill" onclick="scrollToSec('liveSec')">Live</div>
-                <div class="pill" onclick="scrollToSec('filmSec')">Films</div>
-                <div class="pill" onclick="scrollToSec('serieSec')">Séries</div>
-                <div class="pill" onclick="scrollToSec('animeSec')">Animes</div>
-                <div class="pill" onclick="scrollToSec('streamSec')">Streaming</div>
-                <div class="pill" onclick="scrollToSec('tvSec')">TV</div>
-            </nav>
-        </header>
-
-        <!-- HERO SLIDER -->
-        <section id="hero" style="padding:0"><div class="hero-slider" id="heroRow"></div></section>
-
-        <!-- SHORTS (2 LIGNES) -->
-        <section id="shortsSec">
-            <h2><i class="fab fa-youtube"></i> Shorts</h2>
-            <div class="row" id="shortsRow1"></div>
-            <div class="row" id="shortsRow2"></div>
-        </section>
-
-        <!-- VIDEOS (2 LIGNES, VIRAL FIRST) -->
-        <section id="vidSec">
-            <h2><i class="fas fa-play-circle"></i> Vidéos</h2>
-            <div class="row" id="videosRow1"></div>
-            <div class="row" id="videosRow2"></div>
-        </section>
-
-        <!-- LIVES (2 LIGNES, DESIGN VIDEO) -->
-        <section id="liveSec">
-            <h2><i class="fas fa-broadcast-tower"></i> Live</h2>
-            <div class="row" id="liveRow1"></div>
-            <div class="row" id="liveRow2"></div>
-        </section>
-
-        <!-- VOD CATEGORIES -->
-        <section id="vodSec">
-            <h2><i class="fas fa-child"></i> VOD - Enfant</h2><div class="row" id="vod_kids"></div>
-            <h2><i class="fas fa-graduation-cap"></i> VOD - Éducation</h2><div class="row" id="vod_education"></div>
-            <h2><i class="fas fa-flask"></i> VOD - Science</h2><div class="row" id="vod_science"></div>
-            <h2><i class="fas fa-film"></i> VOD - Action</h2><div class="row" id="vod_action"></div>
-            <h2><i class="fas fa-ghost"></i> VOD - Horreur</h2><div class="row" id="vod_horror"></div>
-            <h2><i class="fas fa-laugh"></i> VOD - Comédie</h2><div class="row" id="vod_comedy"></div>
-            <h2><i class="fas fa-dragon"></i> VOD - Animé</h2><div class="row" id="vod_anime"></div>
-            <h2><i class="fas fa-book-open"></i> VOD - Manga</h2><div class="row" id="vod_manga"></div>
-            <h2><i class="fas fa-theater-masks"></i> VOD - Drama</h2><div class="row" id="vod_drama"></div>
-            <h2><i class="fas fa-child"></i> VOD - Cartoon</h2><div class="row" id="vod_cartoon"></div>
-            <h2><i class="fas fa-heart"></i> VOD - Romance</h2><div class="row" id="vod_romance"></div>
-            <h2><i class="fas fa-users"></i> VOD - Famille</h2><div class="row" id="vod_family"></div>
-            <h2><i class="fas fa-globe-africa"></i> VOD - Nollywood & Afrique</h2><div class="row" id="vod_africa"></div>
-            <h2><i class="fas fa-book"></i> VOD - Documentaire</h2><div class="row" id="vod_doc"></div>
-        </section>
-
-        <!-- FILMS (TMDB) -->
-        <section id="filmSec">
-            <h2><i class="fas fa-film"></i> Films - Nouveautés</h2><div class="row" id="f_new"></div>
-            <h2><i class="fas fa-fire"></i> Films - Populaires</h2><div class="row" id="f_pop"></div>
-            <h2><i class="fas fa-heart"></i> Films - Aimés</h2><div class="row" id="f_like"></div>
-            <h2><i class="fas fa-chart-line"></i> Films - Tendances</h2><div class="row" id="f_trend"></div>
-            <h2><i class="fas fa-star"></i> Films - Mieux Notés</h2><div class="row" id="f_rate"></div>
-            <h2><i class="fas fa-calendar-alt"></i> Films - À Venir</h2><div class="row" id="f_up"></div>
-        </section>
-
-        <!-- SERIES (TMDB) -->
-        <section id="serieSec">
-            <h2><i class="fas fa-tv"></i> Séries - Nouveautés</h2><div class="row" id="s_new"></div>
-            <h2><i class="fas fa-fire"></i> Séries - Populaires</h2><div class="row" id="s_pop"></div>
-            <h2><i class="fas fa-heart"></i> Séries - Aimés</h2><div class="row" id="s_like"></div>
-            <h2><i class="fas fa-chart-line"></i> Séries - Tendances</h2><div class="row" id="s_trend"></div>
-            <h2><i class="fas fa-star"></i> Séries - Mieux Notés</h2><div class="row" id="s_rate"></div>
-            <h2><i class="fas fa-calendar-alt"></i> Séries - À Venir</h2><div class="row" id="s_up"></div>
-        </section>
-
-        <!-- ANIMES (KITSU) -->
-        <section id="animeSec">
-            <h2><i class="fas fa-dragon"></i> Animes - Nouveautés</h2><div class="row" id="a_new"></div>
-            <h2><i class="fas fa-fire"></i> Animes - Populaires</h2><div class="row" id="a_pop"></div>
-            <h2><i class="fas fa-heart"></i> Animes - Aimés</h2><div class="row" id="a_like"></div>
-            <h2><i class="fas fa-chart-line"></i> Animes - Tendances</h2><div class="row" id="a_trend"></div>
-            <h2><i class="fas fa-star"></i> Animes - Mieux Notés</h2><div class="row" id="a_rate"></div>
-            <h2><i class="fas fa-calendar-alt"></i> Animes - À Venir</h2><div class="row" id="a_up"></div>
-        </section>
-
-        <!-- PLATEFORMES -->
-        <section id="streamSec">
-            <h2><i class="fas fa-layer-group"></i> Plateformes</h2>
-            <div class="row">
-                <div class="card card-std" onclick="openLink('https://www.netflix.com')"><img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" style="object-fit:contain; padding:10px"></div>
-                <div class="card card-std" onclick="openLink('https://www.primevideo.com')"><img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.png" style="object-fit:contain; padding:10px"></div>
-                <div class="card card-std" onclick="openLink('https://www.disneyplus.com')"><img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg" style="object-fit:contain; padding:10px"></div>
-                <div class="card card-std" onclick="openLink('https://www.crunchyroll.com')"><img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Crunchyroll_Logo.png" style="object-fit:contain; padding:10px"></div>
-            </div>
-        </section>
-
-        <!-- TV (OFFICIEL) -->
-        <section id="tvSec">
-            <h2><i class="fas fa-broadcast-tower"></i> Chaînes TV</h2>
-            <div class="row" id="tvRow"></div>
-        </section>
-
-        <div style="height:100px"></div>
-    </div>
-
-    <!-- SHORTS INFINITY OVERLAY -->
-    <div id="shortsOverlay">
-        <div class="btn-close-fixed" onclick="closeShortsPlayer()"><i class="fas fa-arrow-left"></i></div>
-        <div class="shorts-feed" id="shortsFeed"></div>
-    </div>
-
-    <!-- DETAILS VIEW -->
-     <div id="details-view">
-        <div class="btn-close-fixed" onclick="closeDetails()"><i class="fas fa-times"></i></div>
-        <div class="player-container" id="player-container"></div>
-        
-        <div class="details-content">
-            <h1 id="m-title" style="text-align: center; margin: 10px 0; font-size: 1.8rem;"></h1>
+    <script>
+        // Traitement de la réponse sans changer de page
+        function handleCredentialResponse(response) {
+            // Décodage du jeton JWT
+            const payload = parseJwt(response.credential);
             
-            <div class="meta-info">
-                <span class="tag" id="m-year"></span>
-                <span class="tag" style="color:var(--red)" id="m-vote"></span>
-                <span class="tag">HD</span>
-            </div>
+            console.log("Utilisateur connecté :", payload);
 
-            <div class="rating-box">
-                <div class="stars" id="star-rating">
-                    <i class="fas fa-star" data-v="1"></i>
-                    <i class="fas fa-star" data-v="2"></i>
-                    <i class="fas fa-star" data-v="3"></i>
-                    <i class="fas fa-star" data-v="4"></i>
-                    <i class="fas fa-star" data-v="5"></i>
-                </div>
-                <small id="rating-text">Notez ce contenu</small>
-            </div>
-
-            <!-- Sections conditionnelles -->
-            <div id="full-details-section">
-                <h2 class="sub-title">Synopsis</h2>
-                <p class="synopsis" id="m-desc"></p>
-
-                <h2 class="sub-title">Casting Principal</h2>
-                <div class="cast-grid" id="m-cast"></div>
-            </div>
-
-            <h2 class="sub-title">Regarder sur</h2>
-            <div class="grid-links">
-                <a href="https://www.netflix.com" target="_blank" class="btn-link">Netflix</a>
-                <a href="https://www.primevideo.com" target="_blank" class="btn-link">Prime Video</a>
-                <a href="https://www.disneyplus.com" target="_blank" class="btn-link">Disney+</a>
-                <a href="https://rakuten.tv" target="_blank" class="btn-link">Rakuten TV</a>
-            </div>
-
-            <h2 class="sub-title">Titres Similaires</h2>
-            <div class="row" id="m-similar" style="padding: 10px 0;"></div>
-        </div>
-    </div>
-
-    <!-- CATALOG OVERLAY -->
-    <div id="catalogOverlay">
-        <div class="cat-header">
-            <div class="cat-controls">
-                <div class="btn-close-fixed" style="position:relative; top:0; left:0; width:35px; height:35px;" onclick="document.getElementById('catalogOverlay').style.display='none'"><i class="fas fa-arrow-left"></i></div>
-                <h3 id="catTitle" style="margin:0; font-size:1rem; flex:1">Catégorie</h3>
-                <select id="catLangSelect" class="cat-lang-select" onchange="applyLangFilter()">
-                    <option value="">Toutes les langues</option>
-                    <option value="fr">Français</option>
-                    <option value="en">Anglais</option>
-                    <option value="es">Espagnol</option>
-                    <option value="de">Allemand</option>
-                    <option value="it">Italien</option>
-                    <option value="pt">Portugais</option>
-                    <option value="ru">Russe</option>
-                    <option value="ja">Japonais</option>
-                    <option value="ko">Coréen</option>
-                    <option value="zh">Chinois</option>
-                    <option value="ar">Arabe</option>
-                    <option value="hi">Hindi</option>
-                    <option value="tr">Turc</option>
-                    <option value="nl">Néerlandais</option>
-                    <option value="pl">Polonais</option>
-                    <option value="sv">Suédois</option>
-                    <option value="no">Norvégien</option>
-                    <option value="da">Danois</option>
-                    <option value="fi">Finnois</option>
-                    <option value="id">Indonésien</option>
-                    <option value="th">Thaï</option>
-                    <option value="vi">Vietnamien</option>
-                </select>
-            </div>
-            <input type="text" id="catSearchInput" class="cat-search" placeholder="Rechercher dans cette section...">
-        </div>
-        <div class="cat-grid" id="catGrid"></div>
-        <div class="cat-footer">
-            <button class="btn-pg" id="prevBtn" onclick="changePage(-1)">Précédent</button>
-            <button class="btn-pg" id="nextBtn" onclick="changePage(1)">Suivant</button>
-        </div>
-    </div>
-
-<script>
-    const TMDB = "1073e4d36ef71f912da093a5eb38f091";
-    // ATTENTION : Si les vidéos ne chargent pas, c'est que les clés API YouTube sont épuisées.
-    // Vous devrez en générer une nouvelle sur Google Cloud Console.
-    const YT_KEYS = [
-        "AIzaSyCo4xWGX9xjFwCoGqum17qvCpr5liZtOq4",
-        "AIzaSyAc7d0U7_DcloYMLqeCdUUZD_M3ZLaEA7E",
-        "AIzaSyCTfzR9KdN2QKLA7SrJkdmCvFaTYVPIs24",
-        "AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc",
-        "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY",
-        "AIzaSyBEos5Lzr0WbleEdtP_Gi7kMHcxaL9hhR0"
-    ];
-    let currentKeyIdx = 0;
-    
-    // Etats globaux
-    let catState = { type: '', sort: '', page: 1, query: '', sectionQuery: '' };
-    let globalShortsList = [];
-    let activeDetailsId = null;
-
-    function attemptLogin() {
-        if(document.getElementById('userEmail').value.includes('@')) {
-            document.getElementById('authOverlay').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
-            initApp();
-        }
-    }
-
-    function logout() { location.reload(); }
-
-    function initApp() {
-        loadHero();
-        loadTV();
-        initStars();
-        
-        // TMDB & Kitsu Configs
-        const configs = [
-            {id:'f_new', t:'movie', c:'now_playing', n:'Nouveautés Films'}, 
-            {id:'f_pop', t:'movie', c:'popular', n:'Films Populaires'},
-            {id:'f_like', t:'movie', c:'top_rated', n:'Films Aimés'}, 
-            {id:'f_trend', t:'movie', c:'trending', n:'Films Tendances'},
-            {id:'f_rate', t:'movie', c:'top_rated', n:'Films Mieux Notés'}, 
-            {id:'f_up', t:'movie', c:'upcoming', n:'Films À Venir'},
+            // Interface dynamique
+            document.getElementById("login-header").style.display = "none";
+            document.querySelector(".g_id_signin").style.display = "none";
             
-            {id:'s_new', t:'tv', c:'airing_today', n:'Séries Nouveautés'}, 
-            {id:'s_pop', t:'tv', c:'popular', n:'Séries Populaires'},
-            {id:'s_like', t:'tv', c:'top_rated', n:'Séries Aimées'}, 
-            {id:'s_trend', t:'tv', c:'trending', n:'Séries Tendances'},
-            {id:'s_rate', t:'tv', c:'top_rated', n:'Séries Mieux Notées'}, 
-            {id:'s_up', t:'tv', c:'on_the_air', n:'Séries À Venir'},
+            const area = document.getElementById("profile-area");
+            area.style.display = "block";
             
-            {id:'a_new', t:'anime', c:'-startDate', n:'Animes Nouveautés'}, 
-            {id:'a_pop', t:'anime', c:'-userCount', n:'Animes Populaires'},
-            {id:'a_like', t:'anime', c:'-favoritesCount', n:'Animes Aimés'}, 
-            {id:'a_trend', t:'anime', c:'trending', n:'Animes Tendances'},
-            {id:'a_rate', t:'anime', c:'-averageRating', n:'Animes Mieux Notés'}, 
-            {id:'a_up', t:'anime', c:'upcoming', n:'Animes À Venir'}
-        ];
-
-        configs.forEach(cfg => {
-            if(cfg.t === 'anime') loadKitsu(cfg.id, cfg.c, cfg.n);
-            else loadTMDB(cfg.id, cfg.t, cfg.c, cfg.n);
-        });
-
-        // Chargement Mixte (Shorts, Videos, Lives)
-        loadMixedContent();
-        
-        // Chargement VOD Catégories
-        const vodCats = [
-            {id:'vod_kids', q:'dessin animé complet francais enfant'},
-            {id:'vod_education', q:'documentaire éducatif enfant c\'est pas sorcier'},
-            {id:'vod_science', q:'expérience scientifique électronique informatique archéologie'},
-            {id:'vod_action', q:'action full movie'}, {id:'vod_horror', q:'horror full movie'},
-            {id:'vod_comedy', q:'comedy full movie'}, {id:'vod_romance', q:'romance full movie'},
-            {id:'vod_family', q:'family full movie'}, 
-            {id:'vod_africa', q:'nollywood benin cote d\'ivoire cameroon movies'},
-            {id:'vod_doc', q:'documentary full'},
-            {id:'vod_anime', q:'anime full movie'}, {id:'vod_manga', q:'manga movie'},
-            {id:'vod_drama', q:'drama full movie'}, {id:'vod_cartoon', q:'cartoon full movie'}
-        ];
-        vodCats.forEach(v => loadVODCategory(v.id, v.q));
-    }
-
-    // --- API TOOLS ---
-    async function fetchYT(urlPart) {
-        try {
-            let key = YT_KEYS[currentKeyIdx];
-            let res = await fetch(`${urlPart}&key=${key}`);
-            let data = await res.json();
-            if(data.error && (data.error.code === 403 || data.error.errors[0].reason === 'quotaExceeded')) {
-                currentKeyIdx++;
-                if(currentKeyIdx < YT_KEYS.length) return fetchYT(urlPart);
-                else return null;
-            }
-            return data;
-        } catch(e) { return null; }
-    }
-
-    function shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
-
-    // --- LOGIQUE CONTENU MIXTE (Recherche incluse) ---
-    async function loadMixedContent(searchQuery = '') {
-        // 1. SHORTS (Toujours videoDuration=short)
-        let shortsQ = searchQuery ? `${searchQuery} shorts` : 'shorts viral';
-        let shorts = [];
-        let ytS = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${shortsQ}&type=video&videoDuration=short&maxResults=40`);
-        if(ytS && ytS.items) shorts.push(...ytS.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'})));
-        
-        if(!searchQuery) { 
-            let dmS = await fetch(`https://api.dailymotion.com/videos?search=shorts&shorter_than=60&fields=id,title,thumbnail_720_url&limit=20`).then(r=>r.json());
-            if(dmS && dmS.list) shorts.push(...dmS.list.map(i => ({id: i.id, title: i.title, img: i.thumbnail_720_url, src: 'dm'})));
-        }
-        
-        globalShortsList = shuffle(shorts);
-        renderShortsRows(globalShortsList);
-
-        // 2. VIDEOS (CORRECTION ICI: Ajout de videoDuration=medium pour éviter les shorts)
-        let videoQ = searchQuery ? searchQuery : 'viral video';
-        let videos = [];
-        // videoDuration=medium force les vidéos entre 4 et 20 minutes (évite les shorts < 1min)
-        let ytV = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${videoQ}&type=video&videoDuration=medium&maxResults=40`);
-        if(ytV && ytV.items) videos.push(...ytV.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'})));
-        
-        renderMixedCards('videosRow1', videos.slice(0, 20), 'video');
-        renderMixedCards('videosRow2', videos.slice(20), 'video');
-
-        // 3. LIVES
-        if(!searchQuery) {
-            let lives = [];
-            let ytL = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=live news gaming&type=video&eventType=live&maxResults=40`);
-            if(ytL && ytL.items) lives.push(...ytL.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'})));
-
-            let dmL = await fetch(`https://api.dailymotion.com/videos?search=live&flags=live_onair&fields=id,title,thumbnail_720_url&limit=20`).then(r=>r.json());
-            if(dmL && dmL.list) lives.push(...dmL.list.map(i => ({id: i.id, title: i.title, img: i.thumbnail_720_url, src: 'dm'})));
-            
-            lives = shuffle(lives);
-            renderMixedCards('liveRow1', lives.slice(0, 20), 'live');
-            
-            let row2 = lives.slice(20);
-            let html2 = row2.map(v => createCardHTML(v, 'live')).join('');
-            html2 += `<div class="card card-more-video" onclick="openCatalog('live','mixed','Direct', 'live')"><i class="fas fa-plus"></i><span>Voir plus</span></div>`;
-            document.getElementById('liveRow2').innerHTML = html2;
-        }
-    }
-
-    async function loadVODCategory(elId, query) {
-        let vods = [];
-        let yt = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&videoDuration=long&maxResults=20`);
-        if(yt && yt.items) vods.push(...yt.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'})));
-        
-        let html = vods.map(v => createCardHTML(v, 'video')).join('');
-        html += `<div class="card card-more-video" onclick="openCatalog('vod','mixed','VOD ${query}', '${query}')"><i class="fas fa-plus"></i><span>Voir plus</span></div>`;
-        document.getElementById(elId).innerHTML = html;
-    }
-
-    // --- RENDERING HELPERS ---
-    function renderShortsRows(list) {
-        let half = Math.ceil(list.length / 2);
-        const buildHtml = (items, offset) => items.map((v, i) => `
-            <div class="card card-short" onclick="playShorts(${offset + i})">
-                <img src="${v.img}">
-                <div class="short-title">${v.title}</div>
-            </div>`).join('');
-        document.getElementById('shortsRow1').innerHTML = buildHtml(list.slice(0, half), 0);
-        document.getElementById('shortsRow2').innerHTML = buildHtml(list.slice(half), half);
-    }
-
-    function createCardHTML(v, type) {
-        // CORRECTION : On ne passe plus l'URL complète dans onclick pour éviter les bugs de guillemets
-        // On passe l'ID et la source ('yt' ou 'dm')
-        let safeTitle = v.title.replace(/'/g, "&apos;").replace(/"/g, "&quot;");
-        return `<div class="card card-video" onclick="openSimplePlayer('${v.id}', '${v.src}', '${safeTitle}')">
-            <img src="${v.img}" style="width:100%; height:100%; object-fit:cover;">
-            ${type==='live' ? '<div class="live-tag">LIVE</div>' : '<div class="play-icon"><i class="fas fa-play" style="color:white; font-size:12px"></i></div>'}
-            <div class="video-title">${v.title}</div>
-        </div>`;
-    }
-
-    function renderMixedCards(elId, list, type) {
-        document.getElementById(elId).innerHTML = list.map(v => createCardHTML(v, type)).join('');
-    }
-
-    // --- TMDB & KITSU LOGIC ---
-    async function loadTMDB(id, type, cat, name) {
-        let url = cat==='trending' ? `https://api.themoviedb.org/3/trending/${type}/week?api_key=${TMDB}&language=fr-FR` : `https://api.themoviedb.org/3/${type}/${cat}?api_key=${TMDB}&language=fr-FR`;
-        try {
-            let r = await fetch(url); let d = await r.json();
-            let html = d.results.slice(0,20).map(m => `
-                <div class="card card-std" onclick="openDetails('${m.id}', '${type}', 'tmdb')">
-                    <img src="https://image.tmdb.org/t/p/w300${m.poster_path}" onerror="this.style.display='none'; this.nextElementSibling.nextElementSibling.style.display='flex'">
-                    <div class="card-title">${m.title||m.name}</div>
-                    <div class="img-fallback" style="display:none; position:absolute; inset:0;">Image Non Disponible</div>
-                </div>`).join('');
-            html += `<div class="card card-more" onclick="openCatalog('${type}','${cat}','${name}')"><i class="fas fa-plus"></i><span>Voir plus</span></div>`;
-            document.getElementById(id).innerHTML = html;
-        } catch(e) {}
-    }
-
-    async function loadKitsu(id, sort, name) {
-        let url = sort==='upcoming' ? "https://kitsu.io/api/edge/anime?filter[status]=upcoming&page[limit]=20" : (sort==='trending' ? "https://kitsu.io/api/edge/trending/anime" : `https://kitsu.io/api/edge/anime?sort=${sort}&page[limit]=20`);
-        try {
-            let r = await fetch(url); let d = await r.json();
-            let html = d.data.map(a => {
-                let img = a.attributes.posterImage?.medium || a.attributes.posterImage?.original;
-                return `<div class="card card-std" onclick="openDetails('${a.id}', 'anime', 'kitsu')">
-                    <img src="${img || ''}" onerror="this.style.display='none'; this.nextElementSibling.nextElementSibling.style.display='flex'">
-                    <div class="card-title">${a.attributes.canonicalTitle}</div>
-                    <div class="img-fallback" style="display:${img?'none':'flex'}; position:absolute; inset:0;">${a.attributes.canonicalTitle}</div>
-                </div>`;
-            }).join('');
-            html += `<div class="card card-more" onclick="openCatalog('anime','${sort}','${name}')"><i class="fas fa-plus"></i><span>Voir plus</span></div>`;
-            document.getElementById(id).innerHTML = html;
-        } catch(e) {}
-    }
-
-    
-    // --- DETAILS VIEW LOGIC ---
-    async function openDetails(id, type, source) {
-        activeDetailsId = id;
-        const view = document.getElementById('details-view');
-        const player = document.getElementById('player-container');
-        
-        document.getElementById('full-details-section').style.display = 'block';
-
-        document.getElementById('m-title').innerText = "Chargement...";
-        document.getElementById('m-desc').innerText = "";
-        document.getElementById('m-cast').innerHTML = "";
-        document.getElementById('m-similar').innerHTML = "";
-        player.innerHTML = '<div style="width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center">Chargement...</div>';
-
-        view.style.display = 'block';
-
-        if(source === 'tmdb') {
-            let r = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${TMDB}&language=fr-FR&append_to_response=videos,credits,similar`);
-            let m = await r.json();
-
-            document.getElementById('m-title').innerText = m.title || m.name;
-            document.getElementById('m-desc').innerText = m.overview || "Pas de description.";
-            document.getElementById('m-year').innerText = (m.release_date || m.first_air_date || "").split('-')[0];
-            document.getElementById('m-vote').innerText = `⭐ ${m.vote_average.toFixed(1)}`;
-
-            let trailer = m.videos.results.find(v => v.type === 'Trailer') || m.videos.results[0];
-            player.innerHTML = trailer ? `<iframe src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=0&rel=0" allow="autoplay; fullscreen"></iframe>` : `<img src="https://image.tmdb.org/t/p/original${m.backdrop_path}" style="width:100%;height:100%;object-fit:cover;">`;
-
-            if(m.credits && m.credits.cast) {
-                document.getElementById('m-cast').innerHTML = m.credits.cast.slice(0, 10).map(c => `
-                    <div class="cast-item">
-                        <img class="cast-img" src="https://image.tmdb.org/t/p/w200${c.profile_path}" onerror="this.src='https://via.placeholder.com/60'">
-                        <div>${c.name}</div>
-                    </div>`).join('');
-            }
-            if(m.similar && m.similar.results) {
-                document.getElementById('m-similar').innerHTML = m.similar.results.slice(0, 10).map(s => `
-                    <div class="card card-std" onclick="openDetails('${s.id}', '${type}', 'tmdb')">
-                        <img src="https://image.tmdb.org/t/p/w200${s.poster_path}">
-                        <div class="card-title">${s.title||s.name}</div>
-                    </div>`).join('');
-            }
-
-        } else if (source === 'kitsu') {
-            let r = await fetch(`https://kitsu.io/api/edge/anime/${id}`);
-            let d = await r.json();
-            let a = d.data.attributes;
-
-            document.getElementById('m-title').innerText = a.canonicalTitle;
-            document.getElementById('m-desc').innerText = a.synopsis;
-            document.getElementById('m-year').innerText = a.startDate ? a.startDate.split('-')[0] : '';
-            document.getElementById('m-vote').innerText = `⭐ ${a.averageRating ? (a.averageRating/20).toFixed(1) : '?'}`;
-
-            player.innerHTML = a.youtubeVideoId ? `<iframe src="https://www.youtube.com/embed/${a.youtubeVideoId}?autoplay=1&mute=0&rel=0" allow="autoplay; fullscreen"></iframe>` : `<img src="${a.coverImage ? a.coverImage.original : (a.posterImage?a.posterImage.original:'')}" style="width:100%;height:100%;object-fit:cover;">`;
-            
-           try {
-                let cRes = await fetch(`https://kitsu.io/api/edge/anime/${id}/characters?include=character&page[limit]=10`);
-                let cData = await cRes.json();
-                if(cData.included) {
-                    document.getElementById('m-cast').innerHTML = cData.included.map(char => `
-                        <div class="cast-item">
-                            <img class="cast-img" src="${char.attributes.image?.original || 'https://via.placeholder.com/60'}" onerror="this.src='https://via.placeholder.com/60'">
-                            <div>${char.attributes.name}</div>
-                        </div>`).join('');
-                }
-            } catch(e) { document.getElementById('m-cast').innerHTML = "<small>Casting indisponible</small>"; }
-        }
-        resetStars(localStorage.getItem('vote_' + id));
-    }
-
-    function closeDetails() {
-        document.getElementById('details-view').style.display = 'none';
-        document.getElementById('player-container').innerHTML = '';
-    }
-
-    // CORRECTION MAJEURE : Fonction modifiée pour accepter ID et Source au lieu de l'URL brute
-    async function openSimplePlayer(id, src, title) {
-        document.getElementById('details-view').style.display = 'block';
-        
-        let embedUrl = "";
-        if(src === 'yt') embedUrl = `https://www.youtube.com/embed/${id}?autoplay=1`;
-        else if(src === 'dm') embedUrl = `https://www.dailymotion.com/embed/video/${id}?autoplay=1`;
-        
-        // On force le rafraîchissement du conteneur pour garantir l'affichage
-        const pContainer = document.getElementById('player-container');
-        pContainer.innerHTML = ''; 
-        setTimeout(() => {
-             pContainer.innerHTML = `<iframe src="${embedUrl}" allow="autoplay; fullscreen"></iframe>`;
-        }, 50);
-
-        document.getElementById('full-details-section').style.display = 'none';
-        
-        document.getElementById('m-title').innerText = title || "Vidéo";
-        document.getElementById('m-year').innerText = "";
-        document.getElementById('m-vote').innerText = "";
-        
-        document.getElementById('m-similar').innerHTML = '<div style="color:#666; width:100%; text-align:center">Chargement des suggestions...</div>';
-        
-        let sim = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${title}&type=video&maxResults=10`);
-        if(sim && sim.items) {
-             document.getElementById('m-similar').innerHTML = sim.items.map(i => {
-                 let safeTitle = i.snippet.title.replace(/'/g, "&apos;").replace(/"/g, "&quot;");
-                 return `<div class="card card-video" onclick="openSimplePlayer('${i.id.videoId}', 'yt', '${safeTitle}')">
-                    <img src="${i.snippet.thumbnails.high.url}" style="width:100%; height:100%; object-fit:cover;">
-                    <div class="video-title">${i.snippet.title}</div>
-                 </div>`;
-             }).join('');
-        } else {
-             document.getElementById('m-similar').innerHTML = '';
-        }
-    }
-
-    // --- INFINITE SHORTS ---
-    function playShorts(startIndex) {
-        const feed = document.getElementById('shortsFeed');
-        document.getElementById('shortsOverlay').style.display = 'block';
-        renderFeed(globalShortsList);
-        setTimeout(() => {
-            const el = document.getElementById(`slide-${startIndex}`);
-            if(el) { el.scrollIntoView(); loadSlideFrame(startIndex); }
-        }, 100);
-        let timeout;
-        feed.onscroll = () => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                let index = Math.round(feed.scrollTop / window.innerHeight);
-                loadSlideFrame(index);
-                if(index >= globalShortsList.length - 2) appendMoreShorts();
-            }, 100);
-        };
-    }
-
-    function renderFeed(list) {
-        document.getElementById('shortsFeed').innerHTML = list.map((it, i) => `<div class="short-item" id="slide-${i}" data-src="${it.src}" data-id="${it.id}"></div>`).join('');
-    }
-
-    function loadSlideFrame(index) {
-        if(!globalShortsList[index]) return;
-        const item = globalShortsList[index];
-        const slide = document.getElementById(`slide-${index}`);
-        document.querySelectorAll('.short-item iframe').forEach(ifr => { if(ifr.parentElement.id !== `slide-${index}`) ifr.remove(); });
-        if(slide && !slide.querySelector('iframe')) {
-            let src = item.src === 'yt' ? `https://www.youtube.com/embed/${item.id}?autoplay=1&rel=0&controls=0&loop=1&playlist=${item.id}` : `https://www.dailymotion.com/embed/video/${item.id}?autoplay=1&controls=0&ui-start-screen-info=false`;
-            slide.innerHTML = `<iframe src="${src}" allow="autoplay"></iframe>`;
-        }
-    }
-
-    async function appendMoreShorts() {
-        let newShorts = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=shorts random&type=video&videoDuration=short&maxResults=10`);
-        if(newShorts && newShorts.items) {
-            let mapped = newShorts.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'}));
-            let startIdx = globalShortsList.length;
-            globalShortsList.push(...mapped);
-            mapped.forEach((it, i) => {
-                let div = document.createElement('div'); div.className = 'short-item'; div.id = `slide-${startIdx + i}`;
-                document.getElementById('shortsFeed').appendChild(div);
-            });
-        }
-    }
-
-    function closeShortsPlayer() {
-        document.getElementById('shortsOverlay').style.display = 'none';
-        document.getElementById('shortsFeed').innerHTML = '';
-    }
-
-    // --- HERO SLIDER ---
-    function loadHero() {
-        Promise.all([
-            fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB}&language=fr-FR&page=1`),
-            fetch(`https://api.themoviedb.org/3/trending/tv/week?api_key=${TMDB}&language=fr-FR`),
-            fetch(`https://kitsu.io/api/edge/trending/anime`)
-        ]).then(async ([r1, r2, r3]) => {
-            const d1 = await r1.json(); const d2 = await r2.json(); const d3 = await r3.json();
-            let slides = [];
-            d1.results.slice(0,7).forEach(m => slides.push({img: "https://image.tmdb.org/t/p/original"+m.backdrop_path, t: m.title, id: m.id, type: 'movie', src:'tmdb'}));
-            d2.results.slice(0,7).forEach(s => slides.push({img: "https://image.tmdb.org/t/p/original"+s.backdrop_path, t: s.name, id: s.id, type: 'tv', src:'tmdb'}));
-            d3.data.slice(0,6).forEach(a => slides.push({img: a.attributes.coverImage?.original || a.attributes.posterImage?.original, t: a.attributes.canonicalTitle, id: a.id, type: 'anime', src:'kitsu'}));
-            slides = shuffle(slides);
-            document.getElementById('heroRow').innerHTML = slides.map(s => `
-                <div class="hero-slide">
-                    <img src="${s.img}">
-                    <div class="hero-content">
-                        <div class="hero-title">${s.t}</div>
-                        <button class="btn-watch-hero" onclick="openDetails('${s.id}', '${s.type}', '${s.src}')"><i class="fas fa-play"></i> REGARDER</button>
-                    </div>
-                </div>`).join('');
-            let i=0; setInterval(()=>{ i=(i+1)%slides.length; document.getElementById('heroRow').style.transform=`translateX(-${i*100}%)`; }, 6000);
-        });
-    }
-
-    // --- TV SECTION ---
-    function loadTV() {
-        const tvs = [
-            {n:"TF1", url:"https://www.tf1.fr/tf1/direct"}, {n:"France 2", url:"https://www.france.tv/france-2/direct.html"},
-            {n:"France 3", url:"https://www.france.tv/france-3/direct.html"}, {n:"M6", url:"https://www.6play.fr/m6/direct"},
-            {n:"Arte", url:"https://www.arte.tv/fr/direct/"}, {n:"C8", url:"https://www.canalplus.com/chaines/c8"},
-            {n:"W9", url:"https://www.6play.fr/w9/direct"}, {n:"TMC", url:"https://www.tf1.fr/tmc/direct"},
-            {n:"TFX", url:"https://www.tf1.fr/tfx/direct"}, {n:"NRJ 12", url:"https://www.nrj-play.fr/nrj12/direct"},
-            {n:"L'Équipe", url:"https://www.lequipe.fr/lachainelequipe/"}, {n:"RMC Story", url:"https://www.rmcbfmplay.com/direct-tv/rmc-story"},
-            {n:"RMC Découverte", url:"https://www.rmcbfmplay.com/direct-tv/rmc-decouverte"}, {n:"Chérie 25", url:"https://www.nrj-play.fr/cherie25/direct"},
-            {n:"Pluto TV", url:"https://pluto.tv/fr/live-tv/"}, {n:"Rakuten TV", url:"https://rakuten.tv/fr/live_channels"},
-            {n:"BFM TV", url:"https://www.bfmtv.com/en-direct/"}, {n:"CNews", url:"https://www.cnews.fr/le-direct"}
-        ];
-        
-        let html = tvs.slice(0, 10).map(t => `<div class="card card-tv-css" onclick="openLink('${t.url}')"><div class="tv-name">${t.n}</div></div>`).join('');
-        html += `<div class="card card-tv-css" style="border-style:dashed" onclick="openCatalog('tv','list','Chaînes TV', 'tv')"><div class="tv-name"><i class="fas fa-plus"></i> Voir plus</div></div>`;
-        document.getElementById('tvRow').innerHTML = html;
-        window.fullTvList = tvs;
-    }
-
-    // --- CATALOG & UTILS ---
-    function openCatalog(type, sort, name, queryContext) {
-        catState = { type, sort, page: 1, query: '', sectionQuery: queryContext || '' };
-        document.getElementById('catTitle').innerText = name;
-        document.getElementById('catSearchInput').value = '';
-        document.getElementById('catLangSelect').style.display = (type === 'vod' || type === 'live') ? 'block' : 'none';
-        document.getElementById('catLangSelect').value = '';
-        document.getElementById('catalogOverlay').style.display = 'flex';
-        fetchCatalog();
-    }
-
-    function applyLangFilter() {
-        catState.page = 1;
-        fetchCatalog();
-    }
-
-    function changePage(dir) {
-        catState.page += dir;
-        if(catState.page < 1) catState.page = 1;
-        fetchCatalog();
-    }
-
-    document.getElementById('catSearchInput').addEventListener('keypress', (e) => {
-        if(e.key === 'Enter') {
-            catState.query = e.target.value;
-            catState.page = 1;
-            fetchCatalog();
-            e.target.blur();
-        }
-    });
-
-    async function fetchCatalog() {
-        const grid = document.getElementById('catGrid');
-        grid.innerHTML = '<div style="color:white; width:100%; text-align:center">Chargement...</div>';
-        document.getElementById('prevBtn').disabled = (catState.page === 1);
-
-        const { type, sort, page, query, sectionQuery } = catState;
-        const lang = document.getElementById('catLangSelect').value;
-
-        if (type === 'tv') {
-            let filtered = window.fullTvList;
-            if(query) filtered = filtered.filter(t => t.n.toLowerCase().includes(query.toLowerCase()));
-            grid.innerHTML = filtered.map(t => `<div class="card card-tv-css" style="width:100%; height:120px" onclick="openLink('${t.url}')"><div class="tv-name">${t.n}</div></div>`).join('');
-            document.getElementById('prevBtn').style.display = 'none';
-            document.getElementById('nextBtn').style.display = 'none';
-            return;
+            document.getElementById("u-pic").src = payload.picture;
+            document.getElementById("u-name").innerText = payload.name;
+            document.getElementById("u-email").innerText = payload.email;
         }
 
-        if (type === 'vod' || type === 'live') {
-            let searchQuery = "";
-            if(type === 'live') {
-                searchQuery = (query ? query : sectionQuery) + (lang ? ` ${lang}` : '');
-            } else {
-                searchQuery = (query ? `${query} ${sectionQuery}` : sectionQuery) + (lang ? ` ${lang}` : '');
-            }
-
-            let liveParam = (type === 'live') ? '&eventType=live' : '&videoDuration=long';
-            
-            let yt = await fetchYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchQuery}&type=video${liveParam}&maxResults=20`);
-            
-            if(yt && yt.items && yt.items.length > 0) {
-                grid.innerHTML = yt.items.map(i => {
-                     let safeTitle = i.snippet.title.replace(/'/g, "&apos;").replace(/"/g, "&quot;");
-                     return `<div class="card card-video" style="width:100%; height:150px" onclick="openSimplePlayer('${i.id.videoId}', 'yt', '${safeTitle}')">
-                        <img src="${i.snippet.thumbnails.high.url}" style="width:100%; height:100%; object-fit:cover;">
-                        <div class="video-title" style="font-size:0.8rem">${i.snippet.title}</div>
-                     </div>`;
-                }).join('');
-            } else {
-                grid.innerHTML = '<div style="color:white; width:100%; text-align:center; padding:20px;">Aucun résultats trouvés</div>';
-            }
-            return;
+        // Fonction technique pour lire les données du jeton
+        function parseJwt(token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
         }
-        
-        // TMDB / Kitsu Standard
-        if (type === 'anime') {
-            let offset = (page - 1) * 20;
-            let url = query ? `https://kitsu.io/api/edge/anime?filter[text]=${query}&page[limit]=20&page[offset]=${offset}` :
-                      (sort === 'upcoming' ? `https://kitsu.io/api/edge/anime?filter[status]=upcoming&page[limit]=20&page[offset]=${offset}` :
-                      (sort === 'trending' ? `https://kitsu.io/api/edge/trending/anime?page[limit]=20&page[offset]=${offset}` :
-                      `https://kitsu.io/api/edge/anime?sort=${sort}&page[limit]=20&page[offset]=${offset}`));
-
-            let r = await fetch(url); let d = await r.json();
-            grid.innerHTML = d.data.map(a => {
-                let img = a.attributes.posterImage?.medium;
-                return `<div class="card card-std" style="width:100%; height:220px" onclick="openDetails('${a.id}', 'anime', 'kitsu')">
-                    <img src="${img||''}" onerror="this.style.display='none'; this.nextElementSibling.nextElementSibling.style.display='flex'">
-                    <div class="card-title">${a.attributes.canonicalTitle}</div>
-                    <div class="img-fallback" style="display:${img?'none':'flex'}; position:absolute; inset:0;">${a.attributes.canonicalTitle}</div>
-                </div>`;
-            }).join('');
-        } else {
-            let url = query ? `https://api.themoviedb.org/3/search/${type}?api_key=${TMDB}&language=fr-FR&query=${query}&page=${page}` :
-                      (sort === 'trending' ? `https://api.themoviedb.org/3/trending/${type}/week?api_key=${TMDB}&language=fr-FR&page=${page}` :
-                      `https://api.themoviedb.org/3/${type}/${sort}?api_key=${TMDB}&language=fr-FR&page=${page}`);
-
-            let r = await fetch(url); let d = await r.json();
-            grid.innerHTML = d.results.map(m => `
-                <div class="card card-std" style="width:100%; height:220px" onclick="openDetails('${m.id}', '${type}', 'tmdb')">
-                    <img src="https://image.tmdb.org/t/p/w300${m.poster_path}" onerror="this.style.display='none'; this.nextElementSibling.nextElementSibling.style.display='flex'">
-                    <div class="card-title">${m.title||m.name}</div>
-                </div>`).join('');
-        }
-    }
-
-    function initStars() {
-        document.querySelectorAll('#star-rating i').forEach(s => {
-            s.onclick = function() {
-                const val = this.dataset.v;
-                if(activeDetailsId) {
-                    localStorage.setItem('vote_' + activeDetailsId, val);
-                    resetStars(val);
-                }
-            }
-        });
-    }
-
-    function resetStars(val) {
-        document.querySelectorAll('#star-rating i').forEach((s, i) => {
-            s.classList.toggle('active', i < val);
-        });
-        document.getElementById('rating-text').innerText = val ? `Votre note : ${val}/5` : "Notez ce contenu";
-    }
-
-    function openLink(url) { window.open(url, '_blank'); }
-    function scrollToSec(id) { document.getElementById(id).scrollIntoView({behavior:'smooth', block:'center'}); }
-    
-    // Barre de recherche principale : Shorts et Vidéos uniquement
-    document.getElementById('searchInput').addEventListener('keypress', (e) => {
-        if(e.key==='Enter') {
-            loadMixedContent(e.target.value);
-            e.target.blur();
-        }
-    });
-</script>
+    </script>
 </body>
 </html>
