@@ -3,230 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - FILMANGSTREAM</title>
+    <title>FILMANGSTREAM - Connexion</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    
+    <script src="https://www.google.com/recaptcha/api.js?render=6LeusWosAAAAAA-CQ-p7CjxB3FsPm6X9E3Rve3FL"></script>
 
     <style>
         :root {
-            --bg-dark: #0a0a0a;
-            --card-bg: #161616;
-            --accent-red: #E50914;
-            --accent-red-hover: #f40612;
-            --text-primary: #ffffff;
-            --text-secondary: #b3b3b3;
-            --input-bg: #333333;
-            --input-focus-bg: #454545;
+            --red: #E50914;
+            --glass-bg: rgba(15, 15, 15, 0.88);
         }
 
-        body {
+        body, html {
+            margin: 0; padding: 0; height: 100%; width: 100%;
             font-family: 'Inter', sans-serif;
-            /* Arrière-plan dégradé cinématographique */
-            background: radial-gradient(circle at center, #1a1a1a 0%, var(--bg-dark) 100%);
-            color: var(--text-primary);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
+            display: flex; justify-content: center; align-items: center;
+            background-color: #000; overflow: hidden;
         }
 
+        /* Vidéo en fond : Flou "Cinema" et sombre */
+        #video-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; object-fit: cover;
+            filter: blur(15px) brightness(35%);
+            transform: scale(1.1);
+        }
+
+        /* Carte de connexion Premium */
         .login-card {
-            background-color: var(--card-bg);
-            padding: 40px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 420px;
+            background-color: var(--glass-bg);
+            padding: 50px 40px;
+            border-radius: 24px;
+            width: 90%; max-width: 400px;
             text-align: center;
-            /* Ombre douce et légère bordure lumineuse en haut pour le relief */
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-            border-top: 1px solid rgba(255,255,255,0.1);
-            animation: slideUp 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9);
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: slideUp 0.8s ease-out;
         }
 
         .brand-title {
-            color: var(--accent-red);
-            font-weight: 900;
-            font-size: 32px;
-            margin-bottom: 35px;
-            letter-spacing: 1.5px;
-            text-shadow: 0 2px 10px rgba(229, 9, 20, 0.3);
+            color: var(--red);
+            font-weight: 900; font-size: 34px;
+            margin-bottom: 35px; letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(229, 9, 20, 0.4);
         }
 
-        /* --- Style des champs avec "Floating Labels" --- */
         .input-group {
-            position: relative;
-            margin-bottom: 20px;
-            text-align: left;
+            width: 100%; padding: 18px; margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
+            color: white; font-size: 16px; box-sizing: border-box;
+            transition: 0.3s ease;
         }
 
-        .styled-input {
-            width: 100%;
-            padding: 16px 16px 6px 16px; /* Espace en bas pour le texte saisi */
-            background: var(--input-bg);
-            border: 1px solid transparent;
-            border-radius: 6px;
-            color: var(--text-primary);
-            font-size: 16px;
-            font-family: inherit;
-            transition: all 0.3s ease;
-            height: 56px;
-            box-sizing: border-box;
+        .input-group:focus {
+            outline: none; border-color: var(--red);
+            background: rgba(255, 255, 255, 0.12);
         }
 
-        .styled-input:focus {
-            outline: none;
-            background: var(--input-focus-bg);
-            border-color: var(--accent-red);
-            box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.2);
+        .btn-entrer {
+            width: 100%; padding: 18px;
+            background: var(--red);
+            color: white; border: none; border-radius: 12px;
+            font-weight: 700; font-size: 16px;
+            cursor: pointer; transition: 0.4s;
+            box-shadow: 0 10px 25px rgba(229, 9, 20, 0.4);
+            margin-top: 10px;
         }
 
-        .floating-label {
-            position: absolute;
-            top: 18px;
-            left: 16px;
-            color: var(--text-secondary);
-            font-size: 16px;
-            pointer-events: none;
-            transition: 0.2s cubic-bezier(0.25, 0.8, 0.5, 1);
+        .btn-entrer:hover {
+            background: #f40612;
+            transform: translateY(-2px);
         }
 
-        /* Magie CSS : quand l'input a le focus OU qu'il n'est pas vide (valid) */
-        .styled-input:focus ~ .floating-label,
-        .styled-input:valid ~ .floating-label {
-            top: 8px;
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-weight: 600;
-        }
-
-        /* --- Bouton Entrer Premium --- */
-        .btn-red {
-            width: 100%;
-            padding: 16px;
-            /* Léger dégradé pour du volume */
-            background: linear-gradient(to bottom, var(--accent-red), #c90812);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: default;
-            opacity: 0.4;
-            transition: all 0.3s ease;
-            letter-spacing: 1px;
-        }
-
-        .btn-red.active {
-            opacity: 1;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
-        }
-
-        .btn-red.active:hover {
-            background: linear-gradient(to bottom, var(--accent-red-hover), #d60913);
-            transform: translateY(-1px);
-        }
-
-        /* --- Séparateur subtil --- */
         .separator {
-            display: flex;
-            align-items: center;
-            margin: 25px 0;
-            color: var(--text-secondary);
-            font-size: 13px;
-            font-weight: 500;
+            display: flex; align-items: center; margin: 30px 0;
+            color: #666; font-size: 12px; text-transform: uppercase;
         }
+
         .separator::before, .separator::after {
-            content: ''; flex: 1; border-bottom: 1px solid #333; margin: 0 15px;
+            content: ''; flex: 1; border-bottom: 1px solid rgba(255,255,255,0.1); margin: 0 15px;
         }
 
-        .g-recaptcha { margin-bottom: 25px; display: flex; justify-content: center; }
-
-        /* Animation d'entrée */
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
-    <div class="login-card" id="login-box">
+    <video autoplay muted loop playsinline id="video-bg">
+        <source src="t.mp4" type="video/mp4">
+    </video>
+
+    <div class="login-card">
         <h1 class="brand-title">FILMANGSTREAM</h1>
 
-        <form id="main-form">
-            <div class="input-group">
-                <input type="email" id="user-email" class="styled-input" required>
-                <label for="user-email" class="floating-label">Email</label>
-            </div>
-
-            <div class="input-group">
-                <input type="password" id="user-pass" class="styled-input" required>
-                <label for="user-pass" class="floating-label">Mot de passe</label>
-            </div>
-
-            <div class="g-recaptcha" 
-                 data-sitekey="6Lf1CVYsAAAAAJV-_MtXBBUBGfwCIRkE2x75adLl" 
-                 data-theme="dark" 
-                 data-callback="enableBtn"
-                 data-expired-callback="disableBtn"></div>
-
-            <button type="submit" id="submit-btn" class="btn-red" disabled>ENTRER</button>
+        <form id="form-v3">
+            <input type="email" class="input-group" placeholder="Email" required>
+            <input type="password" class="input-group" placeholder="Mot de passe" required>
+            
+            <button type="submit" class="btn-entrer">ENTRER</button>
         </form>
 
-        <div class="separator">OU CONTINUER AVEC</div>
+        <div class="separator">ou</div>
 
         <div id="g_id_onload"
              data-client_id="302097598278-r0clncpouup6lbfp1pqc05v9t1s3aaao.apps.googleusercontent.com"
              data-callback="handleGoogleResponse">
         </div>
-        <div class="g_id_signin" 
-             data-type="standard" 
-             data-theme="filled_black" 
-             data-size="large"
-             data-text="signin_with"
-             data-shape="rectangular"
-             data-logo_alignment="left"
-             data-width="100%">
-        </div>
+        <div class="g_id_signin" data-type="standard" data-theme="filled_black" data-width="100%" data-shape="pill"></div>
     </div>
 
     <script>
-        const submitBtn = document.getElementById("submit-btn");
+        /* CLE SERVEUR (Gardée ici pour ton futur back-end) : 
+           6LeusWosAAAAADqPNAfNyyoWiTUrkaN_7AcOBN9K 
+        */
 
-        // Active le bouton rouge quand le captcha est validé
-        function enableBtn() {
-            submitBtn.classList.add("active");
-            submitBtn.removeAttribute("disabled");
-        }
-
-        // Désactive si le captcha expire
-        function disableBtn() {
-            submitBtn.classList.remove("active");
-            submitBtn.setAttribute("disabled", "true");
-        }
-
-        // Gestion du formulaire classique (Simulation)
-        document.getElementById("main-form").addEventListener("submit", function(e) {
+        document.getElementById('form-v3').addEventListener('submit', function(e) {
             e.preventDefault();
-            const email = document.getElementById("user-email").value;
-            // Animation du bouton pendant le chargement
-            submitBtn.innerHTML = "Connexion en cours...";
-            setTimeout(() => {
-                 alert("Simulation : Connexion réussie pour " + email + " (Captcha validé) !");
-                 submitBtn.innerHTML = "ENTRER";
-            }, 1000);
+            
+            // Activation invisible de la v3
+            grecaptcha.ready(function() {
+                grecaptcha.execute('6LeusWosAAAAAA-CQ-p7CjxB3FsPm6X9E3Rve3FL', {action: 'submit'}).then(function(token) {
+                    console.log("Validation Invisible OK. Token :", token);
+                    alert("Connexion en cours... (Vérification invisible effectuée avec succès)");
+                });
+            });
         });
 
-        // Gestion de la connexion Google
         function handleGoogleResponse(response) {
             const user = parseJwt(response.credential);
-            alert("Bienvenue Google : " + user.name);
+            alert("Bienvenue " + user.name);
         }
 
         function parseJwt(token) {
