@@ -3,110 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authentification FilmangstreamV01</title>
+    <title>Connexion - FILMANGSTREAM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <style>
+        /* --- Variables CSS pour un design cohérent --- */
+        :root {
+            --bg-color: #000000; /* Fond noir profond */
+            --card-color: #1E1E1E; /* Gris foncé pour la carte */
+            --text-color: #FFFFFF;
+            --text-muted: #A8A8A8;
+            --accent-red: #E50914; /* Rouge vif style streaming */
+            --input-bg: #333333;
+            --border-focus: #E50914;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
-            color: #333;
+            min-height: 100vh;
+            padding: 20px;
         }
+
+        /* --- La carte de connexion --- */
         .login-card {
-            background: white;
-            padding: 40px;
+            background-color: var(--card-color);
+            padding: 40px 30px;
             border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            text-align: center;
             width: 100%;
-            max-width: 350px;
+            max-width: 400px; /* Largeur optimale */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
         }
-        h2 { margin-bottom: 10px; color: #1a73e8; }
-        p { font-size: 14px; color: #666; margin-bottom: 30px; }
-        
+
+        /* --- Titre --- */
+        .brand-title {
+            color: var(--accent-red);
+            font-weight: 800;
+            font-size: 28px;
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        /* --- Champs de formulaire --- */
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .styled-input {
+            width: 100%;
+            padding: 14px 16px;
+            background-color: var(--input-bg);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 16px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .styled-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .styled-input:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            background-color: #404040;
+        }
+
+        /* --- Bouton Entrer --- */
+        .btn-red {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--accent-red);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-red:hover {
+            background-color: #c40812;
+        }
+
+        /* --- Séparateur "OU" --- */
+        .separator {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 25px 0;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .separator::before,
+        .separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #3D3D3D;
+        }
+
+        .separator::before { margin-right: 15px; }
+        .separator::after { margin-left: 15px; }
+
+        /* --- Conteneur Google pour forcer la pleine largeur --- */
+        .google-btn-container {
+            width: 100%;
+        }
+        /* Permet au bouton Google de prendre toute la largeur disponible */
+        .g_id_signin iframe {
+            width: 100% !important; 
+        }
+
+        /* --- Zone de profil (cachée au départ) --- */
         #profile-area {
             display: none;
-            animation: fadeIn 0.5s;
-        }
-        .user-pic {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            border: 3px solid #1a73e8;
-            margin-bottom: 15px;
-        }
-        .logout-btn {
             margin-top: 20px;
-            padding: 10px 20px;
-            background: #f1f3f4;
-            border: 1px solid #dadce0;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 0.3s;
         }
-        .logout-btn:hover { background: #e8eaed; }
-        
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .user-pic { width: 80px; height: 80px; border-radius: 50%; margin-bottom: 10px; border: 2px solid var(--accent-red); }
     </style>
 </head>
 <body>
 
-    <div class="login-card">
-        <div id="login-header">
-            <h2>FilmangstreamV01</h2>
-            <p>Connectez-vous pour accéder à votre espace</p>
-        </div>
+    <div class="login-card" id="login-box">
+        <h1 class="brand-title">Filmangstream</h1>
 
-        <div id="g_id_onload"
-             data-client_id="302097598278-r0clncpouup6lbfp1pqc05v9t1s3aaao.apps.googleusercontent.com"
-             data-callback="handleCredentialResponse"
-             data-auto_prompt="false">
-        </div>
+        <form onsubmit="event.preventDefault(); alert('Connexion classique non implémentée dans ce test.');">
+            <div class="input-group">
+                <input type="email" class="styled-input" placeholder="Votre email" required>
+            </div>
+            <div class="input-group">
+                <input type="password" class="styled-input" placeholder="Votre mot de passe" required>
+            </div>
+            <button type="submit" class="btn-red">ENTRER</button>
+        </form>
 
-        <div class="g_id_signin" 
-             data-type="standard" 
-             data-shape="rectangular" 
-             data-theme="filled_blue" 
-             data-text="signin_with" 
-             data-size="large" 
-             data-logo_alignment="left">
-        </div>
+        <div class="separator">OU</div>
 
-        <div id="profile-area">
-            <img id="u-pic" class="user-pic" src="" alt="Profil">
-            <h3 id="u-name"></h3>
-            <p id="u-email"></p>
-            <button class="logout-btn" onclick="location.reload()">Déconnexion</button>
+        <div class="google-btn-container">
+            <div id="g_id_onload"
+                 data-client_id="302097598278-r0clncpouup6lbfp1pqc05v9t1s3aaao.apps.googleusercontent.com"
+                 data-callback="handleCredentialResponse"
+                 data-auto_prompt="false">
+            </div>
+
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-shape="rectangular"
+                 data-theme="filled_black"
+                 data-text="continue_with"
+                 data-size="large"
+                 data-logo_alignment="center"
+                 data-width="100%"> </div>
         </div>
     </div>
 
-    <script>
-        // Traitement de la réponse sans changer de page
-        function handleCredentialResponse(response) {
-            // Décodage du jeton JWT
-            const payload = parseJwt(response.credential);
-            
-            console.log("Utilisateur connecté :", payload);
+    <div class="login-card" id="profile-area">
+        <img id="u-pic" class="user-pic" src="" alt="Profil">
+        <h3 id="u-name" style="margin-bottom: 5px;"></h3>
+        <p id="u-email" style="color: var(--text-muted); margin-bottom: 20px;"></p>
+        <button class="btn-red" onclick="location.reload()">Se déconnecter</button>
+    </div>
 
-            // Interface dynamique
-            document.getElementById("login-header").style.display = "none";
-            document.querySelector(".g_id_signin").style.display = "none";
+    <script>
+        // Fonction exécutée quand Google valide la connexion
+        function handleCredentialResponse(response) {
+            // On décode les infos reçues
+            const payload = parseJwt(response.credential);
+            console.log("Connexion Google réussie pour :", payload.email);
+
+            // On cache le formulaire et on affiche le profil
+            document.getElementById("login-box").style.display = "none";
+            document.getElementById("profile-area").style.display = "block";
             
-            const area = document.getElementById("profile-area");
-            area.style.display = "block";
-            
+            // On remplit les infos
             document.getElementById("u-pic").src = payload.picture;
             document.getElementById("u-name").innerText = payload.name;
             document.getElementById("u-email").innerText = payload.email;
         }
 
-        // Fonction technique pour lire les données du jeton
+        // Outil pour lire le "jeton" Google (ne pas modifier)
         function parseJwt(token) {
             var base64Url = token.split('.')[1];
             var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
