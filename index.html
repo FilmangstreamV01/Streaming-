@@ -8,234 +8,87 @@
     <!-- SDK Appwrite -->
     <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.1"></script>
     
-    <!-- Fonts Premium & Icons -->
+    <!-- Fonts & Icons -->
     <link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,400,600,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* --- DESIGN SYSTEM (Même style "Pro" que validé) --- */
         :root {
-            --accent: #ff3b3b; /* Rouge néon vibrant */
-            --accent-glow: rgba(255, 59, 59, 0.4);
-            --bg-dark: #050505;
-            --glass: rgba(255, 255, 255, 0.03);
+            --accent: #ff3b3b; --accent-glow: rgba(255, 59, 59, 0.4);
+            --bg-dark: #050505; --glass: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(255, 255, 255, 0.08);
-            --text-main: #ffffff;
-            --text-muted: #888888;
+            --text-main: #ffffff; --text-muted: #888888;
         }
-
-        /* --- RESET & BASE --- */
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        body, html {
-            margin: 0; padding: 0; height: 100%; width: 100%;
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            overflow: hidden; /* Pas de scroll sur la page de login */
-        }
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; font-family: 'Outfit', sans-serif; background-color: var(--bg-dark); color: var(--text-main); overflow: hidden; }
 
-        /* --- FOND CINÉMATIQUE --- */
-        .cinematic-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, #1a0b0b 0%, #000000 100%);
-            z-index: -2;
-        }
-        /* Orbes de lumière animés */
-        .orb {
-            position: absolute; border-radius: 50%;
-            filter: blur(100px); opacity: 0.4;
-            animation: floatOrb 10s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        /* --- BACKGROUND --- */
+        .cinematic-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, #1a0b0b 0%, #000000 100%); z-index: -2; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; animation: floatOrb 10s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); }
         .orb-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #4b0000; }
         .orb-2 { bottom: -10%; right: -10%; width: 40vw; height: 40vw; background: #1a0533; animation-delay: -5s; }
-        
-        /* Grain de film */
-        .noise {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.07'/%3E%3C/svg%3E");
-            z-index: -1; pointer-events: none;
-        }
+        .noise { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.07'/%3E%3C/svg%3E"); z-index: -1; pointer-events: none; }
 
-        /* --- CONTENEUR CENTRAL (LOGIN) --- */
-        #auth-wrapper {
-            display: flex; justify-content: center; align-items: center;
-            height: 100vh; padding: 20px;
-            position: relative; z-index: 10;
-            transition: opacity 0.8s ease, transform 0.8s ease;
-        }
-
-        .glass-panel {
-            width: 100%; max-width: 420px;
-            background: var(--glass);
-            backdrop-filter: blur(30px) saturate(180%);
-            -webkit-backdrop-filter: blur(30px) saturate(180%);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 40px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-            position: relative; overflow: hidden;
-            transform: translateY(0);
-            transition: height 0.4s ease;
-        }
-
-        /* Logo animé */
-        .brand {
-            font-family: 'Clash Display', sans-serif;
-            font-weight: 700; font-size: 2rem;
-            text-align: center; margin-bottom: 5px;
-            background: linear-gradient(to right, #fff, #aaa);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            letter-spacing: 1px;
-        }
+        /* --- LOGIN CARD --- */
+        #auth-wrapper { display: flex; justify-content: center; align-items: center; height: 100vh; padding: 20px; position: relative; z-index: 10; transition: opacity 0.8s ease, transform 0.8s ease; }
+        .glass-panel { width: 100%; max-width: 420px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--glass-border); border-radius: 24px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); position: relative; overflow: hidden; }
+        .brand { font-family: 'Clash Display', sans-serif; font-weight: 700; font-size: 2rem; text-align: center; margin-bottom: 5px; background: linear-gradient(to right, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; }
         .brand-sub { text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-bottom: 30px; letter-spacing: 2px; text-transform: uppercase; }
 
-        /* Vues (Login, Reg, Verify...) */
         .view-section { display: none; animation: fadeIn 0.5s ease; }
         .view-section.active { display: block; }
-
-        /* Inputs ultra-modernes */
+        
         .field { position: relative; margin-bottom: 20px; }
-        .field input {
-            width: 100%; padding: 18px 20px;
-            background: rgba(0,0,0,0.2);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            color: white; font-family: inherit; font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-        .field input:focus {
-            background: rgba(255,255,255,0.05);
-            border-color: var(--accent);
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
-        .field label {
-            position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
-            color: #666; pointer-events: none; transition: 0.3s; font-size: 0.95rem;
-        }
-        .field input:focus ~ label, .field input:not(:placeholder-shown) ~ label {
-            top: 0; font-size: 0.75rem; background: #000; padding: 0 5px; color: var(--accent);
-        }
-        .field i { position: absolute; right: 20px; top: 18px; color: #444; }
-
-        /* Bouton "Glow" */
-        .btn-glow {
-            width: 100%; padding: 18px;
-            background: linear-gradient(90deg, #d40000, #ff3b3b);
-            color: white; font-weight: 600; font-size: 1rem; letter-spacing: 1px;
-            border: none; border-radius: 12px; cursor: pointer;
-            position: relative; overflow: hidden; margin-top: 10px;
-            transition: transform 0.2s;
-            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
-        }
+        .field input { width: 100%; padding: 18px 20px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; font-family: inherit; font-size: 1rem; transition: all 0.3s ease; }
+        .field input:focus { background: rgba(255,255,255,0.05); border-color: var(--accent); box-shadow: 0 0 20px var(--accent-glow); }
+        .field label { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #666; pointer-events: none; transition: 0.3s; font-size: 0.95rem; }
+        .field input:focus ~ label, .field input:not(:placeholder-shown) ~ label { top: 0; font-size: 0.75rem; background: #000; padding: 0 5px; color: var(--accent); }
+        
+        .btn-glow { width: 100%; padding: 18px; background: linear-gradient(90deg, #d40000, #ff3b3b); color: white; font-weight: 600; font-size: 1rem; letter-spacing: 1px; border: none; border-radius: 12px; cursor: pointer; position: relative; overflow: hidden; margin-top: 10px; transition: transform 0.2s; box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3); }
         .btn-glow:hover { transform: scale(1.02); box-shadow: 0 10px 40px rgba(220, 20, 60, 0.5); }
-        .btn-glow::after {
-            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: 0.5s;
-        }
-        .btn-glow:hover::after { left: 100%; }
+        .btn-glow:disabled { background: #444; cursor: not-allowed; box-shadow: none; }
 
-        /* Liens et Helpers */
-        .helper-links {
-            display: flex; justify-content: space-between; margin-top: 20px; font-size: 0.85rem;
-        }
+        .helper-links { display: flex; justify-content: space-between; margin-top: 20px; font-size: 0.85rem; }
         .link { color: #888; text-decoration: none; cursor: pointer; transition: 0.3s; }
         .link:hover { color: white; }
         .link.accent { color: var(--accent); }
+        .error-toast { color: #ff6b6b; font-size: 0.85rem; text-align: center; margin-top: 15px; min-height: 20px; opacity: 0; transition: 0.3s; }
 
-        .error-toast {
-            color: #ff6b6b; font-size: 0.85rem; text-align: center;
-            margin-top: 15px; min-height: 20px; opacity: 0; transition: 0.3s;
-        }
-
-        /* --- APP (2 AFFICHES) --- */
-        #app-wrapper {
-            display: none; height: 100vh; width: 100%;
-            position: relative; opacity: 0; transition: opacity 1s ease;
-        }
+        /* --- APP (2 MOVIES) --- */
+        #app-wrapper { display: none; height: 100vh; width: 100%; position: relative; opacity: 0; transition: opacity 1s ease; }
         #app-wrapper.visible { display: flex; opacity: 1; }
-
-        .movie-split {
-            flex: 1; position: relative; height: 100%;
-            transition: flex 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            cursor: pointer; overflow: hidden;
-            border-right: 1px solid rgba(0,0,0,0.5);
-        }
-        /* Mobile: vertical stack */
-        @media (max-width: 768px) {
-            #app-wrapper { flex-direction: column; }
-            .movie-split { border-right: none; border-bottom: 1px solid rgba(0,0,0,0.5); }
-        }
-
-        .movie-bg {
-            width: 100%; height: 100%; background-size: cover; background-position: center;
-            transition: transform 1s ease, filter 0.5s ease;
-            filter: grayscale(80%) brightness(0.6);
-        }
-        .movie-split:hover .movie-bg {
-            transform: scale(1.05); filter: grayscale(0%) brightness(1);
-        }
-        /* Quand on survole l'un, l'autre rétrécit */
-        .movie-split:hover { flex: 1.5; } 
-
-        .movie-info {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            padding: 40px;
-            background: linear-gradient(to top, black, transparent);
-            transform: translateY(20px); opacity: 0.7; transition: 0.5s;
-        }
+        .movie-split { flex: 1; position: relative; height: 100%; transition: flex 0.6s cubic-bezier(0.25, 1, 0.5, 1); cursor: pointer; overflow: hidden; border-right: 1px solid rgba(0,0,0,0.5); }
+        @media (max-width: 768px) { #app-wrapper { flex-direction: column; } .movie-split { border-right: none; border-bottom: 1px solid rgba(0,0,0,0.5); } }
+        .movie-bg { width: 100%; height: 100%; background-size: cover; background-position: center; transition: transform 1s ease, filter 0.5s ease; filter: grayscale(80%) brightness(0.6); }
+        .movie-split:hover .movie-bg { transform: scale(1.05); filter: grayscale(0%) brightness(1); }
+        .movie-split:hover { flex: 1.5; }
+        .movie-info { position: absolute; bottom: 0; left: 0; width: 100%; padding: 40px; background: linear-gradient(to top, black, transparent); transform: translateY(20px); opacity: 0.7; transition: 0.5s; }
         .movie-split:hover .movie-info { transform: translateY(0); opacity: 1; }
-        
-        .movie-title {
-            font-family: 'Clash Display', sans-serif; font-size: 3rem; font-weight: 700;
-            text-transform: uppercase; line-height: 0.9; margin-bottom: 10px;
-            text-shadow: 0 10px 30px rgba(0,0,0,0.8);
-        }
-        .movie-tag {
-            font-size: 0.9rem; letter-spacing: 2px; color: var(--accent); font-weight: 600; text-transform: uppercase;
-        }
-        
-        .logout-btn {
-            position: fixed; top: 20px; right: 20px; z-index: 100;
-            background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2);
-            color: white; padding: 10px 20px; border-radius: 30px;
-            backdrop-filter: blur(10px); cursor: pointer; font-size: 0.8rem;
-        }
+        .movie-title { font-family: 'Clash Display', sans-serif; font-size: 3rem; font-weight: 700; text-transform: uppercase; line-height: 0.9; margin-bottom: 10px; text-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .movie-tag { font-size: 0.9rem; letter-spacing: 2px; color: var(--accent); font-weight: 600; text-transform: uppercase; }
+        .logout-btn { position: fixed; top: 20px; right: 20px; z-index: 100; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 10px 20px; border-radius: 30px; backdrop-filter: blur(10px); cursor: pointer; font-size: 0.8rem; }
 
         @keyframes floatOrb { from { transform: translate(0,0); } to { transform: translate(20px, 40px); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-
-    <!-- Fond visuel -->
-    <div class="cinematic-bg">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-    </div>
+    <div class="cinematic-bg"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
     <div class="noise"></div>
 
-    <!-- --- AUTHENTIFICATION --- -->
+    <!-- AUTHENTIFICATION -->
     <div id="auth-wrapper">
         <div class="glass-panel">
             <div class="brand">FILMANGSTREAM</div>
-            <div class="brand-sub">Authentification Sécurisée</div>
+            <div class="brand-sub">Connexion Sécurisée</div>
 
-            <!-- 1. LOGIN -->
+            <!-- LOGIN -->
             <div id="step-login" class="view-section active">
-                <div class="field">
-                    <input type="email" id="l-email" placeholder=" ">
-                    <label>Email</label>
-                    <i class="fa-solid fa-at"></i>
-                </div>
-                <div class="field">
-                    <input type="password" id="l-pass" placeholder=" ">
-                    <label>Mot de passe</label>
-                    <i class="fa-solid fa-lock"></i>
-                </div>
-                
+                <div class="field"><input type="email" id="l-email" placeholder=" "><label>Email</label></div>
+                <div class="field"><input type="password" id="l-pass" placeholder=" "><label>Mot de passe</label></div>
                 <button class="btn-glow" onclick="login()">ENTRER</button>
-                
                 <div class="helper-links">
                     <span class="link" onclick="go('step-forgot')">Mot de passe oublié ?</span>
                     <span class="link accent" onclick="go('step-register')">Créer un compte</span>
@@ -243,229 +96,233 @@
                 <div id="l-err" class="error-toast"></div>
             </div>
 
-            <!-- 2. REGISTER -->
+            <!-- REGISTER -->
             <div id="step-register" class="view-section">
-                <h3 style="margin-top:0; font-weight:400; color:#ccc;">Nouveau Compte</h3>
-                <div class="field">
-                    <input type="email" id="r-email" placeholder=" ">
-                    <label>Email</label>
-                </div>
-                <div class="field">
-                    <input type="password" id="r-pass" placeholder=" ">
-                    <label>Mot de passe (8+)</label>
-                </div>
-                <div class="field">
-                    <input type="password" id="r-confirm" placeholder=" ">
-                    <label>Confirmer le mot de passe</label>
-                </div>
-
+                <h3 style="margin-top:0; color:#ccc;">Inscription</h3>
+                <div class="field"><input type="email" id="r-email" placeholder=" "><label>Email</label></div>
+                <div class="field"><input type="password" id="r-pass" placeholder=" "><label>Mot de passe</label></div>
+                <div class="field"><input type="password" id="r-confirm" placeholder=" "><label>Confirmer</label></div>
                 <button class="btn-glow" onclick="register()">S'INSCRIRE</button>
-                
                 <div class="helper-links" style="justify-content:center;">
-                    <span class="link" onclick="go('step-login')">Retour connexion</span>
+                    <span class="link" onclick="go('step-login')">Retour</span>
                 </div>
                 <div id="r-err" class="error-toast"></div>
             </div>
 
-            <!-- 3. VERIFY CODE (Inscription & Reset) -->
-            <div id="step-verify" class="view-section">
-                <h3 style="margin-top:0; font-weight:400; color:#ccc; text-align:center;">Vérification d'Identité</h3>
-                <p style="font-size:0.8rem; color:#888; text-align:center; margin-bottom:20px;">Un code a été envoyé à votre email.</p>
-                
-                <div class="field">
-                    <input type="text" id="v-code" placeholder=" " maxlength="6" style="text-align:center; letter-spacing:5px; font-size:1.2rem;">
-                    <label style="left:50%; transform:translateX(-50%); top:0;">CODE DE SÉCURITÉ</label>
+            <!-- MESSAGE APRES INSCRIPTION / RESET -->
+            <div id="step-msg" class="view-section">
+                <h3 style="margin-top:0; color:#ccc; text-align:center;">Vérifiez vos emails</h3>
+                <p style="font-size:0.9rem; color:#888; text-align:center; line-height:1.5;">
+                    Un lien de confirmation a été envoyé à votre adresse. <br><br>
+                    Veuillez cliquer sur le lien dans l'email pour valider votre compte ou réinitialiser votre mot de passe.
+                </p>
+                <div class="helper-links" style="justify-content:center;">
+                    <span class="link" onclick="go('step-login')">Retour à la connexion</span>
                 </div>
-
-                <button class="btn-glow" onclick="verifyCode()">VALIDER L'ACCÈS</button>
-                <div id="v-err" class="error-toast"></div>
             </div>
 
-            <!-- 4. FORGOT PASSWORD -->
+            <!-- FORGOT PASSWORD -->
             <div id="step-forgot" class="view-section">
-                <h3 style="margin-top:0; font-weight:400; color:#ccc;">Récupération</h3>
-                <div class="field">
-                    <input type="email" id="f-email" placeholder=" ">
-                    <label>Votre Email</label>
-                </div>
-                
-                <button class="btn-glow" onclick="forgotRequest()">ENVOYER LE CODE</button>
-                
+                <h3 style="margin-top:0; color:#ccc;">Récupération</h3>
+                <div class="field"><input type="email" id="f-email" placeholder=" "><label>Email du compte</label></div>
+                <button class="btn-glow" onclick="forgotRequest()">ENVOYER LE LIEN</button>
                 <div class="helper-links" style="justify-content:center;">
                     <span class="link" onclick="go('step-login')">Annuler</span>
                 </div>
+                <div id="f-err" class="error-toast"></div>
             </div>
 
-            <!-- 5. RESET PASSWORD (New Pass) -->
-            <div id="step-reset" class="view-section">
-                <h3 style="margin-top:0; font-weight:400; color:#ccc;">Nouveau Mot de passe</h3>
-                <div class="field">
-                    <input type="password" id="res-pass" placeholder=" ">
-                    <label>Nouveau mot de passe</label>
-                </div>
-                <div class="field">
-                    <input type="password" id="res-confirm" placeholder=" ">
-                    <label>Confirmer</label>
-                </div>
-
-                <button class="btn-glow" onclick="resetPassword()">CHANGER</button>
-                <div id="res-err" class="error-toast"></div>
+            <!-- NEW PASSWORD (RESET) -->
+            <!-- Cette section s'affiche uniquement si on arrive via un lien avec ?userId=&secret= -->
+            <div id="step-reset-final" class="view-section">
+                <h3 style="margin-top:0; color:#ccc;">Nouveau mot de passe</h3>
+                <div class="field"><input type="password" id="new-pass" placeholder=" "><label>Nouveau mot de passe</label></div>
+                <div class="field"><input type="password" id="new-confirm" placeholder=" "><label>Confirmer</label></div>
+                <button class="btn-glow" onclick="completeReset()">VALIDER</button>
+                <div id="reset-err" class="error-toast"></div>
             </div>
-
         </div>
     </div>
 
-    <!-- --- APP (LES 2 AFFICHES) --- -->
+    <!-- APP -->
     <div id="app-wrapper">
         <button class="logout-btn" onclick="logout()">DÉCONNEXION</button>
-        
-        <!-- Film 1 -->
         <div class="movie-split" id="movie-1">
             <div class="movie-bg"></div>
-            <div class="movie-info">
-                <div class="movie-tag">A L'AFFICHE</div>
-                <div class="movie-title">Film 1</div>
-                <div style="font-size:0.9rem; opacity:0.8;">Cliquez pour regarder maintenant</div>
-            </div>
+            <div class="movie-info"><div class="movie-tag">A L'AFFICHE</div><div class="movie-title"></div></div>
         </div>
-
-        <!-- Film 2 -->
         <div class="movie-split" id="movie-2">
             <div class="movie-bg"></div>
-            <div class="movie-info">
-                <div class="movie-tag">TENDANCE</div>
-                <div class="movie-title">Film 2</div>
-                <div style="font-size:0.9rem; opacity:0.8;">Exclusivité Filmangstream</div>
-            </div>
+            <div class="movie-info"><div class="movie-tag">TENDANCE</div><div class="movie-title"></div></div>
         </div>
     </div>
 
     <script>
-        // Configuration minimale
-        const TMDB_KEY = '7b5c62a2d80f0a3d2e86a622cb23f0db';
-        
-        // --- NAVIGATION INTERNE ---
-        let currentFlow = ''; // 'register' ou 'reset' pour savoir où rediriger après le code
+        // --- CONFIGURATION REELLE ---
+        const { Client, Account, ID } = Appwrite;
+        const client = new Client()
+            .setEndpoint('https://cloud.appwrite.io/v1')
+            .setProject('698f97e3001c4c48d6d7'); // Ton ID Projet Original
+        const account = new Account(client);
 
+        const TMDB_KEY = '7b5c62a2d80f0a3d2e86a622cb23f0db';
+
+        // --- NAVIGATION UI ---
         function go(stepId) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById(stepId).classList.add('active');
-            clearErrors();
+            document.querySelectorAll('.error-toast').forEach(e => { e.innerText = ''; e.style.opacity = '0'; });
         }
-
-        function msg(id, text) {
+        function showError(id, msg) {
             const el = document.getElementById(id);
-            el.innerText = text;
+            el.innerText = msg;
             el.style.opacity = '1';
-        }
-        function clearErrors() {
-            document.querySelectorAll('.error-toast').forEach(e => e.style.opacity = '0');
         }
 
         // --- 1. LOGIN ---
-        function login() {
+        async function login() {
             const email = document.getElementById('l-email').value;
             const pass = document.getElementById('l-pass').value;
+            if(!email || !pass) return showError('l-err', 'Champs vides');
 
-            if(!email || !pass) return msg('l-err', 'Veuillez remplir tous les champs');
-            
-            // Simulation connexion réussie
-            if(pass.length < 4) return msg('l-err', 'Mot de passe incorrect');
-            
-            enterApp();
+            try {
+                await account.createEmailPasswordSession(email, pass);
+                enterApp();
+            } catch(e) {
+                showError('l-err', 'Identifiants incorrects');
+            }
         }
 
         // --- 2. REGISTER ---
-        function register() {
+        async function register() {
             const email = document.getElementById('r-email').value;
             const pass = document.getElementById('r-pass').value;
             const conf = document.getElementById('r-confirm').value;
 
-            if(!email || !pass || !conf) return msg('r-err', 'Tous les champs sont requis');
-            if(pass !== conf) return msg('r-err', 'Les mots de passe ne correspondent pas');
-            if(pass.length < 8) return msg('r-err', 'Le mot de passe est trop court');
+            if(!email || !pass) return showError('r-err', 'Remplissez tout');
+            if(pass !== conf) return showError('r-err', 'Les mots de passe diffèrent');
+            if(pass.length < 8) return showError('r-err', '8 caractères minimum');
 
-            // Succès -> Vers code
-            currentFlow = 'register';
-            go('step-verify');
-        }
+            try {
+                // Créer le compte
+                await account.create(ID.unique(), email, pass);
+                
+                // Connecter automatiquement
+                await account.createEmailPasswordSession(email, pass);
 
-        // --- 3. VERIFY CODE ---
-        function verifyCode() {
-            const code = document.getElementById('v-code').value;
-            if(code.length !== 6) return msg('v-err', 'Le code doit contenir 6 chiffres');
+                // Demander verification email (Envoyer le mail)
+                // L'URL ici doit être l'URL de TON site où l'utilisateur revient
+                await account.createVerification(window.location.href); 
 
-            // Simulation Validation
-            if(currentFlow === 'register') {
-                enterApp();
-            } else if (currentFlow === 'reset') {
-                go('step-reset');
+                go('step-msg'); // Afficher "Allez voir vos mails"
+            } catch(e) {
+                showError('r-err', e.message);
             }
         }
 
-        // --- 4. FORGOT PASSWORD ---
-        function forgotRequest() {
+        // --- 3. FORGOT PASSWORD ---
+        async function forgotRequest() {
             const email = document.getElementById('f-email').value;
-            if(!email) return alert("Email requis");
-            
-            currentFlow = 'reset';
-            alert("Code envoyé à " + email);
-            go('step-verify');
+            if(!email) return showError('f-err', 'Email requis');
+
+            try {
+                // Appwrite envoie un lien de reset.
+                // L'utilisateur reviendra sur CETTE page avec ?userId=xyz&secret=abc
+                await account.createRecovery(email, window.location.href);
+                go('step-msg'); // Afficher "Email envoyé"
+            } catch(e) {
+                showError('f-err', "Impossible d'envoyer (Vérifiez l'email)");
+            }
         }
 
-        // --- 5. RESET PASSWORD ---
-        function resetPassword() {
-            const p1 = document.getElementById('res-pass').value;
-            const p2 = document.getElementById('res-confirm').value;
+        // --- 4. COMPLETE RESET (Quand on revient du mail) ---
+        async function completeReset() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('userId');
+            const secret = urlParams.get('secret');
+            const pass = document.getElementById('new-pass').value;
+            const conf = document.getElementById('new-confirm').value;
 
-            if(p1 !== p2) return msg('res-err', 'Erreur de correspondance');
-            
-            alert("Mot de passe mis à jour !");
-            go('step-login');
+            if(pass !== conf) return showError('reset-err', 'Non identique');
+
+            try {
+                await account.updateRecovery(userId, secret, pass, conf);
+                alert("Mot de passe modifié ! Connectez-vous.");
+                // Nettoyer l'URL
+                window.history.replaceState({}, document.title, "/");
+                go('step-login');
+            } catch(e) {
+                showError('reset-err', "Lien expiré ou invalide");
+            }
         }
 
-        // --- APP & ANIMATIONS ---
+        // --- LOGIQUE DE DEMARRAGE ---
+        async function init() {
+            // Cas 1 : Retour de mail "Mot de passe oublié"
+            const urlParams = new URLSearchParams(window.location.search);
+            if(urlParams.get('userId') && urlParams.get('secret')) {
+                // On détecte qu'on revient d'un email de reset
+                go('step-reset-final');
+                return;
+            }
+
+            // Cas 2 : Retour de mail "Vérification compte"
+            if(urlParams.get('userId') && urlParams.get('secret') && urlParams.get('expire')) {
+                try {
+                    await account.updateVerification(urlParams.get('userId'), urlParams.get('secret'));
+                    alert("Compte vérifié avec succès !");
+                } catch(e) { console.log(e); }
+                window.history.replaceState({}, document.title, "/");
+            }
+
+            // Cas 3 : Déjà connecté ?
+            try {
+                await account.get();
+                enterApp();
+            } catch(e) {
+                // Pas connecté, rester sur login
+            }
+        }
+
+        // --- APP & DATA ---
         async function enterApp() {
-            // Animation de sortie Auth
             const auth = document.getElementById('auth-wrapper');
-            auth.style.transform = 'scale(0.9) translateY(-50px)';
             auth.style.opacity = '0';
-            
-            await loadContent();
-
             setTimeout(() => {
                 auth.style.display = 'none';
-                const app = document.getElementById('app-wrapper');
-                app.classList.add('visible');
-            }, 600);
+                document.getElementById('app-wrapper').classList.add('visible');
+                loadMovies();
+            }, 500);
         }
 
-        function logout() {
+        async function logout() {
+            try { await account.deleteSession('current'); } catch(e){}
             window.location.reload();
         }
 
-        async function loadContent() {
-            // Récupérer 2 films populaires
+        async function loadMovies() {
             try {
                 const res = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_KEY}&language=fr-FR`);
                 const data = await res.json();
+                
                 const m1 = data.results[0];
                 const m2 = data.results[1];
 
-                // Setup Film 1
-                const el1 = document.getElementById('movie-1');
-                el1.querySelector('.movie-bg').style.backgroundImage = `url('https://image.tmdb.org/t/p/original${m1.poster_path}')`;
-                el1.querySelector('.movie-title').innerText = m1.title;
-                el1.onclick = () => window.open(`https://www.google.com/search?q=${m1.title}+streaming`, '_blank');
-
-                // Setup Film 2
-                const el2 = document.getElementById('movie-2');
-                el2.querySelector('.movie-bg').style.backgroundImage = `url('https://image.tmdb.org/t/p/original${m2.poster_path}')`;
-                el2.querySelector('.movie-title').innerText = m2.title;
-                el2.onclick = () => window.open(`https://www.google.com/search?q=${m2.title}+streaming`, '_blank');
-
-            } catch(e) { console.error(e); }
+                setupMovie('movie-1', m1);
+                setupMovie('movie-2', m2);
+            } catch(e){}
         }
+
+        function setupMovie(id, movie) {
+            const el = document.getElementById(id);
+            el.querySelector('.movie-bg').style.backgroundImage = `url('https://image.tmdb.org/t/p/original${movie.poster_path}')`;
+            el.querySelector('.movie-title').innerText = movie.title;
+            el.onclick = () => window.open(`https://www.google.com/search?q=${movie.title}+streaming`, '_blank');
+        }
+
+        // Lancer
+        init();
     </script>
 </body>
-</html>
+            </html>
+            
