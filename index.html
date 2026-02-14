@@ -29,46 +29,31 @@
             display: flex; justify-content: center; align-items: center;
         }
 
-        /* --- BACKGROUND CINÉMATIQUE --- */
-        #bg-wrapper {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-        }
+        #bg-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
         #dynamic-bg {
             width: 100%; height: 100%;
             background-size: cover; background-position: center;
-            filter: brightness(0.4) blur(4px); /* Flou artistique */
+            filter: brightness(0.4) blur(4px);
             transform: scale(1.1);
             transition: background-image 1s ease-in-out;
         }
-        /* Dégradé vignette sombre pour focus */
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle, transparent 0%, #000000 90%);
         }
 
-        /* --- CARTE PRINCIPALE --- */
-        .auth-container {
-            width: 100%; max-width: 400px;
-            padding: 20px;
-            perspective: 1000px;
-            z-index: 10;
-        }
+        .auth-container { width: 100%; max-width: 400px; padding: 20px; z-index: 10; }
 
         .glass-card {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border-light);
-            border-radius: 20px;
-            padding: 40px 30px;
+            border-radius: 20px; padding: 40px 30px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.8), var(--neon-glow);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+            text-align: center; position: relative; overflow: hidden;
             animation: floatUp 0.8s ease-out;
         }
 
-        /* Barre rouge décorative en haut */
         .glass-card::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
             background: linear-gradient(90deg, transparent, var(--primary-red), transparent);
@@ -80,111 +65,49 @@
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        /* --- LOGO & TITRE --- */
         .brand-logo {
-            font-size: 2rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            color: var(--primary-red);
-            letter-spacing: -1px;
-            margin-bottom: 5px;
-            display: inline-block;
-            text-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
+            font-size: 2rem; font-weight: 900; text-transform: uppercase;
+            color: var(--primary-red); letter-spacing: -1px; margin-bottom: 5px;
+            display: inline-block; text-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
         }
 
-        .welcome-text {
-            color: var(--text-gray);
-            font-size: 0.9rem;
-            margin-bottom: 35px;
-            font-weight: 400;
-        }
+        .welcome-text { color: var(--text-gray); font-size: 0.9rem; margin-bottom: 35px; }
 
-        /* --- CHAMPS DE FORMULAIRE --- */
-        .input-group {
-            position: relative; margin-bottom: 20px; text-align: left;
-        }
+        .input-group { position: relative; margin-bottom: 20px; text-align: left; }
 
         .input-field {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            padding: 16px 15px 16px 45px; /* Padding gauche pour l'icône */
-            color: white;
-            font-size: 1rem;
-            font-family: inherit;
-            box-sizing: border-box;
-            transition: var(--transition);
+            width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-light);
+            border-radius: 8px; padding: 16px 15px 16px 45px; color: white;
+            font-size: 1rem; font-family: inherit; box-sizing: border-box; transition: var(--transition);
         }
 
-        .input-field:focus {
-            outline: none;
-            border-color: var(--primary-red);
-            background: rgba(0, 0, 0, 0.6);
-            box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.1);
-        }
+        .input-field:focus { outline: none; border-color: var(--primary-red); background: rgba(0, 0, 0, 0.6); }
 
-        .field-icon {
-            position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
-            color: var(--text-gray); pointer-events: none; transition: var(--transition);
-        }
+        .field-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-gray); }
         
-        .input-field:focus ~ .field-icon { color: var(--primary-red); }
+        .toggle-eye { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-gray); cursor: pointer; }
 
-        .toggle-eye {
-            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
-            color: var(--text-gray); cursor: pointer; transition: color 0.2s;
-        }
-        .toggle-eye:hover { color: white; }
-
-        /* --- BOUTON --- */
         .btn-submit {
-            width: 100%;
-            background: var(--primary-red);
-            color: white;
-            border: none;
-            padding: 14px;
-            font-size: 1rem;
-            font-weight: 700;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: var(--transition);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
+            width: 100%; background: var(--primary-red); color: white; border: none;
+            padding: 14px; font-size: 1rem; font-weight: 700; border-radius: 8px;
+            cursor: pointer; margin-top: 10px; transition: var(--transition);
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
 
-        .btn-submit:hover {
-            background: #f40612;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(229, 9, 20, 0.5);
-        }
+        .btn-submit:hover { background: #f40612; transform: translateY(-2px); }
 
-        /* --- FOOTER & LINKS --- */
-        .footer-links {
-            margin-top: 25px;
-            font-size: 0.85rem;
-            color: var(--text-gray);
-        }
-        .footer-links span {
-            color: white; cursor: pointer; font-weight: 600; text-decoration: underline;
-            transition: color 0.2s;
-        }
-        .footer-links span:hover { color: var(--primary-red); }
+        .footer-links { margin-top: 25px; font-size: 0.85rem; color: var(--text-gray); }
+        .footer-links span { color: white; cursor: pointer; font-weight: 600; text-decoration: underline; }
 
-        .error-message {
-            color: #ffbaba; font-size: 0.8rem; margin-top: 10px; min-height: 20px;
-            display: flex; align-items: center; justify-content: center; gap: 5px;
-        }
+        .error-message { color: #ffbaba; font-size: 0.8rem; margin-top: 10px; min-height: 20px; }
         
-        .hidden { display: none; }
+        .hidden { display: none !important; }
         
-        /* Particles */
-        #particles {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 0; opacity: 0.3;
-        }
+        #particles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.3; }
+
+        /* Animation de succès */
+        .success-state { color: white; }
+        .success-state i { font-size: 4rem; color: #4CAF50; margin-bottom: 20px; display: block; }
     </style>
 </head>
 <body>
@@ -194,18 +117,16 @@
         <div class="overlay"></div>
     </div>
     
-    <!-- Effet de poussière flottante -->
     <canvas id="particles"></canvas>
 
     <div class="auth-container">
         
-        <!-- LOGIN VIEW -->
         <div id="login-view" class="glass-card">
             <div class="brand-logo">FILMANGSTREAM</div>
-            <p class="welcome-text">Bon retour parmi nous.</p>
+            <p class="welcome-text">Accès à votre espace membre.</p>
 
             <div class="input-group">
-                <input type="email" id="log-email" class="input-field" placeholder="Email ou téléphone" autocomplete="off">
+                <input type="email" id="log-email" class="input-field" placeholder="Votre email">
                 <i class="fa-solid fa-envelope field-icon"></i>
             </div>
 
@@ -220,39 +141,44 @@
             <button class="btn-submit" onclick="handleLogin(this)">S'identifier</button>
 
             <div class="footer-links">
-                Première visite ? <span onclick="switchView('reg')">Inscrivez-vous maintenant.</span>
-                <br><br>
-                <small style="opacity: 0.5;">Protection par reCAPTCHA de Google.</small>
+                Nouveau ? <span onclick="switchView('reg')">Créer un compte.</span>
             </div>
         </div>
 
-        <!-- REGISTER VIEW -->
         <div id="register-view" class="glass-card hidden">
             <div class="brand-logo">FILMANGSTREAM</div>
-            <p class="welcome-text">Créez votre compte gratuit.</p>
+            <p class="welcome-text">Inscription gratuite.</p>
 
             <div class="input-group">
-                <input type="email" id="reg-email" class="input-field" placeholder="Votre email">
+                <input type="email" id="reg-email" class="input-field" placeholder="Email">
                 <i class="fa-solid fa-at field-icon"></i>
             </div>
 
             <div class="input-group">
-                <input type="password" id="reg-pass" class="input-field" placeholder="Créez un mot de passe">
+                <input type="password" id="reg-pass" class="input-field" placeholder="Mot de passe (8 car. min)">
                 <i class="fa-solid fa-key field-icon"></i>
                 <i class="fa-regular fa-eye toggle-eye" onclick="togglePwd('reg-pass', this)"></i>
             </div>
 
-            <!-- Recaptcha centré et scalé pour fit -->
-            <div style="display: flex; justify-content: center; margin: 15px 0; transform: scale(0.85);">
-                <div class="g-recaptcha" data-theme="dark" data-sitekey="6Lf1CVYsAAAAAJV-_MtXBBUBGfwCIRkE2x75adLl"></div>
+            <div style="display: flex; justify-content: center; margin: 15px 0; transform: scale(0.8);">
+                <div class="g-recaptcha" id="recaptcha-element" data-theme="dark" data-sitekey="6Lf1CVYsAAAAAJV-_MtXBBUBGfwCIRkE2x75adLl"></div>
             </div>
 
             <div id="reg-err" class="error-message"></div>
 
-            <button class="btn-submit" onclick="handleRegister(this)">Commencer</button>
+            <button class="btn-submit" onclick="handleRegister(this)">Valider l'inscription</button>
 
             <div class="footer-links">
-                Déjà membre ? <span onclick="switchView('log')">Connexion.</span>
+                Déjà inscrit ? <span onclick="switchView('log')">Connexion.</span>
+            </div>
+        </div>
+
+        <div id="success-view" class="glass-card hidden">
+            <div class="success-state">
+                <i class="fa-solid fa-circle-check"></i>
+                <div class="brand-logo">SUCCÈS</div>
+                <p>Connexion réussie ! Préparation de votre catalogue...</p>
+                <div style="margin-top: 20px;"><i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem;"></i></div>
             </div>
         </div>
 
@@ -263,157 +189,126 @@
         const client = new Client().setEndpoint('https://cloud.appwrite.io/v1').setProject('698f97e3001c4c48d6d7');
         const account = new Account(client);
 
-        /* --- 1. Gestion du fond d'écran TMDB --- */
+        // 1. Fond dynamique
         async function loadBackgrounds() {
             try {
                 const res = await fetch('https://api.themoviedb.org/3/trending/movie/day?api_key=7b5c62a2d80f0a3d2e86a622cb23f0db');
                 const data = await res.json();
                 const paths = data.results.map(m => `https://image.tmdb.org/t/p/original${m.backdrop_path}`);
-                
                 let idx = 0;
                 const bgEl = document.getElementById('dynamic-bg');
-                
-                const changeBg = () => {
-                    const img = new Image();
-                    img.src = paths[idx];
-                    img.onload = () => {
-                        bgEl.style.backgroundImage = `url('${paths[idx]}')`;
-                        idx = (idx + 1) % paths.length;
-                    };
-                };
-                changeBg();
-                setInterval(changeBg, 10000);
+                setInterval(() => {
+                    idx = (idx + 1) % paths.length;
+                    bgEl.style.backgroundImage = `url('${paths[idx]}')`;
+                }, 10000);
+                bgEl.style.backgroundImage = `url('${paths[0]}')`;
             } catch(e) { console.log("Bg Error", e); }
         }
         loadBackgrounds();
 
-        /* --- 2. Animations UI --- */
+        // 2. Navigation
         function togglePwd(id, icon) {
             const el = document.getElementById(id);
-            if(el.type === 'password') {
-                el.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash');
-            } else {
-                el.type = 'password'; icon.classList.add('fa-eye'); icon.classList.remove('fa-eye-slash');
-            }
+            el.type = el.type === 'password' ? 'text' : 'password';
+            icon.classList.toggle('fa-eye'); icon.classList.toggle('fa-eye-slash');
         }
 
         function switchView(target) {
-            const log = document.getElementById('login-view');
-            const reg = document.getElementById('register-view');
-            
-            // Animation flip simple
-            const current = target === 'reg' ? log : reg;
-            const next = target === 'reg' ? reg : log;
-
-            current.style.display = 'none'; // Pour l'instant simple, on pourrait animer
-            current.classList.add('hidden');
-            
-            next.style.display = 'block';
-            next.classList.remove('hidden');
-            // Reset animation
-            next.style.animation = 'none';
-            next.offsetHeight; /* trigger reflow */
-            next.style.animation = 'floatUp 0.5s ease-out';
+            document.getElementById('login-view').classList.add('hidden');
+            document.getElementById('register-view').classList.add('hidden');
+            document.getElementById(target + '-view').classList.remove('hidden');
         }
 
-        /* --- 3. Appwrite Logic --- */
+        // 3. Logique de Connexion (Corrigée)
         async function handleLogin(btn) {
             const email = document.getElementById('log-email').value;
             const pass = document.getElementById('log-pass').value;
             const err = document.getElementById('log-err');
             
-            if(!email || !pass) return showError(err, "Veuillez tout remplir.");
+            if(!email || !pass) return (err.innerText = "Champs manquants !");
             
             setLoading(btn, true);
             try {
                 await account.createEmailPasswordSession(email, pass);
-                alert("Connexion réussie ! Redirection...");
-                // window.location.href = "/dashboard"; 
+                // SUCCESS : On cache tout et on affiche le succès ou on redirige
+                document.getElementById('login-view').classList.add('hidden');
+                document.getElementById('success-view').classList.remove('hidden');
+                
+                // Redirection réelle après 2 secondes
+                setTimeout(() => {
+                    window.location.href = "index.html"; // METS ICI TON URL DE PAGE D'ACCUEIL
+                }, 2000);
+
             } catch (e) {
-                showError(err, "Identifiants incorrects.");
+                err.innerText = "Email ou mot de passe incorrect.";
             }
             setLoading(btn, false);
         }
 
+        // 4. Logique d'Inscription (Corrigée avec ReCaptcha)
         async function handleRegister(btn) {
             const email = document.getElementById('reg-email').value;
             const pass = document.getElementById('reg-pass').value;
             const err = document.getElementById('reg-err');
 
-            if(!email || !pass) return showError(err, "Erreur formulaire.");
+            // VÉRIFICATION RECAPTCHA
+            const captchaResponse = grecaptcha.getResponse();
+            if(!captchaResponse) return (err.innerText = "Veuillez valider le reCAPTCHA.");
+
+            if(pass.length < 8) return (err.innerText = "Le mot de passe est trop court.");
 
             setLoading(btn, true);
             try {
                 await account.create(ID.unique(), email, pass);
                 await account.createEmailPasswordSession(email, pass);
-                alert("Compte créé avec succès !");
+                
+                document.getElementById('register-view').classList.add('hidden');
+                document.getElementById('success-view').classList.remove('hidden');
+                
+                setTimeout(() => {
+                    window.location.href = "index.html"; // METS ICI TON URL DE PAGE D'ACCUEIL
+                }, 2000);
+
             } catch (e) {
-                showError(err, e.message);
+                err.innerText = "Erreur : " + e.message;
             }
             setLoading(btn, false);
         }
 
         function setLoading(btn, isLoading) {
-            if(isLoading) {
-                btn.dataset.text = btn.innerText;
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-                btn.disabled = true;
-                btn.style.opacity = 0.7;
-            } else {
-                btn.innerText = btn.dataset.text;
-                btn.disabled = false;
-                btn.style.opacity = 1;
-            }
+            btn.disabled = isLoading;
+            btn.innerHTML = isLoading ? '<i class="fa-solid fa-spinner fa-spin"></i>' : (btn.id === 'login-view' ? "S'identifier" : "Valider");
         }
 
-        function showError(el, msg) {
-            el.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${msg}`;
-        }
-
-        /* --- 4. Particules (Canvas) --- */
+        // 5. Particules Design
         const canvas = document.getElementById('particles');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
         const particlesArray = [];
         class Particle {
             constructor() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2;
+                this.size = Math.random() * 1.5;
                 this.speedX = Math.random() * 0.5 - 0.25;
                 this.speedY = Math.random() * 0.5 - 0.25;
             }
             update() {
                 this.x += this.speedX; this.y += this.speedY;
-                if(this.size > 0.2) this.size -= 0.01;
-                if(this.size <= 0.2) {
-                    this.x = Math.random() * canvas.width;
-                    this.y = Math.random() * canvas.height;
-                    this.size = Math.random() * 2;
-                }
+                if(this.x > canvas.width) this.x = 0; if(this.y > canvas.height) this.y = 0;
             }
             draw() {
-                ctx.fillStyle = 'rgba(255,255,255,0.3)';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillStyle = 'rgba(255,255,255,0.2)';
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
             }
         }
-        function initParticles() {
-            for(let i=0; i<50; i++) particlesArray.push(new Particle());
-        }
-        function animateParticles() {
+        for(let i=0; i<60; i++) particlesArray.push(new Particle());
+        function animate() {
             ctx.clearRect(0,0, canvas.width, canvas.height);
-            for(let i=0; i<particlesArray.length; i++) {
-                particlesArray[i].update();
-                particlesArray[i].draw();
-            }
-            requestAnimationFrame(animateParticles);
+            particlesArray.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
         }
-        initParticles();
-        animateParticles();
+        animate();
     </script>
 </body>
 </html>
