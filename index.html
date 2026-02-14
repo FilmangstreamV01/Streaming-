@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FILMANGSTREAM | Connexion</title>
+    <title>FILMANGSTREAM | Accès Membre</title>
     
     <!-- Appwrite SDK -->
     <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.1"></script>
@@ -11,517 +11,441 @@
     <!-- Google reCAPTCHA v3 -->
     <script src="https://www.google.com/recaptcha/api.js?render=6Lf1CVYsAAAAAJV-_MtXBBUBGfwCIRkE2x75adLl"></script>
     
-    <!-- Fonts & Icons -->
-    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Fonts Premium -->
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- DESIGN SYSTEM ULTIME --- */
+        /* --- DESIGN SYSTEM ULTRA-PREMIUM --- */
         :root {
-            --brand-red: #E50914; /* Rouge Streaming */
-            --brand-dark: #0f0f0f;
-            --glass: rgba(22, 22, 22, 0.85); 
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-white: #ffffff;
-            --text-gray: #b3b3b3;
-            --input-bg: rgba(51, 51, 51, 0.6);
+            --primary: #FF0022; /* Rouge vibrant */
+            --primary-glow: rgba(255, 0, 34, 0.5);
+            --bg-deep: #050505;
+            --glass-surface: rgba(10, 10, 10, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #FFFFFF;
+            --text-dim: #888888;
+            --input-bg: rgba(255, 255, 255, 0.03);
+            --radius: 16px;
         }
 
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        
-        body, html { 
-            margin: 0; padding: 0; height: 100%; width: 100%; 
-            font-family: 'Manrope', sans-serif; 
-            background-color: #000; 
-            color: var(--text-white); 
-            overflow: hidden; 
+
+        body, html {
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
         }
 
-        /* --- BACKGROUND CINEMATIQUE (TMDB) --- */
-        #cinematic-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
+        /* --- ARRIERE PLAN CINEMATIQUE --- */
+        #bg-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
         }
-        .bg-slide {
+        .bg-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-size: cover; background-position: center;
-            opacity: 0; transition: opacity 2s ease-in-out, transform 15s linear;
-            transform: scale(1);
+            opacity: 0; transform: scale(1.1);
+            transition: opacity 1.5s ease, transform 10s linear;
         }
-        .bg-slide.active { opacity: 1; transform: scale(1.1); }
+        .bg-layer.active { opacity: 1; transform: scale(1); }
         
-        /* Overlay sombre pour lisibilité */
-        .overlay {
+        /* Vignette sombre pour focus sur le centre */
+        .vignette {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.95) 100%);
-            z-index: -1; pointer-events: none;
+            background: radial-gradient(circle at center, rgba(0,0,0,0.3) 0%, #000000 90%);
+            z-index: 0; pointer-events: none;
         }
 
-        /* --- AUTH CARD --- */
-        #auth-container {
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            height: 100vh; padding: 20px; z-index: 10; position: relative;
-        }
-
-        .glass-card {
-            width: 100%; max-width: 450px;
-            background: var(--glass);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        /* --- CARTE D'AUTHENTIFICATION --- */
+        .auth-card {
+            width: 100%; max-width: 440px;
+            background: var(--glass-surface);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
             border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 40px; /* Plus d'espace */
-            box-shadow: 0 0 80px rgba(0,0,0,0.8);
-            transform: translateY(0); transition: 0.5s;
+            border-radius: var(--radius);
+            padding: 48px 40px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+            position: relative; z-index: 10;
+            transform: translateY(0); opacity: 1;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+        
+        /* Petit glow rouge derrière la carte */
+        .auth-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(255,0,34,0.08), transparent 60%);
+            pointer-events: none; z-index: -1;
         }
 
-        /* LOGO */
-        .brand-logo {
+        /* --- LOGO --- */
+        .logo-container { text-align: center; margin-bottom: 40px; }
+        .logo-text {
             font-family: 'Clash Display', sans-serif;
             font-weight: 700;
-            font-size: 2.2rem; /* Taille augmentée */
-            text-align: center;
-            margin-bottom: 40px;
-            color: var(--brand-red);
+            /* La magie pour qu'il tienne sur une ligne : clamp + nowrap */
+            font-size: clamp(1.5rem, 6vw, 2.2rem); 
+            white-space: nowrap; 
+            color: var(--primary);
             text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 30px rgba(229, 9, 20, 0.4);
-            word-wrap: break-word; /* Empêche la coupure */
-            line-height: 1.1;
+            letter-spacing: 1px;
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+        .logo-sub {
+            font-size: 0.75rem; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; margin-top: 5px;
         }
 
-        /* INPUTS */
-        .input-group { position: relative; margin-bottom: 20px; }
-        
-        .input-field {
-            width: 100%; padding: 16px 20px;
-            background: #333; 
-            border: 1px solid transparent; 
-            border-radius: 6px;
-            color: white; font-size: 1rem; 
-            transition: 0.3s;
-        }
-        .input-field:focus {
-            background: #444; border-bottom: 2px solid var(--brand-red);
-        }
-        
-        .floating-label {
-            position: absolute; left: 20px; top: 16px; 
-            color: #8c8c8c; pointer-events: none; transition: 0.2s ease all;
-            font-size: 1rem;
-        }
-        .input-field:focus ~ .floating-label,
-        .input-field:not(:placeholder-shown) ~ .floating-label {
-            top: 6px; font-size: 0.7rem; font-weight: 700; transform: translateY(-3px);
-        }
-        .input-field:focus ~ .floating-label { color: var(--brand-red); }
-
-        /* PASSWORD EYE */
-        .eye-icon {
-            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
-            color: #888; cursor: pointer; transition: 0.3s; padding: 10px;
-        }
-        .eye-icon:hover { color: white; }
-
-        /* BUTTONS */
-        .btn-primary {
-            width: 100%; padding: 16px;
-            background: var(--brand-red); color: white;
-            font-weight: 700; font-size: 1rem; border: none; border-radius: 6px;
-            cursor: pointer; margin-top: 10px; margin-bottom: 15px;
-            transition: transform 0.2s, background 0.2s;
-        }
-        .btn-primary:hover { background: #f40612; }
-        .btn-primary:active { transform: scale(0.98); }
-
-        .helper-text {
-            color: #737373; font-size: 0.95rem; margin-top: 10px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .link { color: white; text-decoration: none; cursor: pointer; font-weight: 500; }
-        .link:hover { text-decoration: underline; }
-
-        .view-section { display: none; animation: fadeIn 0.4s ease-out; }
+        /* --- FORMULAIRES --- */
+        .view-section { display: none; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
         .view-section.active { display: block; }
+
+        .input-wrapper { position: relative; margin-bottom: 20px; }
         
-        .error-msg {
-            color: #e87c03; font-size: 0.85rem; margin-bottom: 15px; display: none;
-            padding: 10px; background: rgba(232, 124, 3, 0.1); border-radius: 4px;
+        .custom-input {
+            width: 100%; padding: 18px 20px 18px 50px; /* Padding left pour l'icone */
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white; font-family: inherit; font-size: 0.95rem; font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .custom-input::placeholder { color: rgba(255,255,255,0.3); }
+        .custom-input:focus {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.3);
+            box-shadow: 0 0 0 4px rgba(255,255,255,0.02);
         }
 
-        /* --- APP CONTENT (Simple Placeholder) --- */
-        #app-wrapper { display: none; height: 100vh; width: 100%; background: #141414; flex-direction: column; align-items: center; justify-content: center; }
-        .welcome-msg { font-size: 2rem; margin-bottom: 20px; }
-        .logout-btn { padding: 10px 30px; border: 1px solid white; background: transparent; color: white; cursor: pointer; }
+        /* Icones dans les inputs */
+        .input-icon {
+            position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
+            color: var(--text-dim); font-size: 1.1rem; pointer-events: none; transition: 0.3s;
+        }
+        .custom-input:focus ~ .input-icon { color: white; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Oeil mot de passe */
+        .eye-btn {
+            position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+            color: var(--text-dim); cursor: pointer; padding: 5px; transition: 0.3s;
+        }
+        .eye-btn:hover { color: white; }
+
+        /* Bouton Principal */
+        .btn-submit {
+            width: 100%; padding: 18px;
+            background: linear-gradient(135deg, #ff1f3d, #c2001b);
+            color: white; font-weight: 700; font-size: 1rem;
+            border: none; border-radius: 12px;
+            cursor: pointer; margin-top: 10px;
+            box-shadow: 0 10px 25px rgba(194, 0, 27, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 15px 35px rgba(194, 0, 27, 0.5); }
+        .btn-submit:active { transform: scale(0.98); }
+
+        /* Liens et Footer */
+        .auth-footer {
+            margin-top: 25px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem;
+        }
+        .link-text { color: var(--text-dim); text-decoration: none; transition: 0.3s; cursor: pointer; }
+        .link-text:hover { color: white; }
+        .link-highlight { color: white; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .link-highlight:hover { color: var(--primary); }
+
+        .error-banner {
+            background: rgba(255, 59, 59, 0.15); border-left: 3px solid #ff3b3b;
+            color: #ff8080; padding: 12px; font-size: 0.85rem; border-radius: 6px;
+            margin-bottom: 20px; display: none;
+        }
+
+        /* Écran de chargement/App */
+        #app-wrapper { display: none; text-align: center; z-index: 20; }
         
-        /* Mobile adjust */
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Responsive Mobile */
         @media (max-width: 480px) {
-            .glass-card { padding: 30px 20px; background: black; border: none; }
-            .brand-logo { font-size: 1.8rem; }
+            .auth-card { padding: 30px 20px; width: 90%; }
+            .auth-footer { flex-direction: column; gap: 15px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ARRIERE PLAN DYNAMIQUE -->
-    <div id="cinematic-bg">
-        <!-- Les images seront injectées ici par JS -->
-    </div>
-    <div class="overlay"></div>
+    <!-- FOND DYNAMIQUE -->
+    <div id="bg-container"></div>
+    <div class="vignette"></div>
 
-    <!-- ZONE D'AUTHENTIFICATION -->
-    <div id="auth-container">
-        <div class="glass-card">
-            <div class="brand-logo">FILMANGSTREAM</div>
+    <!-- AUTH CARD -->
+    <div id="auth-container" class="auth-card">
+        
+        <!-- EN-TETE -->
+        <div class="logo-container">
+            <div class="logo-text">FILMANGSTREAM</div>
+            <div class="logo-sub">Portail Sécurisé</div>
+        </div>
 
-            <!-- 1. LOGIN -->
-            <div id="view-login" class="view-section active">
-                <div class="error-msg" id="err-login"></div>
-                
-                <div class="input-group">
-                    <input type="email" id="l-email" class="input-field" placeholder=" ">
-                    <label class="floating-label">Email ou numéro</label>
-                </div>
-                
-                <div class="input-group">
-                    <input type="password" id="l-pass" class="input-field" placeholder=" ">
-                    <label class="floating-label">Mot de passe</label>
-                    <i class="fa-regular fa-eye eye-icon" onclick="togglePass('l-pass', this)"></i>
-                </div>
-
-                <button class="btn-primary" onclick="handleLogin()">S'identifier</button>
-
-                <div class="helper-text">
-                    <span onclick="go('view-register')">Nouveau ? <span class="link">S'inscrire maintenant</span></span>
-                    <span class="link" style="font-size:0.8rem; color:#b3b3b3;" onclick="go('view-forgot')">Besoin d'aide ?</span>
-                </div>
+        <!-- 1. CONNEXION -->
+        <div id="v-login" class="view-section active">
+            <div class="error-banner" id="err-login"></div>
+            
+            <div class="input-wrapper">
+                <input type="email" id="l-email" class="custom-input" placeholder="Adresse Email">
+                <i class="fa-regular fa-envelope input-icon"></i>
+            </div>
+            
+            <div class="input-wrapper">
+                <input type="password" id="l-pass" class="custom-input" placeholder="Mot de passe">
+                <i class="fa-solid fa-lock input-icon"></i>
+                <i class="fa-regular fa-eye eye-btn" onclick="togglePass('l-pass', this)"></i>
             </div>
 
-            <!-- 2. REGISTER -->
-            <div id="view-register" class="view-section">
-                <h3 style="margin-top:0; color:white; margin-bottom:20px;">Créer un compte</h3>
-                <div class="error-msg" id="err-register"></div>
+            <button class="btn-submit" onclick="doLogin()">SE CONNECTER</button>
 
-                <div class="input-group">
-                    <input type="email" id="r-email" class="input-field" placeholder=" ">
-                    <label class="floating-label">Email</label>
-                </div>
-
-                <div class="input-group">
-                    <input type="password" id="r-pass" class="input-field" placeholder=" ">
-                    <label class="floating-label">Mot de passe (8+ car.)</label>
-                    <i class="fa-regular fa-eye eye-icon" onclick="togglePass('r-pass', this)"></i>
-                </div>
-                
-                <div class="input-group">
-                    <input type="password" id="r-conf" class="input-field" placeholder=" ">
-                    <label class="floating-label">Confirmer</label>
-                </div>
-
-                <div style="font-size: 0.75rem; color: #888; margin-bottom: 15px;">
-                    Ce site est protégé par reCAPTCHA. <a href="https://policies.google.com/privacy" target="_blank" style="color:#888;">Confidentialité</a>.
-                </div>
-
-                <button class="btn-primary" onclick="handleRegister()">Commencer</button>
-                
-                <div class="helper-text" style="justify-content:center;">
-                    <span class="link" onclick="go('view-login')">Retour à la connexion</span>
-                </div>
-            </div>
-
-            <!-- 3. MSG : CHECK EMAIL -->
-            <div id="view-wait" class="view-section" style="text-align:center;">
-                <i class="fa-solid fa-envelope-open-text" style="font-size: 3rem; color: var(--brand-red); margin-bottom: 20px;"></i>
-                <h3 style="margin:0;">Vérifiez votre email</h3>
-                <p style="color:#ccc; font-size:0.9rem; line-height:1.6; margin-top:10px;">
-                    Un lien magique a été envoyé à votre adresse.<br>
-                    Cliquez dessus pour activer votre compte et accéder à FILMANGSTREAM.
-                </p>
-                <div class="helper-text" style="justify-content:center; margin-top:20px;">
-                    <span class="link" onclick="go('view-login')">Retour</span>
-                </div>
-            </div>
-
-            <!-- 4. FORGOT PASSWORD -->
-            <div id="view-forgot" class="view-section">
-                <h3 style="margin-top:0;">Récupération</h3>
-                <div class="error-msg" id="err-forgot"></div>
-                <p style="color:#ccc; font-size:0.9rem;">Entrez votre email pour recevoir un lien de réinitialisation.</p>
-                
-                <div class="input-group">
-                    <input type="email" id="f-email" class="input-field" placeholder=" ">
-                    <label class="floating-label">Email</label>
-                </div>
-                
-                <button class="btn-primary" onclick="handleForgot()">Envoyer</button>
-                <div class="helper-text" style="justify-content:center;">
-                    <span class="link" onclick="go('view-login')">Annuler</span>
-                </div>
-            </div>
-
-            <!-- 5. RESET PASSWORD (New Pass) -->
-            <div id="view-reset" class="view-section">
-                <h3 style="margin-top:0;">Nouveau mot de passe</h3>
-                <div class="error-msg" id="err-reset"></div>
-                
-                <div class="input-group">
-                    <input type="password" id="new-pass" class="input-field" placeholder=" ">
-                    <label class="floating-label">Nouveau mot de passe</label>
-                    <i class="fa-regular fa-eye eye-icon" onclick="togglePass('new-pass', this)"></i>
-                </div>
-                
-                <div class="input-group">
-                    <input type="password" id="new-conf" class="input-field" placeholder=" ">
-                    <label class="floating-label">Confirmer</label>
-                </div>
-                
-                <button class="btn-primary" onclick="handleResetConfirm()">Valider</button>
+            <div class="auth-footer">
+                <span class="link-text" onclick="go('v-forgot')">Mot de passe oublié ?</span>
+                <span class="link-highlight" onclick="go('v-register')">Créer un compte</span>
             </div>
         </div>
+
+        <!-- 2. INSCRIPTION -->
+        <div id="v-register" class="view-section">
+            <div class="error-banner" id="err-register"></div>
+            
+            <div class="input-wrapper">
+                <input type="email" id="r-email" class="custom-input" placeholder="Votre Email">
+                <i class="fa-regular fa-envelope input-icon"></i>
+            </div>
+
+            <div class="input-wrapper">
+                <input type="password" id="r-pass" class="custom-input" placeholder="Mot de passe (8+ car.)">
+                <i class="fa-solid fa-lock input-icon"></i>
+                <i class="fa-regular fa-eye eye-btn" onclick="togglePass('r-pass', this)"></i>
+            </div>
+
+            <div class="input-wrapper">
+                <input type="password" id="r-conf" class="custom-input" placeholder="Confirmer le mot de passe">
+                <i class="fa-solid fa-check-double input-icon"></i>
+            </div>
+
+            <button class="btn-submit" onclick="doRegister()">S'INSCRIRE</button>
+
+            <div class="auth-footer" style="justify-content: center;">
+                <span class="link-text">Déjà membre ? <span class="link-highlight" onclick="go('v-login')">Connexion</span></span>
+            </div>
+            <div style="text-align:center; margin-top:15px; font-size:0.7rem; color:#555;">
+                Protected by reCAPTCHA v3
+            </div>
+        </div>
+
+        <!-- 3. MESSAGE VERIFICATION -->
+        <div id="v-msg" class="view-section" style="text-align: center; padding: 20px 0;">
+            <div style="width: 70px; height: 70px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+                <i class="fa-regular fa-paper-plane" style="font-size: 1.8rem; color: var(--primary);"></i>
+            </div>
+            <h3 style="margin: 0 0 10px 0;">Vérifiez vos emails</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; line-height: 1.6;">
+                Un lien de confirmation sécurisé a été envoyé.<br>Cliquez dessus pour activer votre accès.
+            </p>
+            <button class="btn-submit" style="background: #333; margin-top:20px;" onclick="go('v-login')">Retour</button>
+        </div>
+
+        <!-- 4. MOT DE PASSE OUBLIÉ -->
+        <div id="v-forgot" class="view-section">
+            <h3 style="margin: 0 0 20px 0; font-size: 1.2rem;">Récupération</h3>
+            <div class="error-banner" id="err-forgot"></div>
+            
+            <div class="input-wrapper">
+                <input type="email" id="f-email" class="custom-input" placeholder="Email du compte">
+                <i class="fa-regular fa-envelope input-icon"></i>
+            </div>
+
+            <button class="btn-submit" onclick="doForgot()">ENVOYER LE LIEN</button>
+
+            <div class="auth-footer" style="justify-content: center;">
+                <span class="link-text" onclick="go('v-login')">Annuler</span>
+            </div>
+        </div>
+
+        <!-- 5. RESET FINAL (Nouveau mot de passe) -->
+        <div id="v-reset" class="view-section">
+            <h3 style="margin: 0 0 20px 0;">Définir nouveau mot de passe</h3>
+            <div class="error-banner" id="err-reset"></div>
+
+            <div class="input-wrapper">
+                <input type="password" id="n-pass" class="custom-input" placeholder="Nouveau mot de passe">
+                <i class="fa-solid fa-lock input-icon"></i>
+                <i class="fa-regular fa-eye eye-btn" onclick="togglePass('n-pass', this)"></i>
+            </div>
+            <div class="input-wrapper">
+                <input type="password" id="n-conf" class="custom-input" placeholder="Confirmer">
+                <i class="fa-solid fa-check-double input-icon"></i>
+            </div>
+
+            <button class="btn-submit" onclick="doResetFinal()">VALIDER</button>
+        </div>
+
     </div>
 
-    <!-- CONTENU DU SITE (Après Login) -->
+    <!-- SITE APRES LOGIN -->
     <div id="app-wrapper">
-        <div class="brand-logo" style="margin-bottom:10px;">FILMANGSTREAM</div>
-        <div class="welcome-msg">Bienvenue dans l'expérience ultime.</div>
-        <button class="logout-btn" onclick="logout()">Se déconnecter</button>
+        <h1 style="font-family:'Clash Display'; font-size:3rem; color:var(--primary);">FILMANGSTREAM</h1>
+        <p style="font-size:1.2rem; color: #aaa;">Bienvenue dans la zone membre.</p>
+        <button class="btn-submit" style="max-width:200px; margin: 20px auto;" onclick="logout()">Déconnexion</button>
     </div>
 
     <script>
-        // --- 1. CONFIGURATION ---
+        // CONFIG
         const { Client, Account, ID } = Appwrite;
-        const client = new Client()
-            .setEndpoint('https://cloud.appwrite.io/v1')
-            .setProject('698f97e3001c4c48d6d7'); // Ton ID Projet
+        const client = new Client().setEndpoint('https://cloud.appwrite.io/v1').setProject('698f97e3001c4c48d6d7');
         const account = new Account(client);
-
+        
         const TMDB_KEY = '7b5c62a2d80f0a3d2e86a622cb23f0db';
-        const RECAPTCHA_SITE_KEY = '6Lf1CVYsAAAAAJV-_MtXBBUBGfwCIRkE2x75adLl';
+        const RECAPTCHA_KEY = '6Lf1CVYsAAAAAJV-_MtXBBUBGfwCIRkE2x75adLl';
 
-        // --- 2. GESTION UI & NAVIGATION ---
-        function go(viewId) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            // Reset errors
-            document.querySelectorAll('.error-msg').forEach(e => { e.style.display = 'none'; e.innerText = ''; });
-        }
-
-        function togglePass(inputId, icon) {
-            const input = document.getElementById(inputId);
-            if(input.type === "password") {
-                input.type = "text";
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                input.type = "password";
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
-
-        function showError(elementId, msg) {
-            const el = document.getElementById(elementId);
-            el.innerText = msg;
-            el.style.display = 'block';
-        }
-
-        // --- 3. BACKGROUND DYNAMIQUE TMDB ---
-        async function initBackground() {
+        // --- BACKGROUND ---
+        async function loadBackground() {
             try {
-                const res = await fetch(`https://api.themoviedb.org/3/trending/movie/week?api_key=${TMDB_KEY}&language=fr-FR`);
+                const res = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_KEY}&language=fr-FR`);
                 const data = await res.json();
-                const movies = data.results.slice(0, 5); // Prendre les 5 premiers
-                const container = document.getElementById('cinematic-bg');
+                const container = document.getElementById('bg-container');
                 
-                movies.forEach((m, index) => {
-                    if(!m.backdrop_path) return;
+                // Prendre 4 films
+                data.results.slice(0, 4).forEach((m, i) => {
                     const div = document.createElement('div');
-                    div.className = 'bg-slide';
-                    if(index === 0) div.classList.add('active');
+                    div.className = `bg-layer ${i===0 ? 'active' : ''}`;
                     div.style.backgroundImage = `url('https://image.tmdb.org/t/p/original${m.backdrop_path}')`;
                     container.appendChild(div);
                 });
 
-                // Rotation simple
-                let current = 0;
-                const slides = document.querySelectorAll('.bg-slide');
-                if(slides.length > 1) {
+                // Rotation
+                let idx = 0;
+                const layers = document.querySelectorAll('.bg-layer');
+                if(layers.length > 0) {
                     setInterval(() => {
-                        slides[current].classList.remove('active');
-                        current = (current + 1) % slides.length;
-                        slides[current].classList.add('active');
-                    }, 8000); // Change toutes les 8s
+                        layers[idx].classList.remove('active');
+                        idx = (idx + 1) % layers.length;
+                        layers[idx].classList.add('active');
+                    }, 7000);
                 }
-
-            } catch(e) { console.error("Erreur TMDB BG", e); }
+            } catch(e) {}
         }
 
-        // --- 4. SECURITE RECAPTCHA ---
-        function executeRecaptcha(actionName) {
+        // --- UI ---
+        function go(id) {
+            document.querySelectorAll('.view-section').forEach(e => e.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.error-banner').forEach(e => { e.style.display = 'none'; e.innerText=''; });
+        }
+
+        function togglePass(fid, icon) {
+            const f = document.getElementById(fid);
+            if(f.type === 'password') {
+                f.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                f.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        function showErr(id, msg) {
+            const el = document.getElementById(id);
+            el.innerText = msg; el.style.display = 'block';
+        }
+
+        // --- RECAPTCHA ---
+        function checkBot(action) {
             return new Promise((resolve, reject) => {
-                grecaptcha.ready(function() {
-                    grecaptcha.execute(RECAPTCHA_SITE_KEY, {action: actionName}).then(function(token) {
-                        // Ici, on a le token.
-                        // Dans un système backend complet, on enverrait ce token à Appwrite Functions pour validation.
-                        // Pour ce frontend pur, l'obtention du token confirme que le script tourne et que Google analyse.
-                        console.log("reCAPTCHA Token:", token);
-                        if(token) resolve(true);
-                        else reject("Bot détecté");
-                    }).catch(err => reject(err));
+                grecaptcha.ready(() => {
+                    grecaptcha.execute(RECAPTCHA_KEY, {action: action})
+                    .then(token => resolve(token))
+                    .catch(err => reject(err));
                 });
             });
         }
 
-        // --- 5. LOGIQUE AUTHENTIFICATION ---
-
-        // A. INSCRIPTION
-        async function handleRegister() {
+        // --- LOGIC ---
+        
+        // 1. INSCRIPTION
+        async function doRegister() {
             const email = document.getElementById('r-email').value;
             const pass = document.getElementById('r-pass').value;
             const conf = document.getElementById('r-conf').value;
 
-            if(!email || !pass) return showError('err-register', 'Tous les champs sont requis.');
-            if(pass !== conf) return showError('err-register', 'Les mots de passe ne correspondent pas.');
-            if(pass.length < 8) return showError('err-register', 'Mot de passe trop court (min 8).');
+            if(!email || !pass) return showErr('err-register', 'Champs requis');
+            if(pass !== conf) return showErr('err-register', 'Mots de passe différents');
+            if(pass.length < 8) return showErr('err-register', '8 caractères minimum');
 
             try {
-                // 1. Check Recaptcha
-                await executeRecaptcha('register');
-
-                // 2. Création compte Appwrite
+                await checkBot('register');
                 await account.create(ID.unique(), email, pass);
-
-                // 3. Connexion session (nécessaire pour envoyer le mail de vérif)
                 await account.createEmailPasswordSession(email, pass);
-
-                // 4. Envoi Email Vérification
-                // L'URL ici est la page actuelle. Appwrite ajoutera ?userId=...&secret=...
-                await account.createVerification(window.location.href);
-
-                // 5. UI : Allez voir vos mails
-                go('view-wait');
-
-            } catch (e) {
-                showError('err-register', "Erreur: " + e.message);
-            }
+                await account.createVerification(window.location.href); // Magic Link
+                go('v-msg');
+            } catch(e) { showErr('err-register', e.message); }
         }
 
-        // B. CONNEXION
-        async function handleLogin() {
+        // 2. CONNEXION
+        async function doLogin() {
             const email = document.getElementById('l-email').value;
             const pass = document.getElementById('l-pass').value;
-
-            if(!email || !pass) return showError('err-login', 'Identifiants manquants.');
+            
+            if(!email || !pass) return showErr('err-login', 'Identifiants requis');
 
             try {
-                await executeRecaptcha('login'); // Check Robot
-
+                await checkBot('login');
                 await account.createEmailPasswordSession(email, pass);
                 
-                // Vérifier si email validé ? (Optionnel, Appwrite le gère selon tes settings)
-                const user = await account.get();
-                if(!user.emailVerification) {
-                    // Si tu veux bloquer les non-vérifiés :
-                    // showError('err-login', 'Veuillez vérifier votre email avant de vous connecter.');
-                    // return;
-                    // Sinon, on laisse passer :
-                }
-
-                showApp();
-            } catch (e) {
-                showError('err-login', 'Email ou mot de passe incorrect.');
-            }
+                // Optionnel: Check si vérifié
+                /* const u = await account.get();
+                if(!u.emailVerification) { ... } */
+                
+                enterSite();
+            } catch(e) { showErr('err-login', 'Email ou mot de passe incorrect'); }
         }
 
-        // C. MOT DE PASSE OUBLIÉ
-        async function handleForgot() {
+        // 3. FORGOT
+        async function doForgot() {
             const email = document.getElementById('f-email').value;
-            if(!email) return showError('err-forgot', 'Email requis.');
-
+            if(!email) return showErr('err-forgot', 'Email requis');
             try {
-                await executeRecaptcha('forgot_pass');
-                // Envoie un lien qui revient ici avec ?userId=&secret=
-                await account.createRecovery(email, window.location.href); 
-                go('view-wait'); // On réutilise l'écran d'attente
-                document.querySelector('#view-wait h3').innerText = "Email envoyé";
-                document.querySelector('#view-wait p').innerText = "Suivez les instructions reçues par email.";
-            } catch(e) {
-                showError('err-forgot', "Impossible d'envoyer la demande.");
-            }
+                await checkBot('forgot');
+                await account.createRecovery(email, window.location.href);
+                // On réutilise le message de succès
+                document.querySelector('#v-msg h3').innerText = "Vérifiez vos emails";
+                document.querySelector('#v-msg p').innerText = "Le lien de réinitialisation a été envoyé.";
+                go('v-msg');
+            } catch(e) { showErr('err-forgot', "Erreur d'envoi"); }
+        }
+    // 4. RESET FINAL
+        async function doResetFinal() {
+            const p1 = document.getElementById('n-pass').value;
+            const p2 = document.getElementById('n-conf').value;
+            const url = new URLSearchParams(window.location.search);
+            
+            if(p1 !== p2) return showErr('err-reset', 'Différents');
+            
+            try {
+                await account.updateRecovery(url.get('userId'), url.get('secret'), p1, p2);
+                alert("Mot de passe modifié !");
+                window.location.href = window.location.pathname;
+            } catch(e) { showErr('err-reset', "Lien invalide"); }
         }
 
-        // D. VALIDATION RESET MOT DE PASSE
-        async function handleResetConfirm() {
-            const pass = document.getElementById('new-pass').value;
-            const conf = document.getElementById('new-conf').value;
-            
-            if(pass !== conf) return showError('err-reset', 'Les mots de passe diffèrent.');
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const userId = urlParams.get('userId');
-            const secret = urlParams.get('secret');
-
-            try {
-                await account.updateRecovery(userId, secret, pass, conf);
-                alert("Mot de passe changé ! Connectez-vous.");
-                window.location.href = window.location.pathname; // Clean URL
-            } catch(e) {
-                showError('err-reset', "Lien expiré ou invalide.");
-            }
-        }
-
-        // --- 6. LOGIQUE DE DÉMARRAGE (INIT) ---
-        async function init() {
-            initBackground(); // Lancer le diaporama
-
-            const urlParams = new URLSearchParams(window.location.search);
-            const userId = urlParams.get('userId');
-            const secret = urlParams.get('secret');
-            const expire = urlParams.get('expire'); // Présent uniquement pour Verification, pas Recovery
-
-            // SCENARIO 1 : VERIFICATION EMAIL (Magic Link clic)
-            if (userId && secret && expire) {
-                try {
-                    await account.updateVerification(userId, secret);
-                    alert("Compte vérifié avec succès ! Vous pouvez accéder au site.");
-                    // On connecte ou on montre l'app directement
-                    showApp();
-                    // Nettoyer URL
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                    return; 
-                } catch (e) {
-                    alert("Erreur de vérification ou lien expiré.");
-                }
-            }
-
-            // SCENARIO 2 : RECUPERATION MOT DE PASSE (Lien Recovery)
-            if (userId && secret && !expire) {
-                go('view-reset');
-                return;
-            }
-
-            // SCENARIO 3 : CHECK SESSION EXISTANTE
-            try {
-                await account.get();
-                showApp(); // Déjà connecté
-            } catch(e) {
-                // Pas de session, on reste sur Login
-            }
-        }
-
-        function showApp() {
-            const auth = document.getElementById('auth-container');
-            const app = document.getElementById('app-wrapper');
-            
-            auth.style.transition = 'opacity 0.5s';
-            auth.style.opacity = '0';
-            
+        function enterSite() {
+            const card = document.getElementById('auth-container');
+            card.style.transform = 'scale(0.9)';
+            card.style.opacity = '0';
             setTimeout(() => {
-                auth.style.display = 'none';
-                app.style.display = 'flex';
-                // Ici tu chargerais le reste de ton site
-            }, 500);
+                card.style.display = 'none';
+                document.getElementById('app-wrapper').style.display = 'block';
+            }, 400);
         }
 
         async function logout() {
@@ -529,9 +453,38 @@
             window.location.reload();
         }
 
-        // Lancement
-        init();
+        // INIT
+        (async function init() {
+            loadBackground();
+            
+            const p = new URLSearchParams(window.location.search);
+            const uid = p.get('userId');
+            const sec = p.get('secret');
+            const exp = p.get('expire'); // "expire" est dans Verification mais pas Recovery
 
+            // A. VERIFICATION EMAIL (Magic Link)
+            if(uid && sec && exp) {
+                try {
+                    await account.updateVerification(uid, sec);
+                    alert("Compte vérifié avec succès !");
+                    enterSite(); // Accès direct
+                } catch(e) { alert("Lien expiré"); }
+                window.history.replaceState({},'', window.location.pathname);
+                return;
+            }
+
+            // B. RESET PASS
+            if(uid && sec && !exp) {
+                go('v-reset');
+                return;
+            }
+
+            // C. SESSION ACTIVE ?
+            try {
+                await account.get();
+                enterSite();
+            } catch(e) {}
+        })();
     </script>
 </body>
 </html>
