@@ -3,295 +3,524 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CINEMATICS | L'Expérience Ultime</title>
+    <title>FILMANGSTREAM | Connexion</title>
     
-    <!-- SDK Appwrite -->
+    <!-- Appwrite SDK -->
     <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.1"></script>
     
+    <!-- Google reCAPTCHA v3 -->
+    <script src="https://www.google.com/recaptcha/api.js?render=6Lf1CVYsAAAAAJV-_MtXBBUBGfwCIRkE2x75adLl"></script>
+    
     <!-- Fonts & Icons -->
-    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,400,600,700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- DESIGN SYSTEM (Même style "Pro" que validé) --- */
+        /* --- DESIGN SYSTEM ULTIME --- */
         :root {
-            --accent: #ff3b3b; --accent-glow: rgba(255, 59, 59, 0.4);
-            --bg-dark: #050505; --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --text-main: #ffffff; --text-muted: #888888;
+            --brand-red: #E50914; /* Rouge Streaming */
+            --brand-dark: #0f0f0f;
+            --glass: rgba(22, 22, 22, 0.85); 
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-white: #ffffff;
+            --text-gray: #b3b3b3;
+            --input-bg: rgba(51, 51, 51, 0.6);
         }
+
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        body, html { margin: 0; padding: 0; height: 100%; width: 100%; font-family: 'Outfit', sans-serif; background-color: var(--bg-dark); color: var(--text-main); overflow: hidden; }
+        
+        body, html { 
+            margin: 0; padding: 0; height: 100%; width: 100%; 
+            font-family: 'Manrope', sans-serif; 
+            background-color: #000; 
+            color: var(--text-white); 
+            overflow: hidden; 
+        }
 
-        /* --- BACKGROUND --- */
-        .cinematic-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, #1a0b0b 0%, #000000 100%); z-index: -2; }
-        .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; animation: floatOrb 10s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); }
-        .orb-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #4b0000; }
-        .orb-2 { bottom: -10%; right: -10%; width: 40vw; height: 40vw; background: #1a0533; animation-delay: -5s; }
-        .noise { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.07'/%3E%3C/svg%3E"); z-index: -1; pointer-events: none; }
+        /* --- BACKGROUND CINEMATIQUE (TMDB) --- */
+        #cinematic-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
+        }
+        .bg-slide {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover; background-position: center;
+            opacity: 0; transition: opacity 2s ease-in-out, transform 15s linear;
+            transform: scale(1);
+        }
+        .bg-slide.active { opacity: 1; transform: scale(1.1); }
+        
+        /* Overlay sombre pour lisibilité */
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.95) 100%);
+            z-index: -1; pointer-events: none;
+        }
 
-        /* --- LOGIN CARD --- */
-        #auth-wrapper { display: flex; justify-content: center; align-items: center; height: 100vh; padding: 20px; position: relative; z-index: 10; transition: opacity 0.8s ease, transform 0.8s ease; }
-        .glass-panel { width: 100%; max-width: 420px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--glass-border); border-radius: 24px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); position: relative; overflow: hidden; }
-        .brand { font-family: 'Clash Display', sans-serif; font-weight: 700; font-size: 2rem; text-align: center; margin-bottom: 5px; background: linear-gradient(to right, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; }
-        .brand-sub { text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-bottom: 30px; letter-spacing: 2px; text-transform: uppercase; }
+        /* --- AUTH CARD --- */
+        #auth-container {
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            height: 100vh; padding: 20px; z-index: 10; position: relative;
+        }
 
-        .view-section { display: none; animation: fadeIn 0.5s ease; }
+        .glass-card {
+            width: 100%; max-width: 450px;
+            background: var(--glass);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 40px; /* Plus d'espace */
+            box-shadow: 0 0 80px rgba(0,0,0,0.8);
+            transform: translateY(0); transition: 0.5s;
+        }
+
+        /* LOGO */
+        .brand-logo {
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 700;
+            font-size: 2.2rem; /* Taille augmentée */
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--brand-red);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 30px rgba(229, 9, 20, 0.4);
+            word-wrap: break-word; /* Empêche la coupure */
+            line-height: 1.1;
+        }
+
+        /* INPUTS */
+        .input-group { position: relative; margin-bottom: 20px; }
+        
+        .input-field {
+            width: 100%; padding: 16px 20px;
+            background: #333; 
+            border: 1px solid transparent; 
+            border-radius: 6px;
+            color: white; font-size: 1rem; 
+            transition: 0.3s;
+        }
+        .input-field:focus {
+            background: #444; border-bottom: 2px solid var(--brand-red);
+        }
+        
+        .floating-label {
+            position: absolute; left: 20px; top: 16px; 
+            color: #8c8c8c; pointer-events: none; transition: 0.2s ease all;
+            font-size: 1rem;
+        }
+        .input-field:focus ~ .floating-label,
+        .input-field:not(:placeholder-shown) ~ .floating-label {
+            top: 6px; font-size: 0.7rem; font-weight: 700; transform: translateY(-3px);
+        }
+        .input-field:focus ~ .floating-label { color: var(--brand-red); }
+
+        /* PASSWORD EYE */
+        .eye-icon {
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+            color: #888; cursor: pointer; transition: 0.3s; padding: 10px;
+        }
+        .eye-icon:hover { color: white; }
+
+        /* BUTTONS */
+        .btn-primary {
+            width: 100%; padding: 16px;
+            background: var(--brand-red); color: white;
+            font-weight: 700; font-size: 1rem; border: none; border-radius: 6px;
+            cursor: pointer; margin-top: 10px; margin-bottom: 15px;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .btn-primary:hover { background: #f40612; }
+        .btn-primary:active { transform: scale(0.98); }
+
+        .helper-text {
+            color: #737373; font-size: 0.95rem; margin-top: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .link { color: white; text-decoration: none; cursor: pointer; font-weight: 500; }
+        .link:hover { text-decoration: underline; }
+
+        .view-section { display: none; animation: fadeIn 0.4s ease-out; }
         .view-section.active { display: block; }
         
-        .field { position: relative; margin-bottom: 20px; }
-        .field input { width: 100%; padding: 18px 20px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; font-family: inherit; font-size: 1rem; transition: all 0.3s ease; }
-        .field input:focus { background: rgba(255,255,255,0.05); border-color: var(--accent); box-shadow: 0 0 20px var(--accent-glow); }
-        .field label { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #666; pointer-events: none; transition: 0.3s; font-size: 0.95rem; }
-        .field input:focus ~ label, .field input:not(:placeholder-shown) ~ label { top: 0; font-size: 0.75rem; background: #000; padding: 0 5px; color: var(--accent); }
-        
-        .btn-glow { width: 100%; padding: 18px; background: linear-gradient(90deg, #d40000, #ff3b3b); color: white; font-weight: 600; font-size: 1rem; letter-spacing: 1px; border: none; border-radius: 12px; cursor: pointer; position: relative; overflow: hidden; margin-top: 10px; transition: transform 0.2s; box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3); }
-        .btn-glow:hover { transform: scale(1.02); box-shadow: 0 10px 40px rgba(220, 20, 60, 0.5); }
-        .btn-glow:disabled { background: #444; cursor: not-allowed; box-shadow: none; }
+        .error-msg {
+            color: #e87c03; font-size: 0.85rem; margin-bottom: 15px; display: none;
+            padding: 10px; background: rgba(232, 124, 3, 0.1); border-radius: 4px;
+        }
 
-        .helper-links { display: flex; justify-content: space-between; margin-top: 20px; font-size: 0.85rem; }
-        .link { color: #888; text-decoration: none; cursor: pointer; transition: 0.3s; }
-        .link:hover { color: white; }
-        .link.accent { color: var(--accent); }
-        .error-toast { color: #ff6b6b; font-size: 0.85rem; text-align: center; margin-top: 15px; min-height: 20px; opacity: 0; transition: 0.3s; }
+        /* --- APP CONTENT (Simple Placeholder) --- */
+        #app-wrapper { display: none; height: 100vh; width: 100%; background: #141414; flex-direction: column; align-items: center; justify-content: center; }
+        .welcome-msg { font-size: 2rem; margin-bottom: 20px; }
+        .logout-btn { padding: 10px 30px; border: 1px solid white; background: transparent; color: white; cursor: pointer; }
 
-        /* --- APP (2 MOVIES) --- */
-        #app-wrapper { display: none; height: 100vh; width: 100%; position: relative; opacity: 0; transition: opacity 1s ease; }
-        #app-wrapper.visible { display: flex; opacity: 1; }
-        .movie-split { flex: 1; position: relative; height: 100%; transition: flex 0.6s cubic-bezier(0.25, 1, 0.5, 1); cursor: pointer; overflow: hidden; border-right: 1px solid rgba(0,0,0,0.5); }
-        @media (max-width: 768px) { #app-wrapper { flex-direction: column; } .movie-split { border-right: none; border-bottom: 1px solid rgba(0,0,0,0.5); } }
-        .movie-bg { width: 100%; height: 100%; background-size: cover; background-position: center; transition: transform 1s ease, filter 0.5s ease; filter: grayscale(80%) brightness(0.6); }
-        .movie-split:hover .movie-bg { transform: scale(1.05); filter: grayscale(0%) brightness(1); }
-        .movie-split:hover { flex: 1.5; }
-        .movie-info { position: absolute; bottom: 0; left: 0; width: 100%; padding: 40px; background: linear-gradient(to top, black, transparent); transform: translateY(20px); opacity: 0.7; transition: 0.5s; }
-        .movie-split:hover .movie-info { transform: translateY(0); opacity: 1; }
-        .movie-title { font-family: 'Clash Display', sans-serif; font-size: 3rem; font-weight: 700; text-transform: uppercase; line-height: 0.9; margin-bottom: 10px; text-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-        .movie-tag { font-size: 0.9rem; letter-spacing: 2px; color: var(--accent); font-weight: 600; text-transform: uppercase; }
-        .logout-btn { position: fixed; top: 20px; right: 20px; z-index: 100; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 10px 20px; border-radius: 30px; backdrop-filter: blur(10px); cursor: pointer; font-size: 0.8rem; }
-
-        @keyframes floatOrb { from { transform: translate(0,0); } to { transform: translate(20px, 40px); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Mobile adjust */
+        @media (max-width: 480px) {
+            .glass-card { padding: 30px 20px; background: black; border: none; }
+            .brand-logo { font-size: 1.8rem; }
+        }
     </style>
 </head>
 <body>
-    <div class="cinematic-bg"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
-    <div class="noise"></div>
 
-    <!-- AUTHENTIFICATION -->
-    <div id="auth-wrapper">
-        <div class="glass-panel">
-            <div class="brand">FILMANGSTREAM</div>
-            <div class="brand-sub">Connexion Sécurisée</div>
+    <!-- ARRIERE PLAN DYNAMIQUE -->
+    <div id="cinematic-bg">
+        <!-- Les images seront injectées ici par JS -->
+    </div>
+    <div class="overlay"></div>
 
-            <!-- LOGIN -->
-            <div id="step-login" class="view-section active">
-                <div class="field"><input type="email" id="l-email" placeholder=" "><label>Email</label></div>
-                <div class="field"><input type="password" id="l-pass" placeholder=" "><label>Mot de passe</label></div>
-                <button class="btn-glow" onclick="login()">ENTRER</button>
-                <div class="helper-links">
-                    <span class="link" onclick="go('step-forgot')">Mot de passe oublié ?</span>
-                    <span class="link accent" onclick="go('step-register')">Créer un compte</span>
+    <!-- ZONE D'AUTHENTIFICATION -->
+    <div id="auth-container">
+        <div class="glass-card">
+            <div class="brand-logo">FILMANGSTREAM</div>
+
+            <!-- 1. LOGIN -->
+            <div id="view-login" class="view-section active">
+                <div class="error-msg" id="err-login"></div>
+                
+                <div class="input-group">
+                    <input type="email" id="l-email" class="input-field" placeholder=" ">
+                    <label class="floating-label">Email ou numéro</label>
                 </div>
-                <div id="l-err" class="error-toast"></div>
+                
+                <div class="input-group">
+                    <input type="password" id="l-pass" class="input-field" placeholder=" ">
+                    <label class="floating-label">Mot de passe</label>
+                    <i class="fa-regular fa-eye eye-icon" onclick="togglePass('l-pass', this)"></i>
+                </div>
+
+                <button class="btn-primary" onclick="handleLogin()">S'identifier</button>
+
+                <div class="helper-text">
+                    <span onclick="go('view-register')">Nouveau ? <span class="link">S'inscrire maintenant</span></span>
+                    <span class="link" style="font-size:0.8rem; color:#b3b3b3;" onclick="go('view-forgot')">Besoin d'aide ?</span>
+                </div>
             </div>
 
-            <!-- REGISTER -->
-            <div id="step-register" class="view-section">
-                <h3 style="margin-top:0; color:#ccc;">Inscription</h3>
-                <div class="field"><input type="email" id="r-email" placeholder=" "><label>Email</label></div>
-                <div class="field"><input type="password" id="r-pass" placeholder=" "><label>Mot de passe</label></div>
-                <div class="field"><input type="password" id="r-confirm" placeholder=" "><label>Confirmer</label></div>
-                <button class="btn-glow" onclick="register()">S'INSCRIRE</button>
-                <div class="helper-links" style="justify-content:center;">
-                    <span class="link" onclick="go('step-login')">Retour</span>
+            <!-- 2. REGISTER -->
+            <div id="view-register" class="view-section">
+                <h3 style="margin-top:0; color:white; margin-bottom:20px;">Créer un compte</h3>
+                <div class="error-msg" id="err-register"></div>
+
+                <div class="input-group">
+                    <input type="email" id="r-email" class="input-field" placeholder=" ">
+                    <label class="floating-label">Email</label>
                 </div>
-                <div id="r-err" class="error-toast"></div>
+
+                <div class="input-group">
+                    <input type="password" id="r-pass" class="input-field" placeholder=" ">
+                    <label class="floating-label">Mot de passe (8+ car.)</label>
+                    <i class="fa-regular fa-eye eye-icon" onclick="togglePass('r-pass', this)"></i>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" id="r-conf" class="input-field" placeholder=" ">
+                    <label class="floating-label">Confirmer</label>
+                </div>
+
+                <div style="font-size: 0.75rem; color: #888; margin-bottom: 15px;">
+                    Ce site est protégé par reCAPTCHA. <a href="https://policies.google.com/privacy" target="_blank" style="color:#888;">Confidentialité</a>.
+                </div>
+
+                <button class="btn-primary" onclick="handleRegister()">Commencer</button>
+                
+                <div class="helper-text" style="justify-content:center;">
+                    <span class="link" onclick="go('view-login')">Retour à la connexion</span>
+                </div>
             </div>
 
-            <!-- MESSAGE APRES INSCRIPTION / RESET -->
-            <div id="step-msg" class="view-section">
-                <h3 style="margin-top:0; color:#ccc; text-align:center;">Vérifiez vos emails</h3>
-                <p style="font-size:0.9rem; color:#888; text-align:center; line-height:1.5;">
-                    Un lien de confirmation a été envoyé à votre adresse. <br><br>
-                    Veuillez cliquer sur le lien dans l'email pour valider votre compte ou réinitialiser votre mot de passe.
+            <!-- 3. MSG : CHECK EMAIL -->
+            <div id="view-wait" class="view-section" style="text-align:center;">
+                <i class="fa-solid fa-envelope-open-text" style="font-size: 3rem; color: var(--brand-red); margin-bottom: 20px;"></i>
+                <h3 style="margin:0;">Vérifiez votre email</h3>
+                <p style="color:#ccc; font-size:0.9rem; line-height:1.6; margin-top:10px;">
+                    Un lien magique a été envoyé à votre adresse.<br>
+                    Cliquez dessus pour activer votre compte et accéder à FILMANGSTREAM.
                 </p>
-                <div class="helper-links" style="justify-content:center;">
-                    <span class="link" onclick="go('step-login')">Retour à la connexion</span>
+                <div class="helper-text" style="justify-content:center; margin-top:20px;">
+                    <span class="link" onclick="go('view-login')">Retour</span>
                 </div>
             </div>
 
-            <!-- FORGOT PASSWORD -->
-            <div id="step-forgot" class="view-section">
-                <h3 style="margin-top:0; color:#ccc;">Récupération</h3>
-                <div class="field"><input type="email" id="f-email" placeholder=" "><label>Email du compte</label></div>
-                <button class="btn-glow" onclick="forgotRequest()">ENVOYER LE LIEN</button>
-                <div class="helper-links" style="justify-content:center;">
-                    <span class="link" onclick="go('step-login')">Annuler</span>
+            <!-- 4. FORGOT PASSWORD -->
+            <div id="view-forgot" class="view-section">
+                <h3 style="margin-top:0;">Récupération</h3>
+                <div class="error-msg" id="err-forgot"></div>
+                <p style="color:#ccc; font-size:0.9rem;">Entrez votre email pour recevoir un lien de réinitialisation.</p>
+                
+                <div class="input-group">
+                    <input type="email" id="f-email" class="input-field" placeholder=" ">
+                    <label class="floating-label">Email</label>
                 </div>
-                <div id="f-err" class="error-toast"></div>
+                
+                <button class="btn-primary" onclick="handleForgot()">Envoyer</button>
+                <div class="helper-text" style="justify-content:center;">
+                    <span class="link" onclick="go('view-login')">Annuler</span>
+                </div>
             </div>
 
-            <!-- NEW PASSWORD (RESET) -->
-            <!-- Cette section s'affiche uniquement si on arrive via un lien avec ?userId=&secret= -->
-            <div id="step-reset-final" class="view-section">
-                <h3 style="margin-top:0; color:#ccc;">Nouveau mot de passe</h3>
-                <div class="field"><input type="password" id="new-pass" placeholder=" "><label>Nouveau mot de passe</label></div>
-                <div class="field"><input type="password" id="new-confirm" placeholder=" "><label>Confirmer</label></div>
-                <button class="btn-glow" onclick="completeReset()">VALIDER</button>
-                <div id="reset-err" class="error-toast"></div>
+            <!-- 5. RESET PASSWORD (New Pass) -->
+            <div id="view-reset" class="view-section">
+                <h3 style="margin-top:0;">Nouveau mot de passe</h3>
+                <div class="error-msg" id="err-reset"></div>
+                
+                <div class="input-group">
+                    <input type="password" id="new-pass" class="input-field" placeholder=" ">
+                    <label class="floating-label">Nouveau mot de passe</label>
+                    <i class="fa-regular fa-eye eye-icon" onclick="togglePass('new-pass', this)"></i>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" id="new-conf" class="input-field" placeholder=" ">
+                    <label class="floating-label">Confirmer</label>
+                </div>
+                
+                <button class="btn-primary" onclick="handleResetConfirm()">Valider</button>
             </div>
         </div>
     </div>
 
-    <!-- APP -->
+    <!-- CONTENU DU SITE (Après Login) -->
     <div id="app-wrapper">
-        <button class="logout-btn" onclick="logout()">DÉCONNEXION</button>
-        <div class="movie-split" id="movie-1">
-            <div class="movie-bg"></div>
-            <div class="movie-info"><div class="movie-tag">A L'AFFICHE</div><div class="movie-title"></div></div>
-        </div>
-        <div class="movie-split" id="movie-2">
-            <div class="movie-bg"></div>
-            <div class="movie-info"><div class="movie-tag">TENDANCE</div><div class="movie-title"></div></div>
-        </div>
+        <div class="brand-logo" style="margin-bottom:10px;">FILMANGSTREAM</div>
+        <div class="welcome-msg">Bienvenue dans l'expérience ultime.</div>
+        <button class="logout-btn" onclick="logout()">Se déconnecter</button>
     </div>
 
     <script>
-        // --- CONFIGURATION REELLE ---
+        // --- 1. CONFIGURATION ---
         const { Client, Account, ID } = Appwrite;
         const client = new Client()
             .setEndpoint('https://cloud.appwrite.io/v1')
-            .setProject('698f97e3001c4c48d6d7'); // Ton ID Projet Original
+            .setProject('698f97e3001c4c48d6d7'); // Ton ID Projet
         const account = new Account(client);
 
         const TMDB_KEY = '7b5c62a2d80f0a3d2e86a622cb23f0db';
+        const RECAPTCHA_SITE_KEY = '6Lf1CVYsAAAAAJV-_MtXBBUBGfwCIRkE2x75adLl';
 
-        // --- NAVIGATION UI ---
-        function go(stepId) {
+        // --- 2. GESTION UI & NAVIGATION ---
+        function go(viewId) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById(stepId).classList.add('active');
-            document.querySelectorAll('.error-toast').forEach(e => { e.innerText = ''; e.style.opacity = '0'; });
-        }
-        function showError(id, msg) {
-            const el = document.getElementById(id);
-            el.innerText = msg;
-            el.style.opacity = '1';
+            document.getElementById(viewId).classList.add('active');
+            // Reset errors
+            document.querySelectorAll('.error-msg').forEach(e => { e.style.display = 'none'; e.innerText = ''; });
         }
 
-        // --- 1. LOGIN ---
-        async function login() {
-            const email = document.getElementById('l-email').value;
-            const pass = document.getElementById('l-pass').value;
-            if(!email || !pass) return showError('l-err', 'Champs vides');
-
-            try {
-                await account.createEmailPasswordSession(email, pass);
-                enterApp();
-            } catch(e) {
-                showError('l-err', 'Identifiants incorrects');
+        function togglePass(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if(input.type === "password") {
+                input.type = "text";
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = "password";
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
             }
         }
 
-        // --- 2. REGISTER ---
-        async function register() {
+        function showError(elementId, msg) {
+            const el = document.getElementById(elementId);
+            el.innerText = msg;
+            el.style.display = 'block';
+        }
+
+        // --- 3. BACKGROUND DYNAMIQUE TMDB ---
+        async function initBackground() {
+            try {
+                const res = await fetch(`https://api.themoviedb.org/3/trending/movie/week?api_key=${TMDB_KEY}&language=fr-FR`);
+                const data = await res.json();
+                const movies = data.results.slice(0, 5); // Prendre les 5 premiers
+                const container = document.getElementById('cinematic-bg');
+                
+                movies.forEach((m, index) => {
+                    if(!m.backdrop_path) return;
+                    const div = document.createElement('div');
+                    div.className = 'bg-slide';
+                    if(index === 0) div.classList.add('active');
+                    div.style.backgroundImage = `url('https://image.tmdb.org/t/p/original${m.backdrop_path}')`;
+                    container.appendChild(div);
+                });
+
+                // Rotation simple
+                let current = 0;
+                const slides = document.querySelectorAll('.bg-slide');
+                if(slides.length > 1) {
+                    setInterval(() => {
+                        slides[current].classList.remove('active');
+                        current = (current + 1) % slides.length;
+                        slides[current].classList.add('active');
+                    }, 8000); // Change toutes les 8s
+                }
+
+            } catch(e) { console.error("Erreur TMDB BG", e); }
+        }
+
+        // --- 4. SECURITE RECAPTCHA ---
+        function executeRecaptcha(actionName) {
+            return new Promise((resolve, reject) => {
+                grecaptcha.ready(function() {
+                    grecaptcha.execute(RECAPTCHA_SITE_KEY, {action: actionName}).then(function(token) {
+                        // Ici, on a le token.
+                        // Dans un système backend complet, on enverrait ce token à Appwrite Functions pour validation.
+                        // Pour ce frontend pur, l'obtention du token confirme que le script tourne et que Google analyse.
+                        console.log("reCAPTCHA Token:", token);
+                        if(token) resolve(true);
+                        else reject("Bot détecté");
+                    }).catch(err => reject(err));
+                });
+            });
+        }
+
+        // --- 5. LOGIQUE AUTHENTIFICATION ---
+
+        // A. INSCRIPTION
+        async function handleRegister() {
             const email = document.getElementById('r-email').value;
             const pass = document.getElementById('r-pass').value;
-            const conf = document.getElementById('r-confirm').value;
+            const conf = document.getElementById('r-conf').value;
 
-            if(!email || !pass) return showError('r-err', 'Remplissez tout');
-            if(pass !== conf) return showError('r-err', 'Les mots de passe diffèrent');
-            if(pass.length < 8) return showError('r-err', '8 caractères minimum');
+            if(!email || !pass) return showError('err-register', 'Tous les champs sont requis.');
+            if(pass !== conf) return showError('err-register', 'Les mots de passe ne correspondent pas.');
+            if(pass.length < 8) return showError('err-register', 'Mot de passe trop court (min 8).');
 
             try {
-                // Créer le compte
+                // 1. Check Recaptcha
+                await executeRecaptcha('register');
+
+                // 2. Création compte Appwrite
                 await account.create(ID.unique(), email, pass);
-                
-                // Connecter automatiquement
+
+                // 3. Connexion session (nécessaire pour envoyer le mail de vérif)
                 await account.createEmailPasswordSession(email, pass);
 
-                // Demander verification email (Envoyer le mail)
-                // L'URL ici doit être l'URL de TON site où l'utilisateur revient
-                await account.createVerification(window.location.href); 
+                // 4. Envoi Email Vérification
+                // L'URL ici est la page actuelle. Appwrite ajoutera ?userId=...&secret=...
+                await account.createVerification(window.location.href);
 
-                go('step-msg'); // Afficher "Allez voir vos mails"
-            } catch(e) {
-                showError('r-err', e.message);
+                // 5. UI : Allez voir vos mails
+                go('view-wait');
+
+            } catch (e) {
+                showError('err-register', "Erreur: " + e.message);
             }
         }
 
-        // --- 3. FORGOT PASSWORD ---
-        async function forgotRequest() {
-            const email = document.getElementById('f-email').value;
-            if(!email) return showError('f-err', 'Email requis');
+        // B. CONNEXION
+        async function handleLogin() {
+            const email = document.getElementById('l-email').value;
+            const pass = document.getElementById('l-pass').value;
+
+            if(!email || !pass) return showError('err-login', 'Identifiants manquants.');
 
             try {
-                // Appwrite envoie un lien de reset.
-                // L'utilisateur reviendra sur CETTE page avec ?userId=xyz&secret=abc
-                await account.createRecovery(email, window.location.href);
-                go('step-msg'); // Afficher "Email envoyé"
-            } catch(e) {
-                showError('f-err', "Impossible d'envoyer (Vérifiez l'email)");
+                await executeRecaptcha('login'); // Check Robot
+
+                await account.createEmailPasswordSession(email, pass);
+                
+                // Vérifier si email validé ? (Optionnel, Appwrite le gère selon tes settings)
+                const user = await account.get();
+                if(!user.emailVerification) {
+                    // Si tu veux bloquer les non-vérifiés :
+                    // showError('err-login', 'Veuillez vérifier votre email avant de vous connecter.');
+                    // return;
+                    // Sinon, on laisse passer :
+                }
+
+                showApp();
+            } catch (e) {
+                showError('err-login', 'Email ou mot de passe incorrect.');
             }
         }
 
-        // --- 4. COMPLETE RESET (Quand on revient du mail) ---
-        async function completeReset() {
+        // C. MOT DE PASSE OUBLIÉ
+        async function handleForgot() {
+            const email = document.getElementById('f-email').value;
+            if(!email) return showError('err-forgot', 'Email requis.');
+
+            try {
+                await executeRecaptcha('forgot_pass');
+                // Envoie un lien qui revient ici avec ?userId=&secret=
+                await account.createRecovery(email, window.location.href); 
+                go('view-wait'); // On réutilise l'écran d'attente
+                document.querySelector('#view-wait h3').innerText = "Email envoyé";
+                document.querySelector('#view-wait p').innerText = "Suivez les instructions reçues par email.";
+            } catch(e) {
+                showError('err-forgot', "Impossible d'envoyer la demande.");
+            }
+        }
+
+        // D. VALIDATION RESET MOT DE PASSE
+        async function handleResetConfirm() {
+            const pass = document.getElementById('new-pass').value;
+            const conf = document.getElementById('new-conf').value;
+            
+            if(pass !== conf) return showError('err-reset', 'Les mots de passe diffèrent.');
+            
             const urlParams = new URLSearchParams(window.location.search);
             const userId = urlParams.get('userId');
             const secret = urlParams.get('secret');
-            const pass = document.getElementById('new-pass').value;
-            const conf = document.getElementById('new-confirm').value;
-
-            if(pass !== conf) return showError('reset-err', 'Non identique');
 
             try {
                 await account.updateRecovery(userId, secret, pass, conf);
-                alert("Mot de passe modifié ! Connectez-vous.");
-                // Nettoyer l'URL
-                window.history.replaceState({}, document.title, "/");
-                go('step-login');
+                alert("Mot de passe changé ! Connectez-vous.");
+                window.location.href = window.location.pathname; // Clean URL
             } catch(e) {
-                showError('reset-err', "Lien expiré ou invalide");
+                showError('err-reset', "Lien expiré ou invalide.");
             }
         }
 
-        // --- LOGIQUE DE DEMARRAGE ---
+        // --- 6. LOGIQUE DE DÉMARRAGE (INIT) ---
         async function init() {
-            // Cas 1 : Retour de mail "Mot de passe oublié"
+            initBackground(); // Lancer le diaporama
+
             const urlParams = new URLSearchParams(window.location.search);
-            if(urlParams.get('userId') && urlParams.get('secret')) {
-                // On détecte qu'on revient d'un email de reset
-                go('step-reset-final');
+            const userId = urlParams.get('userId');
+            const secret = urlParams.get('secret');
+            const expire = urlParams.get('expire'); // Présent uniquement pour Verification, pas Recovery
+
+            // SCENARIO 1 : VERIFICATION EMAIL (Magic Link clic)
+            if (userId && secret && expire) {
+                try {
+                    await account.updateVerification(userId, secret);
+                    alert("Compte vérifié avec succès ! Vous pouvez accéder au site.");
+                    // On connecte ou on montre l'app directement
+                    showApp();
+                    // Nettoyer URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    return; 
+                } catch (e) {
+                    alert("Erreur de vérification ou lien expiré.");
+                }
+            }
+
+            // SCENARIO 2 : RECUPERATION MOT DE PASSE (Lien Recovery)
+            if (userId && secret && !expire) {
+                go('view-reset');
                 return;
             }
 
-            // Cas 2 : Retour de mail "Vérification compte"
-            if(urlParams.get('userId') && urlParams.get('secret') && urlParams.get('expire')) {
-                try {
-                    await account.updateVerification(urlParams.get('userId'), urlParams.get('secret'));
-                    alert("Compte vérifié avec succès !");
-                } catch(e) { console.log(e); }
-                window.history.replaceState({}, document.title, "/");
-            }
-
-            // Cas 3 : Déjà connecté ?
+            // SCENARIO 3 : CHECK SESSION EXISTANTE
             try {
                 await account.get();
-                enterApp();
+                showApp(); // Déjà connecté
             } catch(e) {
-                // Pas connecté, rester sur login
+                // Pas de session, on reste sur Login
             }
         }
 
-        // --- APP & DATA ---
-        async function enterApp() {
-            const auth = document.getElementById('auth-wrapper');
+        function showApp() {
+            const auth = document.getElementById('auth-container');
+            const app = document.getElementById('app-wrapper');
+            
+            auth.style.transition = 'opacity 0.5s';
             auth.style.opacity = '0';
+            
             setTimeout(() => {
                 auth.style.display = 'none';
-                document.getElementById('app-wrapper').classList.add('visible');
-                loadMovies();
+                app.style.display = 'flex';
+                // Ici tu chargerais le reste de ton site
             }, 500);
         }
 
@@ -300,29 +529,9 @@
             window.location.reload();
         }
 
-        async function loadMovies() {
-            try {
-                const res = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_KEY}&language=fr-FR`);
-                const data = await res.json();
-                
-                const m1 = data.results[0];
-                const m2 = data.results[1];
-
-                setupMovie('movie-1', m1);
-                setupMovie('movie-2', m2);
-            } catch(e){}
-        }
-
-        function setupMovie(id, movie) {
-            const el = document.getElementById(id);
-            el.querySelector('.movie-bg').style.backgroundImage = `url('https://image.tmdb.org/t/p/original${movie.poster_path}')`;
-            el.querySelector('.movie-title').innerText = movie.title;
-            el.onclick = () => window.open(`https://www.google.com/search?q=${movie.title}+streaming`, '_blank');
-        }
-
-        // Lancer
+        // Lancement
         init();
+
     </script>
 </body>
-            </html>
-            
+</html>
