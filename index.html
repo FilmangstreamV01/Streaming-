@@ -3,161 +3,417 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filmangstream</title>
+    <title>Filmangstream | Accès VIP</title>
     <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.1"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;900&display=swap" rel="stylesheet">
     
     <style>
-        /* Design sombre style Netflix / Streaming */
-        body { 
-            background-color: #121212; 
-            color: white; 
-            font-family: Arial, sans-serif; 
-            text-align: center; 
-            margin: 0; 
-            padding: 20px; 
+        :root {
+            --primary-red: #E50914;
+            --neon-glow: 0 0 20px rgba(229, 9, 20, 0.6);
+            --glass-bg: rgba(18, 18, 18, 0.75);
+            --border-light: rgba(255, 255, 255, 0.1);
+            --text-white: #ffffff;
+            --text-gray: #b3b3b3;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
-        .hidden { display: none !important; } /* Classe magique pour cacher les pages */
-        .card { 
-            background-color: #222; 
-            padding: 30px; 
-            border-radius: 10px; 
-            max-width: 400px; 
-            margin: 50px auto; 
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #000;
+            color: var(--text-white);
+            overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
         }
-        input { 
-            display: block; 
-            margin: 10px auto; 
-            padding: 12px; 
-            width: 90%; 
-            border-radius: 5px; 
-            border: none; 
-            background-color: #333;
+
+        /* --- BACKGROUND CINÉMATIQUE --- */
+        #bg-wrapper {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+        }
+        #dynamic-bg {
+            width: 100%; height: 100%;
+            background-size: cover; background-position: center;
+            filter: brightness(0.4) blur(4px); /* Flou artistique */
+            transform: scale(1.1);
+            transition: background-image 1s ease-in-out;
+        }
+        /* Dégradé vignette sombre pour focus */
+        .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 0%, #000000 90%);
+        }
+
+        /* --- CARTE PRINCIPALE --- */
+        .auth-container {
+            width: 100%; max-width: 400px;
+            padding: 20px;
+            perspective: 1000px;
+            z-index: 10;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), var(--neon-glow);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: floatUp 0.8s ease-out;
+        }
+
+        /* Barre rouge décorative en haut */
+        .glass-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, transparent, var(--primary-red), transparent);
+            box-shadow: 0 2px 10px var(--primary-red);
+        }
+
+        @keyframes floatUp {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* --- LOGO & TITRE --- */
+        .brand-logo {
+            font-size: 2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: var(--primary-red);
+            letter-spacing: -1px;
+            margin-bottom: 5px;
+            display: inline-block;
+            text-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
+        }
+
+        .welcome-text {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-bottom: 35px;
+            font-weight: 400;
+        }
+
+        /* --- CHAMPS DE FORMULAIRE --- */
+        .input-group {
+            position: relative; margin-bottom: 20px; text-align: left;
+        }
+
+        .input-field {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 16px 15px 16px 45px; /* Padding gauche pour l'icône */
             color: white;
+            font-size: 1rem;
+            font-family: inherit;
+            box-sizing: border-box;
+            transition: var(--transition);
         }
-        button { 
-            background-color: #e50914; /* Rouge streaming */
-            color: white; 
-            border: none; 
-            padding: 12px 20px; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            font-size: 16px; 
-            margin: 10px 5px; 
-            font-weight: bold;
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary-red);
+            background: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.1);
         }
-        .btn-google { background-color: #4285F4; } /* Bleu Google */
-        .movie-grid { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
-        .movie-box { background: #333; padding: 30px 20px; border-radius: 8px; width: 100px; }
+
+        .field-icon {
+            position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+            color: var(--text-gray); pointer-events: none; transition: var(--transition);
+        }
+        
+        .input-field:focus ~ .field-icon { color: var(--primary-red); }
+
+        .toggle-eye {
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+            color: var(--text-gray); cursor: pointer; transition: color 0.2s;
+        }
+        .toggle-eye:hover { color: white; }
+
+        /* --- BOUTON --- */
+        .btn-submit {
+            width: 100%;
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
+        }
+
+        .btn-submit:hover {
+            background: #f40612;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(229, 9, 20, 0.5);
+        }
+
+        /* --- FOOTER & LINKS --- */
+        .footer-links {
+            margin-top: 25px;
+            font-size: 0.85rem;
+            color: var(--text-gray);
+        }
+        .footer-links span {
+            color: white; cursor: pointer; font-weight: 600; text-decoration: underline;
+            transition: color 0.2s;
+        }
+        .footer-links span:hover { color: var(--primary-red); }
+
+        .error-message {
+            color: #ffbaba; font-size: 0.8rem; margin-top: 10px; min-height: 20px;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+        }
+        
+        .hidden { display: none; }
+        
+        /* Particles */
+        #particles {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0; opacity: 0.3;
+        }
     </style>
 </head>
 <body>
 
-    <div id="auth-page" class="card">
-        <h1 style="color: #e50914;">Filmangstream</h1>
-        <p>Connecte-toi pour regarder tes films</p>
-        
-        <input type="email" id="email" placeholder="Ton adresse email" required>
-        <input type="password" id="password" placeholder="Mot de passe (8 caractères min)" required>
-        
-        <button onclick="register()">S'inscrire</button>
-        <button onclick="login()">Se connecter</button>
-        <br>
-        <button class="btn-google" onclick="loginWithGoogle()">Continuer avec Google</button>
-        
-        <p id="error-msg" style="color: #ff4d4d; font-weight: bold;"></p>
+    <div id="bg-wrapper">
+        <div id="dynamic-bg"></div>
+        <div class="overlay"></div>
     </div>
+    
+    <!-- Effet de poussière flottante -->
+    <canvas id="particles"></canvas>
 
-
-    <div id="content-page" class="hidden">
-        <h1 style="color: #4CAF50;">🎉 Félicitations !</h1>
-        <h2>Bienvenue sur Filmangstream</h2>
-        <p>Ton compte est validé. Voici le catalogue du moment :</p>
+    <div class="auth-container">
         
-        <div class="movie-grid">
-            <div class="movie-box">🎬<br>Film 1</div>
-            <div class="movie-box">🍿<br>Série 2</div>
-            <div class="movie-box">📺<br>Anime 3</div>
+        <!-- LOGIN VIEW -->
+        <div id="login-view" class="glass-card">
+            <div class="brand-logo">FILMANGSTREAM</div>
+            <p class="welcome-text">Bon retour parmi nous.</p>
+
+            <div class="input-group">
+                <input type="email" id="log-email" class="input-field" placeholder="Email ou téléphone" autocomplete="off">
+                <i class="fa-solid fa-envelope field-icon"></i>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="log-pass" class="input-field" placeholder="Mot de passe">
+                <i class="fa-solid fa-lock field-icon"></i>
+                <i class="fa-regular fa-eye toggle-eye" onclick="togglePwd('log-pass', this)"></i>
+            </div>
+
+            <div id="log-err" class="error-message"></div>
+
+            <button class="btn-submit" onclick="handleLogin(this)">S'identifier</button>
+
+            <div class="footer-links">
+                Première visite ? <span onclick="switchView('reg')">Inscrivez-vous maintenant.</span>
+                <br><br>
+                <small style="opacity: 0.5;">Protection par reCAPTCHA de Google.</small>
+            </div>
         </div>
-        
-        <br><br>
-        <button onclick="logout()" style="background-color: #555;">Se déconnecter</button>
+
+        <!-- REGISTER VIEW -->
+        <div id="register-view" class="glass-card hidden">
+            <div class="brand-logo">FILMANGSTREAM</div>
+            <p class="welcome-text">Créez votre compte gratuit.</p>
+
+            <div class="input-group">
+                <input type="email" id="reg-email" class="input-field" placeholder="Votre email">
+                <i class="fa-solid fa-at field-icon"></i>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="reg-pass" class="input-field" placeholder="Créez un mot de passe">
+                <i class="fa-solid fa-key field-icon"></i>
+                <i class="fa-regular fa-eye toggle-eye" onclick="togglePwd('reg-pass', this)"></i>
+            </div>
+
+            <!-- Recaptcha centré et scalé pour fit -->
+            <div style="display: flex; justify-content: center; margin: 15px 0; transform: scale(0.85);">
+                <div class="g-recaptcha" data-theme="dark" data-sitekey="6Lf1CVYsAAAAAJV-_MtXBBUBGfwCIRkE2x75adLl"></div>
+            </div>
+
+            <div id="reg-err" class="error-message"></div>
+
+            <button class="btn-submit" onclick="handleRegister(this)">Commencer</button>
+
+            <div class="footer-links">
+                Déjà membre ? <span onclick="switchView('log')">Connexion.</span>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        // Initialisation de la connexion avec ton projet Appwrite
         const { Client, Account, ID } = Appwrite;
-        const client = new Client()
-            .setEndpoint('https://cloud.appwrite.io/v1')
-            .setProject('698f97e3001c4c48d6d7'); // TON ID EST BIEN LÀ
+        const client = new Client().setEndpoint('https://cloud.appwrite.io/v1').setProject('698f97e3001c4c48d6d7');
         const account = new Account(client);
 
-        // On récupère les blocs HTML pour pouvoir les cacher/afficher
-        const authPage = document.getElementById('auth-page');
-        const contentPage = document.getElementById('content-page');
-        const errorMsg = document.getElementById('error-msg');
-
-        // Fonction pour cacher l'accueil et afficher les films
-        function showContent() {
-            authPage.classList.add('hidden');
-            contentPage.classList.remove('hidden');
-        }
-
-        // VÉRIFICATION AU DÉMARRAGE : L'utilisateur est-il déjà connecté ?
-        account.get().then(function (response) {
-            // Si oui, on l'envoie direct sur les films !
-            showContent(); 
-        }).catch(function (error) {
-            // Si non, on ne fait rien, il reste sur la page de connexion
-        });
-
-        // FONCTION : S'INSCRIRE (Créer un compte + Connecter)
-        async function register() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            errorMsg.innerText = "Création du compte en cours... ⏳";
-
+        /* --- 1. Gestion du fond d'écran TMDB --- */
+        async function loadBackgrounds() {
             try {
-                // 1. On crée le compte dans ta base de données
-                await account.create(ID.unique(), email, password);
-                // 2. IMPORTANT : On le connecte tout de suite après !
-                await account.createEmailPasswordSession(email, password);
-                // 3. On affiche la page Félicitations
-                showContent();
-            } catch (error) {
-                // Si mot de passe trop court ou email déjà pris
-                errorMsg.innerText = "Erreur : " + error.message;
+                const res = await fetch('https://api.themoviedb.org/3/trending/movie/day?api_key=7b5c62a2d80f0a3d2e86a622cb23f0db');
+                const data = await res.json();
+                const paths = data.results.map(m => `https://image.tmdb.org/t/p/original${m.backdrop_path}`);
+                
+                let idx = 0;
+                const bgEl = document.getElementById('dynamic-bg');
+                
+                const changeBg = () => {
+                    const img = new Image();
+                    img.src = paths[idx];
+                    img.onload = () => {
+                        bgEl.style.backgroundImage = `url('${paths[idx]}')`;
+                        idx = (idx + 1) % paths.length;
+                    };
+                };
+                changeBg();
+                setInterval(changeBg, 10000);
+            } catch(e) { console.log("Bg Error", e); }
+        }
+        loadBackgrounds();
+
+        /* --- 2. Animations UI --- */
+        function togglePwd(id, icon) {
+            const el = document.getElementById(id);
+            if(el.type === 'password') {
+                el.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash');
+            } else {
+                el.type = 'password'; icon.classList.add('fa-eye'); icon.classList.remove('fa-eye-slash');
             }
         }
 
-        // FONCTION : SE CONNECTER (S'il a déjà un compte)
-        async function login() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            errorMsg.innerText = "Connexion en cours... ⏳";
+        function switchView(target) {
+            const log = document.getElementById('login-view');
+            const reg = document.getElementById('register-view');
+            
+            // Animation flip simple
+            const current = target === 'reg' ? log : reg;
+            const next = target === 'reg' ? reg : log;
 
+            current.style.display = 'none'; // Pour l'instant simple, on pourrait animer
+            current.classList.add('hidden');
+            
+            next.style.display = 'block';
+            next.classList.remove('hidden');
+            // Reset animation
+            next.style.animation = 'none';
+            next.offsetHeight; /* trigger reflow */
+            next.style.animation = 'floatUp 0.5s ease-out';
+        }
+
+        /* --- 3. Appwrite Logic --- */
+        async function handleLogin(btn) {
+            const email = document.getElementById('log-email').value;
+            const pass = document.getElementById('log-pass').value;
+            const err = document.getElementById('log-err');
+            
+            if(!email || !pass) return showError(err, "Veuillez tout remplir.");
+            
+            setLoading(btn, true);
             try {
-                await account.createEmailPasswordSession(email, password);
-                showContent();
-            } catch (error) {
-                errorMsg.innerText = "Erreur : " + error.message;
+                await account.createEmailPasswordSession(email, pass);
+                alert("Connexion réussie ! Redirection...");
+                // window.location.href = "/dashboard"; 
+            } catch (e) {
+                showError(err, "Identifiants incorrects.");
+            }
+            setLoading(btn, false);
+        }
+
+        async function handleRegister(btn) {
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-pass').value;
+            const err = document.getElementById('reg-err');
+
+            if(!email || !pass) return showError(err, "Erreur formulaire.");
+
+            setLoading(btn, true);
+            try {
+                await account.create(ID.unique(), email, pass);
+                await account.createEmailPasswordSession(email, pass);
+                alert("Compte créé avec succès !");
+            } catch (e) {
+                showError(err, e.message);
+            }
+            setLoading(btn, false);
+        }
+
+        function setLoading(btn, isLoading) {
+            if(isLoading) {
+                btn.dataset.text = btn.innerText;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+                btn.disabled = true;
+                btn.style.opacity = 0.7;
+            } else {
+                btn.innerText = btn.dataset.text;
+                btn.disabled = false;
+                btn.style.opacity = 1;
             }
         }
 
-        // FONCTION : GOOGLE (Prête pour quand tu auras mis le code secret)
-        function loginWithGoogle() {
-            account.createOAuth2Session('google', window.location.href, window.location.href);
+        function showError(el, msg) {
+            el.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${msg}`;
         }
 
-        // FONCTION : SE DÉCONNECTER
-        async function logout() {
-            try {
-                await account.deleteSession('current');
-                window.location.reload(); // Recharge la page pour tout remettre à zéro
-            } catch (error) {
-                console.error("Erreur de déconnexion", error);
+        /* --- 4. Particules (Canvas) --- */
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const particlesArray = [];
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if(this.size > 0.2) this.size -= 0.01;
+                if(this.size <= 0.2) {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2;
+                }
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
             }
         }
+        function initParticles() {
+            for(let i=0; i<50; i++) particlesArray.push(new Particle());
+        }
+        function animateParticles() {
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+            for(let i=0; i<particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        initParticles();
+        animateParticles();
     </script>
 </body>
 </html>
