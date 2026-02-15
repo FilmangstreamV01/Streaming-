@@ -3,749 +3,730 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FilmangStream Pro - Ultimate</title>
+    <title>FilmangStream Pro - Ultimate Streaming Experience</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #e50914; /* Netflix Red */
-            --bg-dark: #0f0f0f;
-            --bg-card: #181818;
-            --text-main: #ffffff;
-            --text-sec: #a8a8a8;
-            --overlay: rgba(0, 0, 0, 0.85);
-            --glass: rgba(255, 255, 255, 0.08);
-            --border-glass: rgba(255, 255, 255, 0.1);
+            --primary: #e50914;
+            --primary-dark: #b20710;
+            --black: #000000;
+            --dark: #0a0a0a;
+            --dark-2: #141414;
+            --dark-3: #1a1a1a;
+            --gray: #2a2a2a;
+            --gray-light: #4a4a4a;
+            --text: #ffffff;
+            --text-gray: #b3b3b3;
+            --accent: #00d4ff;
+            --gold: #ffd700;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; padding-top: 80px; padding-bottom: 80px; overflow-x: hidden; }
-        ::-webkit-scrollbar { display: none; }
-
-        /* --- UI COMPONENTS --- */
-        .btn { border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: #b20710; transform: scale(1.02); }
-        .btn-glass { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); color: white; border: 1px solid var(--border-glass); }
-        .btn-glass:hover { background: rgba(255,255,255,0.3); }
-
-        /* --- AUTH --- */
-        #authOverlay { position: fixed; inset: 0; background: url('https://assets.nflxext.com/ffe/siteui/vlv3/f841d4c7-10e1-40af-bcae-07a3f8dc141a/f6d7434e-d6de-4185-a6d4-c77a2d08737b/US-en-20220502-popsignuptwoweeks-perspective_alpha_website_medium.jpg') center/cover no-repeat; z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        #authOverlay::before { content:''; position: absolute; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); }
-        .auth-box { position: relative; background: rgba(0,0,0,0.75); padding: 50px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; border: 1px solid var(--border-glass); }
-        .auth-box h1 { color: var(--primary); font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 2.5rem; margin-bottom: 30px; letter-spacing: -1px; }
-        .auth-input { width: 100%; background: #333; border: none; color: white; padding: 16px; border-radius: 4px; margin-bottom: 20px; font-size: 1rem; }
-        
-        /* --- HEADER --- */
-        header { position: fixed; top: 0; width: 100%; background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 80%, transparent 100%); z-index: 2000; transition: background 0.3s; }
-        .header-main { display: flex; align-items: center; justify-content: space-between; padding: 15px 4%; }
-        .logo { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; font-weight: 900; color: var(--primary); cursor: pointer; letter-spacing: -0.5px; text-shadow: 0 0 20px rgba(229,9,20,0.6); }
-        
-        .search-container { position: relative; flex: 1; max-width: 500px; margin: 0 20px; display: none; }
-        @media(min-width: 768px) { .search-container { display: block; } }
-        .mobile-search-trigger { display: block; font-size: 1.2rem; margin-right: 15px; }
-        @media(min-width: 768px) { .mobile-search-trigger { display: none; } }
-        
-        .search-input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #aaa; padding: 8px 15px 8px 40px; border-radius: 4px; color: white; font-family: inherit; transition: 0.3s; }
-        .search-input:focus { background: rgba(0,0,0,0.8); border-color: white; }
-        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #aaa; pointer-events: none; }
-
-        .nav-scroller { display: flex; gap: 10px; overflow-x: auto; padding: 10px 4%; scrollbar-width: none; background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.8) 100%); }
-        .nav-item { color: #ccc; font-size: 0.85rem; white-space: nowrap; cursor: pointer; padding: 5px 10px; transition: color 0.2s; font-weight: 500; }
-        .nav-item:hover, .nav-item.active { color: white; font-weight: 700; }
-
-        /* --- HERO SECTION --- */
-        #hero { height: 60vh; min-height: 400px; position: relative; overflow: hidden; margin-bottom: 20px; }
-        .hero-slider { display: flex; height: 100%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
-        .hero-slide { min-width: 100%; position: relative; }
-        .hero-bg { width: 100%; height: 100%; object-fit: cover; mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%); }
-        .hero-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, #000 0%, transparent 60%); display: flex; align-items: center; padding-left: 4%; }
-        .hero-info { max-width: 600px; padding-top: 100px; }
-        .hero-title { font-size: clamp(2rem, 5vw, 4rem); font-weight: 900; line-height: 1.1; margin-bottom: 15px; font-family: 'Montserrat', sans-serif; text-transform: uppercase; }
-        .hero-desc { font-size: 1rem; color: #ddd; margin-bottom: 20px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5; max-width: 90%; }
-        .hero-actions { display: flex; gap: 15px; }
-
-        /* --- SECTIONS & CARDS --- */
-        section { margin-bottom: 40px; padding-left: 4%; }
-        .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
-        .section-title { font-size: 1.2rem; font-weight: 700; color: #e5e5e5; display: flex; align-items: center; gap: 10px; }
-        .section-title i { color: var(--primary); }
-        
-        .row-container { overflow-x: auto; padding-bottom: 20px; scrollbar-width: none; -ms-overflow-style: none; }
-        .row-inner { display: flex; gap: 10px; padding-right: 4%; }
-        
-        /* Card Styles */
-        .card { flex: 0 0 auto; position: relative; border-radius: 4px; overflow: hidden; cursor: pointer; transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), z-index 0s; background: var(--bg-card); }
-        .card:hover { transform: scale(1.05); z-index: 10; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .card img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s; }
-        .card:hover img { opacity: 0.6; }
-
-        /* Standard Vertical (Films/Series) */
-        .card-std { width: 140px; height: 210px; }
-        .card-info-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 10px; background: linear-gradient(0deg, black, transparent); opacity: 0; transition: 0.3s; }
-        .card:hover .card-info-overlay { opacity: 1; }
-        .card-title { font-size: 0.8rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        /* Shorts Style */
-        .card-short { width: 120px; height: 214px; border-radius: 8px; }
-        .short-meta { position: absolute; bottom: 10px; left: 5px; right: 5px; font-size: 0.75rem; font-weight: 600; text-shadow: 1px 1px 2px black; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-        /* Video / Landscape Style */
-        .card-video { width: 240px; height: 135px; }
-        .video-dur { position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.8); padding: 2px 4px; font-size: 0.7rem; border-radius: 2px; }
-        .play-btn-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.2s; }
-        .card:hover .play-btn-overlay { opacity: 1; }
-        .play-circle { width: 40px; height: 40px; background: rgba(229,9,20,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-
-        /* View More Card */
-        .card-more { background: #222; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #888; border: 1px dashed #444; transition: 0.2s; }
-        .card-more:hover { background: #333; color: white; border-color: white; }
-
-        /* --- SHORTS PLAYER (TIKTOK STYLE) --- */
-        #shortsOverlay { display: none; position: fixed; inset: 0; background: black; z-index: 5000; }
-        .shorts-container { height: 100dvh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
-        .short-slide { height: 100dvh; width: 100%; scroll-snap-align: start; position: relative; display: flex; justify-content: center; background: #000; }
-        .short-slide iframe { width: 100%; height: 100%; max-width: 500px; border: none; }
-        .btn-close-abs { position: absolute; top: 20px; left: 20px; z-index: 5001; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
-        .btn-close-abs:hover { background: white; color: black; }
-
-        /* --- DETAILS MODAL (NETFLIX STYLE) --- */
-        #detailsModal { position: fixed; inset: 0; background: #141414; z-index: 4000; overflow-y: auto; display: none; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-        
-        .modal-hero { height: 50vh; position: relative; }
-        .modal-hero iframe, .modal-hero img { width: 100%; height: 100%; object-fit: cover; border: none; }
-        .modal-close { position: absolute; top: 20px; right: 20px; background: #181818; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; border: 1px solid #333; }
-        
-        .modal-content { padding: 0 4% 40px; margin-top: -50px; position: relative; z-index: 5; background: linear-gradient(0deg, #141414 85%, transparent 100%); }
-        .modal-title { font-size: 2.5rem; font-weight: 900; margin-bottom: 10px; font-family: 'Montserrat'; }
-        .modal-meta { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; color: #bcbcbc; font-size: 0.9rem; }
-        .match-score { color: #46d369; font-weight: 700; }
-        .modal-desc { font-size: 1rem; line-height: 1.6; color: white; margin-bottom: 30px; max-width: 800px; }
-        
-        .cast-list { display: flex; gap: 15px; overflow-x: auto; margin-bottom: 30px; padding-bottom: 10px; }
-        .cast-member { text-align: center; min-width: 80px; }
-        .cast-member img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-bottom: 5px; border: 1px solid #333; }
-        .cast-name { font-size: 0.75rem; color: #ccc; }
-
-        .providers-grid { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 30px; }
-        .provider-link { background: #222; padding: 10px 20px; border-radius: 4px; text-decoration: none; color: white; display: flex; align-items: center; gap: 10px; border: 1px solid #333; transition: 0.2s; }
-        .provider-link:hover { border-color: var(--primary); background: #333; }
-        .provider-link img { width: 24px; height: 24px; border-radius: 4px; }
-
-        /* --- CATALOG OVERLAY --- */
-        #catalogOverlay { display: none; position: fixed; inset: 0; background: #0f0f0f; z-index: 3500; flex-direction: column; }
-        .cat-top { padding: 15px 4%; background: #181818; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 15px; }
-        .cat-grid { flex: 1; overflow-y: auto; padding: 20px 4%; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-        .cat-search { flex: 1; background: #000; border: 1px solid #333; padding: 10px; color: white; border-radius: 4px; }
-
-        /* Mobile Adjustments */
-        @media(max-width: 768px) {
-            .hero-title { font-size: 2rem; }
-            .modal-hero { height: 35vh; }
-            .card-std { width: 110px; height: 165px; }
-            .card-video { width: 200px; height: 112px; }
-            .cat-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- LOGIN -->
-    <div id="authOverlay">
-        <div class="auth-box">
-            <h1>FILMANG PRO</h1>
-            <p style="color:#aaa; margin-bottom:20px">L'expérience ultime de streaming.</p>
-            <input type="email" id="userEmail" class="auth-input" placeholder="Adresse email">
-            <button class="btn btn-primary" style="width:100%; padding:15px; font-size:1rem;" onclick="attemptLogin()">COMMENCER</button>
-        </div>
-    </div>
-
-    <!-- HEADER -->
-    <header id="mainHeader">
-        <div class="header-main">
-            <div style="display:flex; align-items:center;">
-                <div class="mobile-search-trigger" onclick="toggleMobileSearch()"><i class="fas fa-search"></i></div>
-                <div class="logo" onclick="location.reload()">FILMANG</div>
-            </div>
-
-            <div class="search-container" id="searchBox">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" class="search-input" id="mainSearch" placeholder="Rechercher titres, genres, personnes...">
-            </div>
-
-            <div style="display:flex; align-items:center; gap:15px;">
-                <i class="fas fa-bell" style="font-size:1.2rem; cursor:pointer"></i>
-                <div onclick="logout()" style="width:32px; height:32px; background:#e50914; border-radius:4px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold;">P</div>
-            </div>
-        </div>
-        <div class="nav-scroller">
-            <div class="nav-item active" onclick="scrollToSec('hero')">Accueil</div>
-            <div class="nav-item" onclick="scrollToSec('shortsSec')">Shorts</div>
-            <div class="nav-item" onclick="scrollToSec('filmSec')">Films</div>
-            <div class="nav-item" onclick="scrollToSec('serieSec')">Séries</div>
-            <div class="nav-item" onclick="scrollToSec('animeSec')">Animes</div>
-            <div class="nav-item" onclick="scrollToSec('vidSec')">Vidéos</div>
-            <div class="nav-item" onclick="scrollToSec('vodSec')">VOD</div>
-            <div class="nav-item" onclick="scrollToSec('tvSec')">Chaînes TV</div>
-        </div>
-    </header>
-
-    <!-- CONTENT -->
-    <div id="mainContent" style="display:none">
-        
-        <!-- HERO -->
-        <section id="hero" style="padding:0">
-            <div class="hero-slider" id="heroRow"></div>
-        </section>
-
-        <!-- SHORTS -->
-        <section id="shortsSec">
-            <div class="section-header">
-                <div class="section-title"><i class="fab fa-tiktok"></i> Shorts Tendances</div>
-            </div>
-            <div class="row-container">
-                <div class="row-inner" id="shortsRow"></div>
-            </div>
-        </section>
-
-        <!-- PLATEFORMES -->
-        <section>
-            <div class="section-title" style="margin-bottom:15px">Plateformes Streaming</div>
-            <div class="row-container">
-                <div class="row-inner" style="gap:20px">
-                    <a href="https://www.netflix.com" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" height="40" style="object-fit:contain"></a>
-                    <a href="https://www.primevideo.com" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.png" height="40" style="object-fit:contain"></a>
-                    <a href="https://www.disneyplus.com" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg" height="40" style="object-fit:contain"></a>
-                    <a href="https://www.crunchyroll.com" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Crunchyroll_Logo.png" height="40" style="object-fit:contain"></a>
-                    <a href="https://rakuten.tv" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Rakuten_TV_logo.svg/2560px-Rakuten_TV_logo.svg.png" height="40" style="object-fit:contain"></a>
-                </div>
-            </div>
-        </section>
-
-        <!-- VIDEOS VIRALES -->
-        <section id="vidSec">
-            <div class="section-title"><i class="fab fa-youtube"></i> Vidéos Buzz (Monde & Afrique)</div>
-            <div class="row-container"><div class="row-inner" id="videosRow"></div></div>
-        </section>
-
-        <!-- FILMS -->
-        <section id="filmSec">
-            <div class="section-title"><i class="fas fa-film"></i> Films à la Une</div>
-            <div class="row-container"><div class="row-inner" id="f_trend"></div></div>
-            <div class="section-title" style="margin-top:20px">Les Mieux Notés</div>
-            <div class="row-container"><div class="row-inner" id="f_top"></div></div>
-        </section>
-
-        <!-- SERIES -->
-        <section id="serieSec">
-            <div class="section-title"><i class="fas fa-tv"></i> Séries du Moment</div>
-            <div class="row-container"><div class="row-inner" id="s_trend"></div></div>
-        </section>
-
-        <!-- ANIMES -->
-        <section id="animeSec">
-            <div class="section-title"><i class="fas fa-dragon"></i> Animes Populaires</div>
-            <div class="row-container"><div class="row-inner" id="a_pop"></div></div>
-        </section>
-
-        <!-- VOD -->
-        <section id="vodSec">
-            <div class="section-title"><i class="fas fa-video"></i> VOD - Films Complets</div>
-            <div class="row-container"><div class="row-inner" id="vodRow"></div></div>
-        </section>
-
-        <!-- TV -->
-        <section id="tvSec">
-            <div class="section-title"><i class="fas fa-broadcast-tower"></i> Télévision en Direct</div>
-            <div class="row-container"><div class="row-inner" id="tvRow"></div></div>
-        </section>
-
-    </div>
-
-    <!-- SHORTS INFINITE PLAYER -->
-    <div id="shortsOverlay">
-        <div class="btn-close-abs" onclick="closeShorts()"><i class="fas fa-times"></i></div>
-        <div class="shorts-container" id="shortsFeed"></div>
-    </div>
-
-    <!-- DETAILS MODAL -->
-    <div id="detailsModal">
-        <div class="modal-close" onclick="closeDetails()"><i class="fas fa-times"></i></div>
-        
-        <div class="modal-hero" id="modalHero">
-            <!-- Iframe Trailer ou Image ici -->
-        </div>
-
-        <div class="modal-content">
-            <h1 class="modal-title" id="mTitle">Titre</h1>
-            <div class="modal-meta">
-                <span class="match-score">98% Match</span>
-                <span id="mYear">2023</span>
-                <span style="border:1px solid #666; padding:0 4px; font-size:0.7rem">HD</span>
-                <span id="mGenre">Action</span>
-            </div>
-
-            <div style="display:flex; gap:10px; margin-bottom:20px;">
-                <button class="btn btn-primary" onclick="alert('Fonctionnalité Premium requise pour le film complet.')"><i class="fas fa-play"></i> Lecture</button>
-                <button class="btn btn-glass"><i class="fas fa-plus"></i> Ma Liste</button>
-            </div>
-
-            <p class="modal-desc" id="mDesc">Description du film...</p>
-
-            <h3 class="section-title" style="font-size:1rem; margin-bottom:10px">Casting</h3>
-            <div class="cast-list" id="mCast"></div>
-
-            <h3 class="section-title" style="font-size:1rem; margin-bottom:10px">Disponible sur</h3>
-            <div class="providers-grid">
-                <a href="https://www.netflix.com" target="_blank" class="provider-link"><img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg"> Netflix</a>
-                <a href="https://www.primevideo.com" target="_blank" class="provider-link"><img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.png"> Prime Video</a>
-                <a href="https://www.crunchyroll.com" target="_blank" class="provider-link"><img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Crunchyroll_Logo.png"> Crunchyroll</a>
-                 <a href="https://rakuten.tv" target="_blank" class="provider-link"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Rakuten_TV_logo.svg/2560px-Rakuten_TV_logo.svg.png"> Rakuten</a>
-            </div>
-
-            <h3 class="section-title" style="font-size:1rem; margin-bottom:10px">Similaires</h3>
-            <div class="row-container"><div class="row-inner" id="mSimilar"></div></div>
-        </div>
-    </div>
-
-    <!-- CATALOG OVERLAY -->
-    <div id="catalogOverlay">
-        <div class="cat-top">
-            <div onclick="document.getElementById('catalogOverlay').style.display='none'" style="cursor:pointer; font-size:1.5rem"><i class="fas fa-arrow-left"></i></div>
-            <h2 id="catTitle" style="font-size:1.2rem; margin:0; white-space:nowrap">Catalogue</h2>
-            <input type="text" id="catSearch" class="cat-search" placeholder="Filtrer...">
-        </div>
-        <div class="cat-grid" id="catGrid"></div>
-    </div>
-
-    <script>
-        /* --- CONFIG --- */
-        const TMDB_KEY = "1073e4d36ef71f912da093a5eb38f091";
-        const YT_KEYS = [
-            "AIzaSyCo4xWGX9xjFwCoGqum17qvCpr5liZtOq4", "AIzaSyAc7d0U7_DcloYMLqeCdUUZD_M3ZLaEA7E",
-            "AIzaSyCTfzR9KdN2QKLA7SrJkdmCvFaTYVPIs24", "AIzaSyD4Fd78deAlUd8H8kU4X3WfYVlW0-FmWmc",
-            "AIzaSyD5DEzxClq1pp88qrL80mm86H_e9slqHtY"
-        ];
-        let curKeyIdx = 0;
-        
-        let globalShorts = [];
-        let catState = { type: '', query: '', rawData: [] };
-
-        /* --- AUTH & INIT --- */
-        function attemptLogin() {
-            if(document.getElementById('userEmail').value.includes('@')) {
-                document.getElementById('authOverlay').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
-                initApp();
-            }
-        }
-        function logout() { location.reload(); }
-        function toggleMobileSearch() {
-            const sb = document.getElementById('searchBox');
-            sb.style.display = sb.style.display === 'block' ? 'none' : 'block';
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        async function initApp() {
-            loadHero();
+        body {
+            background: var(--black);
+            color: var(--text);
+            font-family: 'Poppins', sans-serif;
+            padding-top: 140px;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(0.95); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* ===== AUTH OVERLAY ===== */
+        #authOverlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #000000 0%, #1a0000 50%, #000000 100%);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-box {
+            background: rgba(20, 20, 20, 0.98);
+            padding: 50px 40px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            border: 1px solid rgba(229, 9, 20, 0.2);
+            box-shadow: 0 20px 60px rgba(229, 9, 20, 0.3);
+            backdrop-filter: blur(20px);
+        }
+
+        .auth-box h1 {
+            color: var(--primary);
+            font-weight: 900;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+            text-shadow: 0 0 30px rgba(229, 9, 20, 0.5);
+        }
+
+        .auth-box p {
+            color: var(--text-gray);
+            margin-bottom: 35px;
+            font-size: 0.95rem;
+        }
+
+        .auth-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .auth-input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-enter {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1.05rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(229, 9, 20, 0.4);
+        }
+
+        .btn-enter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(229, 9, 20, 0.6);
+        }
+
+        /* ===== HEADER & NAV ===== */
+        #mainContent {
+            display: none;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.8) 100%);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary) 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .user-icon {
+            font-size: 1.8rem;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .user-icon:hover {
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .search-bar {
+            padding: 0 20px 12px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 14px 20px 14px 45px;
+            border-radius: 50px;
+            color: white;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .search-bar input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(229, 9, 20, 0.2);
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 37px;
+            top: 15px;
+            color: var(--text-gray);
+            font-size: 1.1rem;
+        }
+
+        nav {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 20px 15px;
+            scrollbar-width: none;
+        }
+
+        nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .pill {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 20px;
+            border-radius: 25px;
+            white-space: nowrap;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .pill:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+        }
+
+        .pill.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--text);
+            border-color: var(--primary);
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+        }
+
+        /* ===== SECTIONS ===== */
+        section {
+            padding: 40px 0 15px 20px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        h2 i {
+            color: var(--primary);
+            font-size: 1.4rem;
+        }
+
+        .row {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 25px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) transparent;
+            align-items: flex-start;
+        }
+
+        .row::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .row::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .row::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            flex: 0 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            background: var(--dark-3);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 40px rgba(229, 9, 20, 0.3);
+            z-index: 10;
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: all 0.3s;
+        }
+
+        .card:hover img {
+            filter: brightness(1.1);
+        }
+
+        .img-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--dark-2) 0%, var(--dark-3) 100%);
+            color: var(--text-gray);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+            padding: 10px;
+        }
+
+        /* Standard Cards (Films/Séries/Animes) */
+        .card-std {
+            width: 150px;
+            height: 225px;
+        }
+
+        .card-std .card-title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0.95) 0%, transparent 100%);
+            padding: 30px 8px 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .card-std .rating-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        /* Shorts */
+        .card-short {
+            width: 120px;
+            height: 213px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-short:hover {
+            border-color: var(--primary);
+        }
+
+        .card-short .short-title {
+            position: absolute;
+            bottom: 0;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0.9) 0%, transparent 100%);
+            width: 100%;
+            padding: 25px 6px 6px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        /* Videos & Lives */
+        .card-video {
+            width: 240px;
+            height: 135px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-video:hover {
+            border-color: var(--primary);
+        }
+
+        .card-video .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(229, 9, 20, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid white;
+            transition: all 0.3s;
+        }
+
+        .card-video:hover .play-icon {
+            transform: translate(-50%, -50%) scale(1.1);
+            background: var(--primary);
+        }
+
+        .card-video .video-title {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0.95) 0%, transparent 100%);
+            padding: 25px 10px 8px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        .live-tag {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--primary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 15px rgba(229, 9, 20, 0.6);
+        }
+
+        /* TV Cards */
+        .card-tv {
+            width: 180px;
+            height: 110px;
+            background: linear-gradient(135deg, var(--dark-2) 0%, var(--dark-3) 100%);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-tv:hover {
+            border-color: var(--primary);
+        }
+
+        .card-tv .tv-name {
+            font-weight: 800;
+            font-size: 1.1rem;
+            text-align: center;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+            z-index: 2;
+            padding: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+        }
+
+        .card-tv::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(229, 9, 20, 0.1), transparent);
+            z-index: 1;
+        }
+
+        /* More Cards */
+        .card-more {
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            gap: 8px;
+            color: var(--text-gray);
+            font-weight: 600;
+        }
+
+        .card-more:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .card-more i {
+            font-size: 1.5rem;
+        }
+
+        /* ===== HERO SLIDER ===== */
+        #hero {
+            height: 500px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: -10px;
+        }
+
+        .hero-slider {
+            display: flex;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hero-slide {
+            min-width: 100%;
+            position: relative;
+        }
+
+        .hero-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-slide::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, transparent 60%);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: absolute;
+            bottom: 80px;
+            left: 20px;
+            max-width: 90%;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            margin-bottom: 12px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+            line-height: 1.2;
+        }
+
+        .hero-desc {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            margin-bottom: 20px;
+            max-width: 500px;
+            line-height: 1.5;
+        }
+
+        .btn-watch-hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 6px 25px rgba(229, 9, 20, 0.5);
+            transition: all 0.3s;
+        }
+
+        .btn-watch-hero:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 35px rgba(229, 9, 20, 0.7);
+        }
+
+        /* ===== SHORTS OVERLAY ===== */
+        #shortsOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: black;
+            z-index: 5000;
+        }
+
+        .shorts-feed {
+            height: 100dvh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        .short-item {
+            height: 100dvh;
+            width: 100%;
+            scroll-snap-align: start;
+            position: relative;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .short-item iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .short-loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--black);
+            color: var(--text-gray);
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .btn-close-fixed {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 6000;
+            cursor: pointer;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+
+        .btn-close-fixed:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        /* ===== DETAILS VIEW ===== */
+        #details-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--black);
+            z-index: 6000;
+            display: none;
+            overflow-y: auto;
+        }
+
+        .player-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .player-container iframe,
+        .player-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            object-fit: cover;
+        }
+
+        .details-content {
+            padding: 30px 20px;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        #m-title {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .meta-info {
+            display: flex;
+            justify-content: center;
             
-            // TMDB
-            fetchTMDB('movie', 'trending', 'f_trend', 'Films Tendances');
-            fetchTMDB('movie', 'top_rated', 'f_top', 'Films Culte');
-            fetchTMDB('tv', 'trending', 's_trend', 'Séries Tendances');
-            
-            // Kitsu (Anime)
-            fetchAnime('trending', 'a_pop', 'Animes Tendances');
-
-            // Mixed Content
-            loadMixedContent(); // Videos & Shorts
-            loadVOD();
-            loadTV();
-        }
-
-        /* --- API HELPERS --- */
-        async function getYT(url) {
-            try {
-                let res = await fetch(`${url}&key=${YT_KEYS[curKeyIdx]}`);
-                let d = await res.json();
-                if(d.error && d.error.code === 403) {
-                    curKeyIdx++; 
-                    if(curKeyIdx < YT_KEYS.length) return getYT(url);
-                }
-                return d;
-            } catch(e){ return null; }
-        }
-
-        function shuffle(a) { return a.sort(() => Math.random() - 0.5); }
-        function scrollToSec(id) { document.getElementById(id).scrollIntoView({behavior:'smooth', block:'center'}); }
-
-        /* --- MIXED CONTENT (Shorts + Videos) --- */
-        async function loadMixedContent(query = '') {
-            // SHORTS : Mixte de mots clés tendances + régions
-            const shortQueries = ['viral', 'dance challenge', 'anime edit', 'humour france', 'funny african', 'tiktok trend'];
-            const qS = query || shortQueries[Math.floor(Math.random() * shortQueries.length)];
-            
-            // On charge YT + Dailymotion pour la variété
-            let shorts = [];
-            let ytS = await getYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${qS} shorts&type=video&videoDuration=short&maxResults=25`);
-            if(ytS?.items) shorts.push(...ytS.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'})));
-
-            if(!query) {
-                try {
-                    let dmS = await fetch(`https://api.dailymotion.com/videos?search=shorts&shorter_than=60&fields=id,title,thumbnail_720_url&limit=15`).then(r=>r.json());
-                    if(dmS?.list) shorts.push(...dmS.list.map(i => ({id: i.id, title: i.title, img: i.thumbnail_720_url, src: 'dm'})));
-                } catch(e){}
-            }
-            
-            globalShorts = shuffle(shorts);
-            const htmlS = globalShorts.map((s, i) => `
-                <div class="card card-short" onclick="openShortsPlayer(${i})">
-                    <img src="${s.img}">
-                    <div class="card-info-overlay" style="opacity:1; background:linear-gradient(0deg, black, transparent);">
-                        <div class="short-meta">${s.title}</div>
-                    </div>
-                </div>
-            `).join('');
-            document.getElementById('shortsRow').innerHTML = htmlS;
-
-            // VIDEOS (Long form only)
-            const vidQueries = ['france humour', 'buzz afrique', 'us viral video', 'vlog voyage', 'documentaire choc'];
-            const qV = query || vidQueries.join(' | ');
-            
-            let vids = [];
-            let ytV = await getYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${qV}&type=video&videoDuration=medium&maxResults=20`);
-            if(ytV?.items) vids = ytV.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'}));
-            
-            const htmlV = vids.map(v => `
-                <div class="card card-video" onclick="openDetailsModal('${v.id}', 'video', '${v.src}', '${v.title.replace(/'/g,"")}', '${v.img}')">
-                    <img src="${v.img}">
-                    <div class="play-btn-overlay"><div class="play-circle"><i class="fas fa-play" style="color:white"></i></div></div>
-                    <div class="card-info-overlay"><div class="card-title">${v.title}</div></div>
-                </div>
-            `).join('');
-            document.getElementById('videosRow').innerHTML = htmlV;
-        }
-
-        async function loadVOD() {
-            // Mixte film complet YT + Dailymotion
-            let vods = [];
-            let yt = await getYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=film complet francais action&type=video&videoDuration=long&maxResults=15`);
-            if(yt?.items) vods.push(...yt.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'})));
-            
-            try {
-                let dm = await fetch(`https://api.dailymotion.com/videos?search=film complet&longer_than=1200&fields=id,title,thumbnail_720_url&limit=10`).then(r=>r.json());
-                if(dm?.list) vods.push(...dm.list.map(i => ({id: i.id, title: i.title, img: i.thumbnail_720_url, src: 'dm'})));
-            } catch(e){}
-
-            vods = shuffle(vods);
-            const html = vods.map(v => `
-                <div class="card card-std" onclick="openDetailsModal('${v.id}', 'video', '${v.src}', '${v.title.replace(/'/g,"")}', '${v.img}')">
-                    <img src="${v.img}">
-                    <div class="card-info-overlay"><div class="card-title">${v.title}</div></div>
-                </div>
-            `).join('') + `<div class="card card-more card-std" onclick="openCatalog('vod','VOD', null)"><i class="fas fa-plus"></i><br>Voir Plus</div>`;
-            document.getElementById('vodRow').innerHTML = html;
-        }
-
-        /* --- TMDB & KITSU --- */
-        async function fetchTMDB(type, cat, elId, title) {
-            const url = cat === 'trending' ? `https://api.themoviedb.org/3/trending/${type}/week` : `https://api.themoviedb.org/3/${type}/${cat}`;
-            try {
-                const res = await fetch(`${url}?api_key=${TMDB_KEY}&language=fr-FR`);
-                const data = await res.json();
-                const items = data.results.slice(0, 15);
-                const html = items.map(m => `
-                    <div class="card card-std" onclick="openDetailsModal('${m.id}', '${type}', 'tmdb')">
-                        <img src="https://image.tmdb.org/t/p/w342${m.poster_path}">
-                        <div class="card-info-overlay"><div class="card-title">${m.title || m.name}</div></div>
-                    </div>
-                `).join('') + `<div class="card card-more card-std" onclick="openCatalog('${type}','${title}', '${cat}')"><i class="fas fa-plus"></i><br>Voir Plus</div>`;
-                document.getElementById(elId).innerHTML = html;
-            } catch(e) {}
-        }
-
-        async function fetchAnime(sort, elId, title) {
-            try {
-                const res = await fetch(`https://kitsu.io/api/edge/trending/anime?limit=15`);
-                const data = await res.json();
-                const html = data.data.map(a => `
-                    <div class="card card-std" onclick="openDetailsModal('${a.id}', 'anime', 'kitsu')">
-                        <img src="${a.attributes.posterImage.medium}">
-                        <div class="card-info-overlay"><div class="card-title">${a.attributes.canonicalTitle}</div></div>
-                    </div>
-                `).join('') + `<div class="card card-more card-std" onclick="openCatalog('anime','${title}', 'trending')"><i class="fas fa-plus"></i><br>Voir Plus</div>`;
-                document.getElementById(elId).innerHTML = html;
-            } catch(e) {}
-        }
-
-           /* --- HERO SLIDER --- */
-        async function loadHero() {
-            // Combinaison Films + Séries Trend
-            const [r1, r2] = await Promise.all([
-                fetch(`https://api.themoviedb.org/3/trending/movie/day?api_key=${TMDB_KEY}&language=fr-FR`),
-                fetch(`https://api.themoviedb.org/3/trending/tv/day?api_key=${TMDB_KEY}&language=fr-FR`)
-            ]);
-            const d1 = await r1.json();
-            const d2 = await r2.json();
-            const slides = shuffle([...d1.results, ...d2.results]).slice(0, 5);
-
-            document.getElementById('heroRow').innerHTML = slides.map(s => `
-                <div class="hero-slide">
-                    <img class="hero-bg" src="https://image.tmdb.org/t/p/original${s.backdrop_path}">
-                    <div class="hero-overlay">
-                        <div class="hero-info">
-                            <h1 class="hero-title">${s.title || s.name}</h1>
-                            <p class="hero-desc">${s.overview}</p>
-                            <div class="hero-actions">
-                                <button class="btn btn-primary" onclick="openDetailsModal('${s.id}', '${s.title?'movie':'tv'}', 'tmdb')"><i class="fas fa-play"></i> Voir Trailer</button>
-                                <button class="btn btn-glass"><i class="fas fa-info-circle"></i> Infos</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-
-            let idx = 0;
-            setInterval(() => {
-                idx = (idx + 1) % slides.length;
-                document.getElementById('heroRow').style.transform = `translateX(-${idx * 100}%)`;
-            }, 7000);
-        }
-
-        /* --- DETAILS MODAL (CORE) --- */
-        async function openDetailsModal(id, type, source, simpleTitle, simpleImg) {
-            const modal = document.getElementById('detailsModal');
-            const hero = document.getElementById('modalHero');
-            const similarRow = document.getElementById('mSimilar');
-            const castRow = document.getElementById('mCast');
-
-            // Reset
-            modal.style.display = 'block';
-            hero.innerHTML = '<div style="width:100%;height:100%;background:#000;"></div>';
-            document.getElementById('mTitle').innerText = simpleTitle || 'Chargement...';
-            document.getElementById('mDesc').innerText = '';
-            castRow.innerHTML = '';
-            similarRow.innerHTML = '';
-
-            if (source === 'tmdb') {
-                const url = `https://api.themoviedb.org/3/${type}/${id}?api_key=${TMDB_KEY}&language=fr-FR&append_to_response=videos,credits,similar`;
-                const res = await fetch(url);
-                const m = await res.json();
-
-                // 1. Trailer
-                const trailer = m.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube') || m.videos.results[0];
-                if (trailer) {
-                    hero.innerHTML = `<iframe src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=0&controls=0&rel=0&modestbranding=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-                } else {
-                    hero.innerHTML = `<img src="https://image.tmdb.org/t/p/original${m.backdrop_path}">`;
-                }
-
-                // 2. Info
-                document.getElementById('mTitle').innerText = m.title || m.name;
-                document.getElementById('mDesc').innerText = m.overview;
-                document.getElementById('mYear').innerText = (m.release_date || m.first_air_date || '').substr(0,4);
-                
-                // 3. Cast
-                castRow.innerHTML = m.credits.cast.slice(0,10).map(c => `
-                    <div class="cast-member">
-                        <img src="https://image.tmdb.org/t/p/w185${c.profile_path}" onerror="this.src='https://via.placeholder.com/70'">
-                        <div class="cast-name">${c.name}</div>
-                    </div>
-                `).join('');
-
-                // 4. Similar
-                similarRow.innerHTML = m.similar.results.slice(0,10).map(s => `
-                    <div class="card card-std" onclick="openDetailsModal('${s.id}', '${type}', 'tmdb')">
-                        <img src="https://image.tmdb.org/t/p/w185${s.poster_path}">
-                        <div class="card-info-overlay"><div class="card-title">${s.title||s.name}</div></div>
-                    </div>
-                `).join('');
-
-            } else if (source === 'kitsu') {
-                const res = await fetch(`https://kitsu.io/api/edge/anime/${id}`);
-                const d = await res.json();
-                const a = d.data.attributes;
-
-                if (a.youtubeVideoId) {
-                    hero.innerHTML = `<iframe src="https://www.youtube.com/embed/${a.youtubeVideoId}?autoplay=1&mute=0" allow="autoplay"></iframe>`;
-                } else {
-                    hero.innerHTML = `<img src="${a.coverImage?.original || a.posterImage.original}">`;
-                }
-
-                document.getElementById('mTitle').innerText = a.canonicalTitle;
-                document.getElementById('mDesc').innerText = a.synopsis;
-                
-                // Fetch Characters (Simulé pour Kitsu ou appel sup)
-                castRow.innerHTML = '<span style="color:#666; font-size:0.8rem">Casting indisponible via cette API rapide.</span>';
-                
-            } else {
-                // Video simple / VOD (YT ou DM)
-                let embed = '';
-                if(source === 'yt') embed = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allow="autoplay; fullscreen"></iframe>`;
-                else embed = `<iframe src="https://www.dailymotion.com/embed/video/${id}?autoplay=1" allow="autoplay; fullscreen"></iframe>`;
-                
-                hero.innerHTML = embed;
-                document.getElementById('mTitle').innerText = simpleTitle;
-                
-                // Suggestions basées sur le titre
-                let rec = await getYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(simpleTitle)}&type=video&maxResults=10`);
-                if(rec?.items) {
-                    similarRow.innerHTML = rec.items.map(v => `
-                        <div class="card card-video" onclick="openDetailsModal('${v.id.videoId}', 'video', 'yt', '${v.snippet.title.replace(/'/g,"")}', '${v.snippet.thumbnails.high.url}')">
-                            <img src="${v.snippet.thumbnails.high.url}">
-                            <div class="card-info-overlay"><div class="card-title">${v.snippet.title}</div></div>
-                        </div>
-                    `).join('');
-                }
-            }
-        }
-        function closeDetails() { 
-            document.getElementById('detailsModal').style.display = 'none';
-            document.getElementById('modalHero').innerHTML = ''; // Stop video
-        }
-
-        /* --- INFINITE SHORTS LOGIC --- */
-        function openShortsPlayer(startIdx) {
-            document.getElementById('shortsOverlay').style.display = 'block';
-            const feed = document.getElementById('shortsFeed');
-            feed.innerHTML = ''; // Clear
-
-            // Initial Render
-            renderShortsBatch(startIdx);
-            
-            // Scroll Event for Infinite
-            feed.onscroll = () => {
-                const st = feed.scrollTop;
-                const h = window.innerHeight;
-                const idx = Math.round(st / h);
-                
-                // Play logic
-                document.querySelectorAll('.short-slide iframe').forEach(ifr => ifr.remove());
-                const currentSlide = document.getElementById(`short-${idx}`);
-                if(currentSlide && !currentSlide.querySelector('iframe')) {
-                    const src = currentSlide.dataset.src;
-                    const id = currentSlide.dataset.id;
-                    const url = src === 'yt' ? `https://www.youtube.com/embed/${id}?autoplay=1&controls=0&loop=1&playlist=${id}` : `https://www.dailymotion.com/embed/video/${id}?autoplay=1&controls=0&ui-start-screen-info=false`;
-                    currentSlide.innerHTML = `<iframe src="${url}" allow="autoplay"></iframe>`;
-                }
-
-                // Infinite Load
-                if(idx > globalShorts.length - 3) {
-                    loadMoreShorts();
-                }
-            };
-
-            // Auto-scroll to start
-            setTimeout(() => {
-                document.getElementById(`short-${0}`).scrollIntoView(); 
-                // Force play first
-                const first = document.getElementById(`short-0`);
-                const u = first.dataset.src==='yt' ? `https://www.youtube.com/embed/${first.dataset.id}?autoplay=1&controls=0` : `https://www.dailymotion.com/embed/video/${first.dataset.id}?autoplay=1&controls=0`;
-                first.innerHTML = `<iframe src="${u}" allow="autoplay"></iframe>`;
-            }, 100);
-        }
-
-        function renderShortsBatch(startIdx) {
-            // On réorganise le tableau pour que startIdx soit le premier
-            const organized = [...globalShorts.slice(startIdx), ...globalShorts.slice(0, startIdx)];
-            // On reset globalShorts pour matcher l'ordre visuel (pour le scroll infini logique)
-            globalShorts = organized; 
-            
-            const html = globalShorts.map((s, i) => `
-                <div class="short-slide" id="short-${i}" data-id="${s.id}" data-src="${s.src}">
-                    <!-- Iframe injected on scroll -->
-                    <img src="${s.img}" style="position:absolute; width:100%; height:100%; object-fit:cover; z-index:-1; filter:blur(10px)">
-                </div>
-            `).join('');
-            document.getElementById('shortsFeed').innerHTML = html;
-        }
-
-        async function loadMoreShorts() {
-            let more = await getYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=shorts funny viral&type=video&videoDuration=short&maxResults=10`);
-            if(more?.items) {
-                const newItems = more.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url, src: 'yt'}));
-                const start = globalShorts.length;
-                globalShorts.push(...newItems);
-                
-                newItems.forEach((s, i) => {
-                    const div = document.createElement('div');
-                    div.className = 'short-slide';
-                    div.id = `short-${start + i}`;
-                    div.dataset.id = s.id;
-                    div.dataset.src = s.src;
-                    div.innerHTML = `<img src="${s.img}" style="position:absolute;width:100%;height:100%;object-fit:cover;z-index:-1;filter:blur(10px)">`;
-                    document.getElementById('shortsFeed').appendChild(div);
-                });
-            }
-        }
-        function closeShorts() {
-            document.getElementById('shortsOverlay').style.display = 'none';
-            document.getElementById('shortsFeed').innerHTML = '';
-        }
-
-        /* --- CATALOG & SEARCH --- */
-        async function openCatalog(type, title, cat) {
-            document.getElementById('catalogOverlay').style.display = 'flex';
-            document.getElementById('catTitle').innerText = title;
-            document.getElementById('catGrid').innerHTML = '<div style="color:white">Chargement...</div>';
-            
-            catState = { type, query: cat }; // 'cat' peut être 'trending', 'top_rated' ou null (pour vod)
-
-            if(type === 'tv') {
-                const tvs = window.tvList; // from loadTV
-                document.getElementById('catGrid').innerHTML = tvs.map(t => `
-                    <div class="card card-video" style="height:100px; display:flex; align-items:center; justify-content:center; background:#222; border:1px solid #333;" onclick="window.open('${t.url}')">
-                        <span style="font-weight:bold; color:white">${t.n}</span>
-                    </div>`).join('');
-                return;
-            }
-
-            // Fetch Logic based on type
-            let items = [];
-            if(type === 'movie' || type === 'tv') {
-                let u = `https://api.themoviedb.org/3/${type}/${cat}?api_key=${TMDB_KEY}&language=fr-FR&page=1`;
-                let r = await fetch(u); let d = await r.json(); items = d.results;
-                document.getElementById('catGrid').innerHTML = items.map(m => `
-                    <div class="card card-std" style="width:100%; height:200px" onclick="openDetailsModal('${m.id}', '${type}', 'tmdb')">
-                        <img src="https://image.tmdb.org/t/p/w342${m.poster_path}">
-                        <div class="card-title" style="background:rgba(0,0,0,0.8); position:absolute; bottom:0; width:100%; padding:5px;">${m.title||m.name}</div>
-                    </div>`).join('');
-            } else if(type === 'vod') {
-                // Fetch more VOD
-                let yt = await getYT(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=film complet francais&type=video&videoDuration=long&maxResults=30`);
-                items = yt.items.map(i => ({id: i.id.videoId, title: i.snippet.title, img: i.snippet.thumbnails.high.url}));
-                document.getElementById('catGrid').innerHTML = items.map(v => `
-                    <div class="card card-std" style="width:100%; height:180px" onclick="openDetailsModal('${v.id}', 'video', 'yt', '${v.title.replace(/'/g,"")}', '${v.img}')">
-                        <img src="${v.img}">
-                         <div class="card-title" style="background:rgba(0,0,0,0.8); position:absolute; bottom:0; width:100%; padding:5px;">${v.title}</div>
-                    </div>`).join('');
-            }
-        }
-
-        // Recherche dynamique globale
-        document.getElementById('mainSearch').addEventListener('input', (e) => {
-            const val = e.target.value;
-            if(val.length > 2) {
-                loadMixedContent(val); // Update Videos & Shorts
-                // TODO: Add search results for movies/series overlay if needed
-            }
-        });
-
-        // TV List Helper
-        function loadTV() {
-            const tvs = [
-                {n:"TF1", url:"https://www.tf1.fr/tf1/direct"}, {n:"France 2", url:"https://www.france.tv/france-2/direct.html"},
-                {n:"M6", url:"https://www.6play.fr/m6/direct"}, {n:"Arte", url:"https://www.arte.tv/fr/direct/"},
-                {n:"RTS 1 (Senegal)", url:"http://rts.sn/"}, {n:"Canal+ Afrique", url:"https://www.canalplus-afrique.com/"},
-                {n:"TV5 Monde", url:"https://live.tv5monde.com/fbs.html"}
-            ];
-            window.tvList = tvs;
-            const html = tvs.slice(0, 5).map(t => `<div class="card card-video" style="height:100px; min-width:160px; display:flex; align-items:center; justify-content:center; background:#222; border:1px solid #333;" onclick="window.open('${t.url}')"><span style="font-weight:bold; color:white">${t.n}</span></div>`).join('') 
-            + `<div class="card card-more card-video" style="height:100px; min-width:160px" onclick="openCatalog('tv','TV', null)"><i class="fas fa-plus"></i> Voir Tout</div>`;
-            document.getElementById('tvRow').innerHTML = html;
-        }
-
-    </script>
-</body>
-</html>
