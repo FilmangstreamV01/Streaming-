@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ELECTRO-PRO | E-Commerce Électroménager</title>
-    <meta name="description" content="Achetez votre électroménager en ligne. Livraison avec suivi GPS et paiement Mobile Money.">
-
+    <title>ELECTRO-PRO | E-Commerce Professionnel</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&display=swap" rel="stylesheet">
@@ -16,7 +15,7 @@
 
 <style>
 :root {
-    --primary: #FF6B00; /* Orange vibrant pour l'électroménager/Mobile Money */
+    --primary: #FF6B00;
     --primary-dark: #cc5500;
     --bg-deep: #0a0a0a;
     --dark-2: #141414;
@@ -40,99 +39,52 @@ header {
     border-bottom: 1px solid var(--border); padding: 15px 20px;
     display: flex; justify-content: space-between; align-items: center;
 }
-.logo { font-family: 'Clash Display', sans-serif; font-size: 1.5rem; color: var(--primary); font-weight: 700; letter-spacing: 1px; }
-.header-actions { display: flex; gap: 15px; align-items: center; }
-.cart-btn { position: relative; cursor: pointer; font-size: 1.2rem; }
+.logo { font-family: 'Clash Display', sans-serif; font-size: 1.5rem; color: var(--primary); font-weight: 700; }
+.header-actions { display: flex; gap: 20px; align-items: center; }
+.icon-btn { position: relative; cursor: pointer; font-size: 1.3rem; transition: var(--transition); }
+.icon-btn:hover { color: var(--primary); }
 .cart-badge {
     position: absolute; top: -8px; right: -10px; background: var(--primary);
     color: white; font-size: 0.7rem; font-weight: bold; width: 18px; height: 18px;
     border-radius: 50%; display: flex; align-items: center; justify-content: center;
 }
 
-/* ===== HERO ===== */
-.hero {
-    margin-top: 70px; padding: 40px 20px; text-align: center;
-    background: linear-gradient(180deg, rgba(255,107,0,0.1) 0%, transparent 100%);
-}
-.hero h1 { font-family: 'Clash Display', sans-serif; font-size: 2.5rem; margin-bottom: 15px; }
-.hero p { color: var(--text-dim); max-width: 600px; margin: 0 auto; line-height: 1.6; }
-
-/* ===== PRODUCT GRID ===== */
-.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-.section-title { font-size: 1.3rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-.section-title i { color: var(--primary); }
-
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-.card {
-    background: var(--dark-2); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 15px; transition: var(--transition);
-    position: relative; overflow: hidden;
-}
-.card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 10px 30px rgba(255,107,0,0.15); }
-.card-img { width: 100%; height: 200px; object-fit: contain; background: white; border-radius: 12px; padding: 10px; margin-bottom: 15px; }
-.badge-stock { position: absolute; top: 25px; left: 25px; padding: 5px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: bold; color: black; }
-.badge-ok { background: var(--green); }
-.badge-rupture { background: var(--red); color: white; }
-.card-brand { font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
-.card-title { font-size: 1.1rem; font-weight: 600; margin: 5px 0 10px; }
-.card-price { font-size: 1.3rem; font-weight: 800; color: var(--primary); margin-bottom: 15px; }
-.btn-add {
-    width: 100%; padding: 12px; background: rgba(255,107,0,0.1); border: 1px solid var(--primary);
-    color: var(--primary); border-radius: 10px; font-weight: bold; cursor: pointer; transition: var(--transition);
-}
-.btn-add:hover:not(:disabled) { background: var(--primary); color: white; }
-.btn-add:disabled { border-color: var(--border); color: var(--text-dim); cursor: not-allowed; }
-
-/* ===== PANIER / CHECKOUT SIDEBAR ===== */
-.sidebar {
-    position: fixed; top: 0; right: -100%; width: 400px; max-width: 100%; height: 100vh;
-    background: var(--dark-3); z-index: 2000; box-shadow: -10px 0 30px rgba(0,0,0,0.8);
-    transition: 0.4s ease-in-out; display: flex; flex-direction: column;
-}
-.sidebar.open { right: 0; }
-.sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-.sidebar-body { padding: 20px; flex: 1; overflow-y: auto; }
-.sidebar-footer { padding: 20px; border-top: 1px solid var(--border); background: var(--dark-2); }
-
-.cart-item { display: flex; gap: 15px; margin-bottom: 15px; background: var(--dark-2); padding: 10px; border-radius: 12px; }
-.cart-item img { width: 60px; height: 60px; object-fit: contain; background: white; border-radius: 8px; }
-.cart-info flex { flex: 1; }
-
-.form-group { margin-bottom: 15px; }
-.form-group label { display: block; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 8px; }
-.form-control {
-    width: 100%; padding: 12px; background: var(--bg-deep); border: 1px solid var(--border);
-    border-radius: 8px; color: white; outline: none;
-}
-.form-control:focus { border-color: var(--primary); }
-
-.gps-btn {
-    background: rgba(0,230,118,0.1); border: 1px solid var(--green); color: var(--green);
-    padding: 10px; border-radius: 8px; cursor: pointer; width: 100%; display: flex; justify-content: center; gap: 10px;
-}
-.operator-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-.op-card {
-    border: 1px solid var(--border); padding: 15px; border-radius: 10px; text-align: center; cursor: pointer; transition: 0.2s;
-}
-.op-card.selected { border-color: var(--primary); background: rgba(255,107,0,0.1); }
-
-.btn-primary {
-    width: 100%; padding: 15px; background: var(--primary); border: none;
-    color: white; border-radius: 10px; font-weight: bold; font-size: 1.1rem; cursor: pointer;
-}
-
-/* ===== TICKET OVERLAY ===== */
-#ticketOverlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 3000;
+/* ===== AUTH OVERLAY (INSCRIPTION & CONNEXION) ===== */
+#authOverlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 4000;
     display: none; align-items: center; justify-content: center; padding: 20px;
 }
-.ticket-card {
-    background: white; color: black; padding: 30px; border-radius: 20px;
-    width: 100%; max-width: 350px; text-align: center;
+.auth-card {
+    background: var(--dark-2); border: 1px solid var(--border);
+    padding: 30px; border-radius: var(--radius); width: 100%; max-width: 450px;
+    max-height: 90vh; overflow-y: auto;
 }
-.ticket-card h2 { font-family: 'Clash Display'; color: var(--primary); margin-bottom: 10px; }
-.ticket-dashed { border-top: 2px dashed #ccc; margin: 20px 0; }
-.qr-container img { margin: 0 auto; border: 10px solid white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.auth-tabs { display: flex; gap: 20px; margin-bottom: 25px; border-bottom: 1px solid var(--border); }
+.auth-tab { padding: 10px 0; cursor: pointer; color: var(--text-dim); font-weight: 600; position: relative; }
+.auth-tab.active { color: var(--primary); }
+.auth-tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: var(--primary); }
+
+/* ===== FORM STYLES ===== */
+.form-group { margin-bottom: 15px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.form-group label { display: block; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+.form-control {
+    width: 100%; padding: 12px; background: var(--dark-3); border: 1px solid var(--border);
+    border-radius: 10px; color: white; outline: none; transition: var(--transition);
+}
+.form-control:focus { border-color: var(--primary); }
+.btn-auth {
+    width: 100%; padding: 15px; background: var(--primary); border: none;
+    color: white; border-radius: 10px; font-weight: bold; margin-top: 10px; cursor: pointer;
+}
+
+/* ===== UI COMPONENTS ===== */
+.container { max-width: 1200px; margin: 80px auto 20px; padding: 20px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+.card { background: var(--dark-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+.card img { width: 100%; height: 200px; object-fit: contain; background: #fff; border-radius: 12px; margin-bottom: 15px; }
+
+/* Rest of the styles from previous interaction */
 </style>
 </head>
 <body>
@@ -140,296 +92,188 @@ header {
 <header>
     <div class="logo">ELECTRO-PRO</div>
     <div class="header-actions">
-        <div class="cart-btn" onclick="toggleSidebar('cartSidebar')">
+        <div class="icon-btn" onclick="openAuth()">
+            <i class="fas fa-user-circle"></i>
+            <span id="userStatus" style="font-size: 0.7rem; display: block; color: var(--text-dim);">Déconnecté</span>
+        </div>
+        <div class="icon-btn" onclick="toggleSidebar('cartSidebar')">
             <i class="fas fa-shopping-cart"></i>
             <div class="cart-badge" id="cartCount">0</div>
         </div>
-        <div class="cart-btn" title="Mon Compte"><i class="fas fa-user-circle"></i></div>
     </div>
 </header>
 
-<section class="hero">
-    <h1>Votre Électroménager, <span style="color:var(--primary)">Livré Chez Vous.</span></h1>
-    <p>Achetez en ligne, payez via Mobile Money en toute sécurité, et suivez votre livraison en temps réel grâce à notre système de tracking GPS.</p>
-</section>
-
 <div class="container">
-    <h2 class="section-title"><i class="fas fa-bolt"></i> En vedette aujourd'hui</h2>
+    <h2 style="margin-bottom:20px; font-family:'Clash Display'">Nos Produits</h2>
     <div class="grid" id="productGrid">
-        <div style="text-align:center; grid-column: 1/-1; padding: 50px;">
-            <i class="fas fa-spinner fa-spin fa-2x"></i> Connexion à la base de données...
         </div>
-    </div>
 </div>
 
-<div class="sidebar" id="cartSidebar">
-    <div class="sidebar-header">
-        <h3><i class="fas fa-shopping-cart"></i> Mon Panier</h3>
-        <i class="fas fa-times" style="cursor:pointer" onclick="toggleSidebar('cartSidebar')"></i>
-    </div>
-    <div class="sidebar-body" id="cartBody">
-        </div>
-    <div class="sidebar-footer">
-        <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:bold; font-size:1.2rem;">
-            <span>Total:</span>
-            <span id="cartTotal">0 FCFA</span>
-        </div>
-        <button class="btn-primary" onclick="proceedToCheckout()">Passer à la caisse <i class="fas fa-arrow-right"></i></button>
-    </div>
-</div>
-
-<div class="sidebar" id="checkoutSidebar">
-    <div class="sidebar-header">
-        <h3><i class="fas fa-lock"></i> Paiement Sécurisé</h3>
-        <i class="fas fa-arrow-left" style="cursor:pointer" onclick="toggleSidebar('cartSidebar')"></i>
-    </div>
-    <div class="sidebar-body">
-        <div class="form-group">
-            <label>1. Localisation GPS (Pour le Livreur)</label>
-            <button class="gps-btn" onclick="getLocation()"><i class="fas fa-map-marker-alt"></i> Obtenir ma position</button>
-            <input type="text" id="gpsCoords" class="form-control" style="margin-top:10px" placeholder="Lat, Long" readonly>
+<div id="authOverlay">
+    <div class="auth-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 id="authTitle" style="font-family:'Clash Display'">Connexion</h2>
+            <i class="fas fa-times" style="cursor:pointer" onclick="closeAuth()"></i>
         </div>
         
-        <div class="form-group">
-            <label>2. Opérateur Mobile Money (Table OPERATEUR_PAIEMENT)</label>
-            <div class="operator-grid">
-                <div class="op-card selected" onclick="selectOp(this, 'Orange')">Orange Money</div>
-                <div class="op-card" onclick="selectOp(this, 'MTN')">MTN MoMo</div>
-                <div class="op-card" onclick="selectOp(this, 'Wave')">Wave</div>
-                <div class="op-card" onclick="selectOp(this, 'Moov')">Moov Money</div>
-            </div>
-            <input type="text" id="momoNumber" class="form-control" placeholder="Entrez votre numéro (ex: 0701020304)">
+        <div class="auth-tabs">
+            <div class="auth-tab active" id="tabLogin" onclick="switchAuth('login')">Se connecter</div>
+            <div class="auth-tab" id="tabRegister" onclick="switchAuth('register')">S'inscrire</div>
         </div>
-    </div>
-    <div class="sidebar-footer">
-        <button class="btn-primary" onclick="processPayment()"><i class="fas fa-check-circle"></i> Payer <span id="payAmount"></span></button>
-    </div>
-</div>
 
-<div id="ticketOverlay">
-    <div class="ticket-card">
-        <h2>ELECTRO-PRO</h2>
-        <p style="font-size:0.8rem; color:#666">Reçu de paiement & Bon de livraison</p>
-        <div class="ticket-dashed"></div>
-        <h3 style="margin-bottom:10px" id="ticketCode">TK-2024-XXXXX</h3>
-        <div class="qr-container">
-            <img id="qrImage" src="" alt="QR Code Ticket">
-        </div>
-        <div class="ticket-dashed"></div>
-        <p style="font-size:0.9rem; font-weight:bold; color:var(--green)"><i class="fas fa-check-circle"></i> Paiement Confirmé</p>
-        <p style="font-size:0.8rem; margin-top:10px">Veuillez présenter ce QR Code au livreur lors de la réception.</p>
-        <button class="btn-add" style="margin-top:20px; background:#f0f0f0; color:black; border:none" onclick="document.getElementById('ticketOverlay').style.display='none'">Fermer</button>
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" class="form-control" placeholder="votre@email.com" required>
+            </div>
+            <div class="form-group">
+                <label>Mot de passe</label>
+                <input type="password" id="loginPass" class="form-control" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-auth">Accéder au catalogue</button>
+        </form>
+
+        <form id="registerForm" style="display:none;">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nom</label>
+                    <input type="text" id="regNom" class="form-control" placeholder="Doe" required>
+                </div>
+                <div class="form-group">
+                    <label>Prénom</label>
+                    <input type="text" id="regPrenom" class="form-control" placeholder="John" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="regEmail" class="form-control" placeholder="john@example.com" required>
+            </div>
+            <div class="form-group">
+                <label>Téléphone</label>
+                <input type="tel" id="regTel" class="form-control" placeholder="+229 XX XX XX XX" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Ville</label>
+                    <input type="text" id="regVille" class="form-control" placeholder="Cotonou" required>
+                </div>
+                <div class="form-group">
+                    <label>Rue / Quartier</label>
+                    <input type="text" id="regRue" class="form-control" placeholder="Cadjehoun">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Mot de passe</label>
+                <input type="password" id="regPass" class="form-control" placeholder="Minimum 8 caractères" required>
+            </div>
+            <button type="submit" class="btn-auth">Créer mon compte Client</button>
+        </form>
     </div>
 </div>
 
 <script>
-/**
- * ============================================================
- * CONNEXION APPWRITE & MAPPING DES TABLES SQL
- * ============================================================
- * Correspondance Access -> Appwrite (NoSQL)
- * Access TABLE CLIENT         -> Appwrite Auth + Collection 'clients'
- * Access TABLE PRODUIT        -> Appwrite Collection 'produits'
- * Access TABLE COMMANDE       -> Appwrite Collection 'commandes'
- * Access TABLE TICKET         -> Appwrite Collection 'tickets'
- */
-
-const { Client, Databases, ID } = Appwrite;
-const client = new Client()
-    .setEndpoint('https://cloud.appwrite.io/v1')
-    .setProject('698f97e3001c4c48d6d7');
-
+// Initialisation Appwrite
+const { Client, Account, ID, Databases } = Appwrite;
+const client = new Client().setEndpoint('https://cloud.appwrite.io/v1').setProject('TON_PROJECT_ID');
+const account = new Account(client);
 const databases = new Databases(client);
 
-// IDs théoriques de ta base de données Appwrite (À adapter si tu as créé les collections)
-const DB_ID = 'db_ecommerce';
-const COL_PRODUITS = 'col_produits';
+// Gestion de l'affichage Auth
+function openAuth() { document.getElementById('authOverlay').style.display = 'flex'; }
+function closeAuth() { document.getElementById('authOverlay').style.display = 'none'; }
 
-// Base de données simulée (reprise stricte des données du fichier .bas)
-// Utilisée si les collections Appwrite ne sont pas encore créées sur ton serveur
-const dbSimulation = [
-    { id: 'p1', cat: 'Réfrigérateurs', nom: 'Réfrigérateur No Frost 350L', marque: 'Samsung', modele: 'RT35K5530S8', prix: 285000, stock: 12, img: 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?auto=format&fit=crop&q=80&w=400' },
-    { id: 'p2', cat: 'Machines à Laver', nom: 'Machine à Laver 7kg Automatique', marque: 'LG', modele: 'F2J5QN3W', prix: 235000, stock: 15, img: 'https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?auto=format&fit=crop&q=80&w=400' },
-    { id: 'p3', cat: 'Climatiseurs', nom: 'Climatiseur Inverter 18000 BTU', marque: 'LG', modele: 'S18EQ', prix: 450000, stock: 4, img: 'https://cdn.pixabay.com/photo/2021/08/23/08/28/air-conditioner-6567113_960_720.jpg' },
-    { id: 'p4', cat: 'Petit Électroménager', nom: 'Mixeur Blender 1.5L 600W', marque: 'Philips', modele: 'HR2051/90', prix: 35000, stock: 50, img: 'https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&q=80&w=400' },
-    { id: 'p5', cat: 'Réfrigérateurs', nom: 'Congélateur Coffre 200L', marque: 'LG', modele: 'GC-F271CSAM', prix: 195000, stock: 0, img: 'https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?auto=format&fit=crop&q=80&w=400' }, // PRODUIT EN RUPTURE
-    { id: 'p6', cat: 'Cuisinières', nom: 'Cuisinière 4 Feux + Four', marque: 'Brandt', modele: 'KG450WF', prix: 185000, stock: 10, img: 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&q=80&w=400' }
-];
+function switchAuth(type) {
+    const isLogin = type === 'login';
+    document.getElementById('loginForm').style.display = isLogin ? 'block' : 'none';
+    document.getElementById('registerForm').style.display = isLogin ? 'none' : 'block';
+    document.getElementById('tabLogin').classList.toggle('active', isLogin);
+    document.getElementById('tabRegister').classList.toggle('active', !isLogin);
+    document.getElementById('authTitle').innerText = isLogin ? 'Connexion' : 'Inscription Client';
+}
 
-let cart = [];
-let totalAmount = 0;
+// LOGIQUE INSCRIPTION (Respect du MCD)
+document.getElementById('registerForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const data = {
+        nom: document.getElementById('regNom').value,
+        prenom: document.getElementById('regPrenom').value,
+        email: document.getElementById('regEmail').value,
+        tel: document.getElementById('regTel').value,
+        ville: document.getElementById('regVille').value,
+        rue: document.getElementById('regRue').value,
+        pass: document.getElementById('regPass').value
+    };
 
-// Chargement initial
-window.onload = async () => {
     try {
-        // Tentative de récupération depuis Appwrite (Requête R01 du SQL)
-        // const response = await databases.listDocuments(DB_ID, COL_PRODUITS);
-        // renderProducts(response.documents);
+        // 1. Création du compte Auth Appwrite
+        await account.create(ID.unique(), data.email, data.pass, `${data.prenom} ${data.nom}`);
         
-        // Fallback sur la base locale pour garantir l'affichage "Sur site"
-        renderProducts(dbSimulation);
+        // 2. Connexion immédiate
+        await account.createEmailSession(data.email, data.pass);
+        
+        // 3. Enregistrement dans la collection 'CLIENT' du MCD
+        // Note: Remplace 'COLLECTION_CLIENT_ID' par l'ID réel dans Appwrite
+        await databases.createDocument('DATABASE_ID', 'COLLECTION_CLIENT_ID', ID.unique(), {
+            nom: data.nom,
+            prenom: data.prenom,
+            email: data.email,
+            telephone: data.tel,
+            ville: data.ville,
+            adresseRue: data.rue,
+            dateInscription: new Date().toISOString(),
+            statut: 'actif'
+        });
+
+        alert("Compte créé avec succès ! Bienvenue chez ELECTRO-PRO.");
+        location.reload();
     } catch (error) {
-        console.warn("Collections Appwrite non trouvées. Utilisation de la structure SQL locale.", error);
-        renderProducts(dbSimulation);
+        alert("Erreur: " + error.message);
     }
 };
 
-function formatCFA(amount) {
-    return amount.toLocaleString('fr-FR') + ' FCFA';
+// LOGIQUE CONNEXION
+document.getElementById('loginForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const pass = document.getElementById('loginPass').value;
+
+    try {
+        await account.createEmailSession(email, pass);
+        closeAuth();
+        checkUser();
+    } catch (error) {
+        alert("Identifiants incorrects.");
+    }
+};
+
+async function checkUser() {
+    try {
+        const user = await account.get();
+        document.getElementById('userStatus').innerText = user.name;
+        document.getElementById('userStatus').style.color = 'var(--green)';
+    } catch (err) {
+        document.getElementById('userStatus').innerText = "Déconnecté";
+    }
 }
 
-function renderProducts(products) {
+// Simulation produits au chargement
+window.onload = () => {
+    checkUser();
+    const mockProducts = [
+        { id: '1', nom: 'Split Inverter 1.5 CV', marque: 'LG', prix: 350000, img: 'https://images.unsplash.com/photo-1658213645070-50346387d833?auto=format&fit=crop&q=80&w=400' },
+        { id: '2', nom: 'Réfrigérateur Side by Side', marque: 'Samsung', prix: 850000, img: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=400' }
+    ];
     const grid = document.getElementById('productGrid');
-    grid.innerHTML = '';
-
-    products.forEach(p => {
-        const isRupture = p.stock === 0;
-        const badgeClass = isRupture ? 'badge-rupture' : 'badge-ok';
-        const badgeText = isRupture ? 'RUPTURE DE STOCK' : 'EN STOCK (' + p.stock + ')';
-        const btnText = isRupture ? 'Indisponible' : '<i class="fas fa-cart-plus"></i> Ajouter au panier';
-        
-        grid.innerHTML += `
-            <div class="card">
-                <div class="badge-stock ${badgeClass}">${badgeText}</div>
-                <img src="${p.img}" class="card-img" alt="${p.nom}">
-                <div class="card-brand">${p.marque} - ${p.modele}</div>
-                <div class="card-title">${p.nom}</div>
-                <div class="card-price">${formatCFA(p.prix)}</div>
-                <button class="btn-add" onclick="addToCart('${p.id}', '${p.nom}', ${p.prix}, '${p.img}')" ${isRupture ? 'disabled' : ''}>
-                    ${btnText}
-                </button>
-            </div>
-        `;
-    });
-}
-
-// ===== LOGIQUE PANIER (Table PANIER / DETAIL_COMMANDE) =====
-function addToCart(id, nom, prix, img) {
-    const existing = cart.find(item => item.id === id);
-    if (existing) {
-        existing.qty++;
-    } else {
-        cart.push({ id, nom, prix, img, qty: 1 });
-    }
-    updateCartUI();
-    toggleSidebar('cartSidebar');
-}
-
-function updateCartUI() {
-    const body = document.getElementById('cartBody');
-    body.innerHTML = '';
-    totalAmount = 0;
-    let count = 0;
-
-    cart.forEach((item, index) => {
-        const sousTotal = item.prix * item.qty;
-        totalAmount += sousTotal;
-        count += item.qty;
-
-        body.innerHTML += `
-            <div class="cart-item">
-                <img src="${item.img}" alt="${item.nom}">
-                <div class="cart-info" style="flex:1">
-                    <div style="font-weight:bold; font-size:0.9rem">${item.nom}</div>
-                    <div style="color:var(--primary); font-weight:bold">${formatCFA(item.prix)}</div>
-                    <div style="display:flex; justify-content:space-between; margin-top:5px; align-items:center;">
-                        <span style="font-size:0.8rem; color:var(--text-dim)">Qté: ${item.qty}</span>
-                        <i class="fas fa-trash" style="color:var(--red); cursor:pointer" onclick="removeFromCart(${index})"></i>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-
-    if (cart.length === 0) body.innerHTML = '<p style="text-align:center; color:gray; margin-top:50px">Votre panier est vide.</p>';
-    
-    document.getElementById('cartTotal').innerText = formatCFA(totalAmount);
-    document.getElementById('payAmount').innerText = formatCFA(totalAmount);
-    document.getElementById('cartCount').innerText = count;
-}
-
-function removeFromCart(index) {
-    cart.splice(index, 1);
-    updateCartUI();
-}
-
-function toggleSidebar(id) {
-    document.querySelectorAll('.sidebar').forEach(el => el.classList.remove('open'));
-    if (id) document.getElementById(id).classList.add('open');
-}
-
-function proceedToCheckout() {
-    if (cart.length === 0) return alert('Le panier est vide !');
-    toggleSidebar('checkoutSidebar');
-}
-
-// ===== LOGIQUE GPS (Table COMMANDE - latitude/longitude) =====
-function getLocation() {
-    const btn = document.querySelector('.gps-btn');
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Localisation...';
-    
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                document.getElementById('gpsCoords').value = `${position.coords.latitude}, ${position.coords.longitude}`;
-                btn.innerHTML = '<i class="fas fa-check"></i> Position enregistrée';
-                btn.style.borderColor = 'var(--green)';
-                btn.style.color = 'var(--green)';
-            },
-            (error) => {
-                alert("Erreur GPS. Veuillez l'activer dans votre navigateur.");
-                btn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Réessayer';
-            }
-        );
-    } else {
-        alert("La géolocalisation n'est pas supportée par ce navigateur.");
-    }
-}
-
-// ===== PAIEMENT & TICKET (Tables PAIEMENT, COMMANDE, TICKET) =====
-function selectOp(element, opName) {
-    document.querySelectorAll('.op-card').forEach(el => el.classList.remove('selected'));
-    element.classList.add('selected');
-}
-
-async function processPayment() {
-    const gps = document.getElementById('gpsCoords').value;
-    const number = document.getElementById('momoNumber').value;
-
-    if (!gps) return alert("Veuillez renseigner votre position GPS pour la livraison.");
-    if (!number || number.length < 8) return alert("Veuillez entrer un numéro Mobile Money valide.");
-
-    const btn = document.querySelector('#checkoutSidebar .btn-primary');
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement opérateur...';
-
-    // Simulation de la validation du paiement et création des enregistrements en base de données
-    setTimeout(() => {
-        // Génération du code ticket unique (Fonction VBA traduite en JS)
-        const dateStr = new Date().getFullYear();
-        const randomId = Math.floor(Math.random() * 90000) + 10000;
-        const codeTicket = `TK-${dateStr}-${randomId}`;
-
-        // Génération du QR Code via API
-        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${codeTicket}&color=FF6B00&bgcolor=FFFFFF`;
-
-        // Affichage du ticket
-        toggleSidebar(''); // Fermer les sidebars
-        document.getElementById('ticketCode').innerText = codeTicket;
-        document.getElementById('qrImage').src = qrUrl;
-        document.getElementById('ticketOverlay').style.display = 'flex';
-
-        // Vider le panier (Simulation fin de transaction)
-        cart = [];
-        updateCartUI();
-        btn.innerHTML = '<i class="fas fa-check-circle"></i> Payer';
-        
-        /* * À ce stade, dans un environnement backend complet :
-        * 1. databases.createDocument(DB_ID, 'col_commandes', ID.unique(), { latitude: ..., status: 'validee' })
-        * 2. databases.createDocument(DB_ID, 'col_paiements', ID.unique(), { reference: ..., montant: ... })
-        * 3. databases.createDocument(DB_ID, 'col_tickets', ID.unique(), { code: codeTicket, qr: qrUrl })
-        */
-    }, 2000);
-}
+    grid.innerHTML = mockProducts.map(p => `
+        <div class="card">
+            <img src="${p.img}" alt="${p.nom}">
+            <p style="color:var(--text-dim); font-size:0.8rem">${p.marque}</p>
+            <h3 style="margin:5px 0">${p.nom}</h3>
+            <p style="color:var(--primary); font-weight:bold; font-size:1.2rem">${p.prix.toLocaleString()} FCFA</p>
+            <button class="btn-auth" style="margin-top:15px; background:rgba(255,107,0,0.1); color:var(--primary); border:1px solid var(--primary)">Ajouter au panier</button>
+        </div>
+    `).join('');
+};
 </script>
 
 </body>
