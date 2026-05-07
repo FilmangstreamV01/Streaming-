@@ -13,388 +13,186 @@
 
 <style>
 :root {
-    --accent: #EAB308; /* Gold */
-    --accent-glow: rgba(234, 179, 8, 0.3);
+    --accent: #EAB308;
     --bg: #050505;
     --card: #0F0F0F;
     --glass: rgba(255, 255, 255, 0.03);
     --border: rgba(255, 255, 255, 0.08);
     --text: #F8FAFC;
     --text-dim: #94A3B8;
-    --error: #EF4444;
-    --success: #22C55E;
     --radius-lg: 24px;
     --radius-md: 12px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { 
-    background: var(--bg); 
-    color: var(--text); 
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    line-height: 1.6;
-    overflow-x: hidden;
-}
+body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
 
-h1, h2, h3, .logo { font-family: 'Clash Display', sans-serif; font-weight: 700; }
-
-/* === NAVIGATION PREMIUM === */
+/* === NAVIGATION & SEARCH === */
 nav {
     position: fixed; top: 0; width: 100%; z-index: 1000;
-    background: rgba(5, 5, 5, 0.8); backdrop-filter: blur(20px);
+    background: rgba(5, 5, 5, 0.9); backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
-    padding: 1.2rem 5%;
-    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 5%; display: flex; align-items: center; justify-content: space-between; gap: 20px;
 }
-.logo { font-size: 1.5rem; color: var(--accent); letter-spacing: 2px; }
-.nav-tools { display: flex; gap: 1.5rem; align-items: center; }
-.tool-icon { 
-    font-size: 1.2rem; cursor: pointer; transition: 0.3s; 
-    color: var(--text); position: relative;
-}
-.tool-icon:hover { color: var(--accent); transform: translateY(-2px); }
-.badge {
-    position: absolute; -top: 8px; -right: 10px;
-    background: var(--accent); color: #000;
-    font-size: 0.7rem; font-weight: 900;
-    width: 18px; height: 18px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-}
+.logo { font-family: 'Clash Display'; font-size: 1.4rem; color: var(--accent); white-space: nowrap; }
 
-/* === HERO SECTION === */
-.hero {
-    height: 60vh;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    text-align: center; background: radial-gradient(circle at center, #1a1a00 0%, var(--bg) 70%);
-    padding: 0 10%; margin-top: 60px;
+.search-container {
+    flex: 1; max-width: 600px; position: relative;
 }
-.hero h1 { font-size: clamp(2rem, 5vw, 4rem); margin-bottom: 1rem; }
-.hero span { color: var(--accent); }
+.search-container input {
+    width: 100%; background: var(--glass); border: 1px solid var(--border);
+    padding: 0.7rem 1rem 0.7rem 2.5rem; border-radius: 30px; color: #fff; outline: none;
+}
+.search-container i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-dim); }
 
-/* === GRID PRODUITS === */
-.container { padding: 4rem 5%; }
-.section-title { margin-bottom: 2rem; font-size: 1.8rem; }
-.product-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;
-}
+/* === PRODUCT GRID === */
+.container { padding: 8rem 5% 4rem; }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
 
 .p-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); padding: 1.5rem;
-    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 1.5rem; position: relative; transition: 0.3s;
 }
-.p-card:hover { border-color: var(--accent); transform: scale(1.02); }
-.p-img-box {
-    width: 100%; height: 220px; background: #fff; border-radius: var(--radius-md);
-    margin-bottom: 1.5rem; overflow: hidden; display: flex; align-items: center; justify-content: center;
-}
-.p-img-box img { max-width: 80%; max-height: 80%; transition: 0.5s; }
-.p-card:hover img { transform: scale(1.1); }
+.p-card:hover { border-color: var(--accent); transform: translateY(-5px); }
 
-.p-tag {
-    position: absolute; top: 1.5rem; left: 1.5rem;
-    padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.7rem; font-weight: 800;
+.promo-badge {
+    position: absolute; top: 1rem; right: 1rem; background: #EF4444; color: white;
+    padding: 3px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 800; z-index: 2;
 }
-.tag-instock { background: var(--success); color: #000; }
-.tag-out { background: var(--error); color: #fff; }
 
-.p-price { font-size: 1.5rem; font-weight: 700; color: var(--accent); margin: 0.5rem 0; }
-.btn-buy {
-    width: 100%; padding: 1rem; border-radius: var(--radius-md);
-    background: var(--accent); border: none; font-weight: 700;
-    cursor: pointer; transition: 0.3s;
-}
-.btn-buy:disabled { background: #333; color: #777; cursor: not-allowed; }
+.p-img { width: 100%; height: 200px; object-fit: contain; margin-bottom: 1rem; }
+.rating { color: var(--accent); font-size: 0.8rem; margin-bottom: 0.5rem; }
 
-/* === AUTH OVERLAY (Strict MCD Compliance) === */
-.overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-    z-index: 2000; display: none; align-items: center; justify-content: center;
-}
-.auth-box {
-    background: var(--card); border: 1px solid var(--border);
-    width: 90%; max-width: 500px; padding: 2.5rem; border-radius: var(--radius-lg);
-    max-height: 85vh; overflow-y: auto;
-}
-.auth-tabs { display: flex; gap: 2rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); }
-.tab { padding-bottom: 0.5rem; cursor: pointer; color: var(--text-dim); font-weight: 600; }
-.tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+.price-box { display: flex; align-items: center; gap: 10px; margin: 0.5rem 0; }
+.old-price { text-decoration: line-through; color: var(--text-dim); font-size: 0.9rem; }
+.current-price { color: var(--accent); font-size: 1.3rem; font-weight: 800; }
 
-.input-group { margin-bottom: 1.2rem; }
-.input-group label { display: block; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.4rem; text-transform: uppercase; }
-.input-group input {
-    width: 100%; background: var(--glass); border: 1px solid var(--border);
-    padding: 0.8rem 1rem; border-radius: var(--radius-md); color: #fff; outline: none;
+/* === PROGRESS MODAL (MCD SIMULATION) === */
+.step-box { text-align: center; padding: 20px; }
+.loader {
+    width: 48px; height: 48px; border: 5px solid #FFF; border-bottom-color: var(--accent);
+    border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite;
+    margin-bottom: 15px;
 }
-.input-group input:focus { border-color: var(--accent); }
+@keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* === CHECKOUT & QR TICKET === */
-.ticket-box {
-    background: #fff; color: #000; padding: 2rem; border-radius: var(--radius-lg);
-    text-align: center; width: 320px;
-}
-.qr-code { margin: 1.5rem 0; padding: 1rem; border: 1px solid #eee; }
-.qr-code img { width: 100%; }
-
-/* Mobile Adaptations */
-@media (max-width: 768px) {
-    .product-grid { grid-template-columns: 1fr; }
-}
+/* Reutilisation des styles overlays precedents */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; }
+.modal-content { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; width: 100%; max-width: 450px; }
+.btn-gold { width: 100%; padding: 1rem; background: var(--accent); color: #000; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
 </style>
 </head>
 <body>
 
 <nav>
     <div class="logo">ELECTRO-GOLD</div>
-    <div class="nav-tools">
-        <div class="tool-icon" onclick="openAuth()">
-            <i class="fa-regular fa-user"></i>
-            <span id="userName" style="font-size: 0.7rem; margin-left: 5px;">Connexion</span>
-        </div>
-        <div class="tool-icon" onclick="toggleCart()">
-            <i class="fa-solid fa-cart-shopping"></i>
-            <div class="badge" id="cartCount">0</div>
-        </div>
+    <div class="search-container">
+        <i class="fa fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Chercher un frigo, TV, Split..." onkeyup="filterProducts()">
+    </div>
+    <div style="display: flex; gap: 15px;">
+        <i class="fa-regular fa-user" style="cursor:pointer" onclick="openAuth()"></i>
+        <i class="fa-solid fa-cart-shopping" style="cursor:pointer"></i>
     </div>
 </nav>
 
-<section class="hero">
-    <h1>L'Élite de <span>l'Électroménager</span></h1>
-    <p>La technologie de pointe rencontre le design d'exception. Livraison GPS incluse.</p>
-</section>
-
 <div class="container">
-    <h2 class="section-title">Collection Exclusive</h2>
-    <div class="product-grid" id="mainGrid">
-        </div>
+    <h2 style="margin-bottom: 2rem; font-family: 'Clash Display'">Catalogue Électroménager</h2>
+    <div class="product-grid" id="productGrid"></div>
 </div>
 
-<div class="overlay" id="authOverlay">
-    <div class="auth-box">
-        <div class="auth-tabs">
-            <div class="tab active" id="t-login" onclick="switchTab('login')">CONNEXION</div>
-            <div class="tab" id="t-reg" onclick="switchTab('register')">INSCRIPTION</div>
+<div class="overlay" id="processOverlay">
+    <div class="modal-content">
+        <div class="step-box" id="step1">
+            <span class="loader"></span>
+            <h3>Traitement du paiement...</h3>
+            <p style="color:var(--text-dim)">Veuillez valider le message sur votre téléphone.</p>
         </div>
-
-        <form id="formLogin">
-            <div class="input-group">
-                <label>Email Professionnel</label>
-                <input type="email" id="logEmail" placeholder="nom@exemple.com" required>
-            </div>
-            <div class="input-group">
-                <label>Mot de passe</label>
-                <input type="password" id="logPass" placeholder="••••••••" required>
-            </div>
-            <button type="submit" class="btn-buy">ACCÉDER À MON COMPTE</button>
-        </form>
-
-        <form id="formRegister" style="display:none;">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div class="input-group">
-                    <label>Nom</label>
-                    <input type="text" id="regNom" required>
-                </div>
-                <div class="input-group">
-                    <label>Prénom</label>
-                    <input type="text" id="regPrenom" required>
-                </div>
-            </div>
-            <div class="input-group">
-                <label>Email (Login)</label>
-                <input type="email" id="regEmail" required>
-            </div>
-            <div class="input-group">
-                <label>Téléphone Mobile Money</label>
-                <input type="tel" id="regTel" required>
-            </div>
-            <div class="input-group">
-                <label>Ville de résidence</label>
-                <input type="text" id="regVille" required>
-            </div>
-            <div class="input-group">
-                <label>Adresse / Rue / Quartier</label>
-                <input type="text" id="regRue" required>
-            </div>
-            <div class="input-group">
-                <label>Créer un mot de passe</label>
-                <input type="password" id="regPass" placeholder="8 caractères min." required>
-            </div>
-            <button type="submit" class="btn-buy">CRÉER MON PROFIL CLIENT</button>
-        </form>
-        <p id="authError" style="color:var(--error); font-size:0.8rem; margin-top:10px; text-align:center;"></p>
-    </div>
-</div>
-
-<div class="overlay" id="ticketOverlay">
-    <div class="ticket-box">
-        <h3 style="color:var(--accent)">COMMANDE VALIDÉE</h3>
-        <p style="font-size: 0.8rem; color: #666;">Référence : <span id="tkRef">---</span></p>
-        <div class="qr-code">
-            <img id="qrImg" src="" alt="QR Code">
+        <div class="step-box" id="step2" style="display:none;">
+            <i class="fas fa-user-shield" style="font-size:3rem; color:var(--accent); margin-bottom:15px"></i>
+            <h3>Vérification Administrative</h3>
+            <p>Veuillez patienter pendant que l'administrateur approuve votre commande (MCD Table: COMMANDE)...</p>
         </div>
-        <p style="font-size: 0.7rem; line-height: 1.2;">Présentez ce QR Code au livreur dès son arrivée à votre position GPS.</p>
-        <button class="btn-buy" style="margin-top: 1rem; background: #000; color: #fff;" onclick="location.reload()">FERMER</button>
+        <div class="step-box" id="step3" style="display:none;">
+            <i class="fas fa-check-circle" style="font-size:3rem; color:#22C55E; margin-bottom:15px"></i>
+            <h3 id="finalMsg">Commande Approuvée !</h3>
+            <p id="subFinalMsg" style="font-size: 0.9rem; margin-top:10px"></p>
+            <div id="qrPlaceholder" style="margin-top:20px; background:#fff; padding:10px; border-radius:10px; display:inline-block;"></div>
+            <button class="btn-gold" style="margin-top:20px" onclick="location.reload()">TERMINER</button>
+        </div>
     </div>
 </div>
 
 <script>
-/**
- * CONFIGURATION APPWRITE
- */
-const { Client, Account, Databases, ID } = Appwrite;
-const client = new Client()
-    .setEndpoint('https://cloud.appwrite.io/v1')
-    .setProject('698f97e3001c4c48d6d7'); // Remplace par ton ID réel
-
-const account = new Account(client);
-const databases = new Databases(client);
-
-// IDs Collections (Selon ton MCD)
-const DB_ID = 'electromenager_db';
-const COL_CLIENT = 'clients';
-const COL_PRODUIT = 'produits';
-
-/**
- * SIMULATION DONNÉES (MCD Compliance)
- */
+// DONNÉES PRODUITS (Inclus Promos & Notes selon MCD)
 const products = [
-    { id: '1', nom: 'Réfrigérateur No Frost 350L', marque: 'Samsung', prix: 285000, stock: 12, img: 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?q=80&w=400' },
-    { id: '2', nom: 'Lave-linge Smart AI 9kg', marque: 'LG', prix: 345000, stock: 5, img: 'https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?q=80&w=400' },
-    { id: '3', nom: 'Congélateur Coffre 500L', marque: 'Whirlpool', prix: 425000, stock: 0, img: 'https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?q=80&w=400' }, // RUPTURE
-    { id: '4', nom: 'Split Inverter 2CV Luxe', marque: 'Midea', prix: 295000, stock: 8, img: 'https://images.unsplash.com/photo-1658213645070-50346387d833?q=80&w=400' }
+    { id: 1, nom: "Smart TV LG 55' OLED", marque: "LG", prix: 650000, promo: 580000, note: 4.8, stock: 5, img: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?q=80&w=400" },
+    { id: 2, nom: "Réfrigérateur Américain BEKO", marque: "Beko", prix: 890000, promo: null, note: 4.5, stock: 3, img: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=400" },
+    { id: 3, nom: "Split Inverter 1.5 CV", marque: "Midea", prix: 285000, promo: 245000, note: 4.2, stock: 10, img: "https://images.unsplash.com/photo-1658213645070-50346387d833?q=80&w=400" },
+    { id: 4, nom: "Machine à laver 9kg", marque: "Samsung", prix: 375000, promo: null, note: 4.7, stock: 6, img: "https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?q=80&w=400" }
 ];
 
-/**
- * INITIALISATION & RENDU
- */
-window.onload = () => {
-    checkUser();
-    renderProducts();
-};
-
-function renderProducts() {
-    const grid = document.getElementById('mainGrid');
-    grid.innerHTML = products.map(p => {
-        const isOut = p.stock === 0;
-        return `
-            <div class="p-card">
-                <span class="p-tag ${isOut ? 'tag-out' : 'tag-instock'}">
-                    ${isOut ? 'RUPTURE DE STOCK' : 'EN STOCK'}
-                </span>
-                <div class="p-img-box">
-                    <img src="${p.img}" alt="${p.nom}">
-                </div>
-                <p style="color:var(--text-dim); font-size:0.75rem; letter-spacing:1px">${p.marque}</p>
-                <h3 style="font-size:1.1rem; height:45px">${p.nom}</h3>
-                <p class="p-price">${p.prix.toLocaleString()} <span style="font-size:0.8rem">FCFA</span></p>
-                <button class="btn-buy" ${isOut ? 'disabled' : ''} onclick="processOrder('${p.id}', ${p.prix})">
-                    ${isOut ? 'INDISPONIBLE' : 'COMMANDER MAINTENANT'}
-                </button>
+function renderProducts(list = products) {
+    const grid = document.getElementById('productGrid');
+    grid.innerHTML = list.map(p => `
+        <div class="p-card">
+            ${p.promo ? `<div class="promo-badge">PROMO</div>` : ''}
+            <img src="${p.img}" alt="${p.nom}" class="p-img">
+            <div class="rating">
+                ${Array(5).fill().map((_, i) => `<i class="fa${i < Math.floor(p.note) ? 's' : 'r'} fa-star"></i>`).join('')}
+                <span style="color:var(--text-dim)">(${p.note})</span>
             </div>
-        `;
-    }).join('');
+            <h3 style="font-size:1.1rem">${p.nom}</h3>
+            <div class="price-box">
+                ${p.promo ? `<span class="old-price">${p.prix.toLocaleString()} F</span>` : ''}
+                <span class="current-price">${(p.promo || p.prix).toLocaleString()} FCFA</span>
+            </div>
+            <button class="btn-gold" onclick="startCheckout(${p.id})">COMMANDER</button>
+        </div>
+    `).join('');
 }
 
-/**
- * AUTHENTIFICATION (createEmailPasswordSession)
- */
-function openAuth() { document.getElementById('authOverlay').style.display = 'flex'; }
-function switchTab(type) {
-    const isLog = type === 'login';
-    document.getElementById('formLogin').style.display = isLog ? 'block' : 'none';
-    document.getElementById('formRegister').style.display = isLog ? 'none' : 'block';
-    document.getElementById('t-login').classList.toggle('active', isLog);
-    document.getElementById('t-reg').classList.toggle('active', !isLog);
+// BARRE DE RECHERCHE FONCTIONNELLE
+function filterProducts() {
+    const term = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = products.filter(p => 
+        p.nom.toLowerCase().includes(term) || 
+        p.marque.toLowerCase().includes(term)
+    );
+    renderProducts(filtered);
 }
 
-// Inscription (Respect MCD : CLIENT table)
-document.getElementById('formRegister').onsubmit = async (e) => {
-    e.preventDefault();
-    const btn = e.target.querySelector('button');
-    btn.innerText = "CRÉATION EN COURS...";
+// SIMULATION DU FLUX MCD (Tunnel de commande)
+async function startCheckout(productId) {
+    const prod = products.find(p => p.id === productId);
+    document.getElementById('processOverlay').style.display = 'flex';
     
-    const clientData = {
-        nom: document.getElementById('regNom').value,
-        prenom: document.getElementById('regPrenom').value,
-        email: document.getElementById('regEmail').value,
-        tel: document.getElementById('regTel').value,
-        ville: document.getElementById('regVille').value,
-        rue: document.getElementById('regRue').value,
-        pass: document.getElementById('regPass').value
-    };
+    // Étape 1 : Simulation Paiement (3s)
+    await new Promise(r => setTimeout(r, 2500));
+    document.getElementById('step1').style.display = 'none';
+    document.getElementById('step2').style.display = 'block';
 
-    try {
-        // 1. Création compte Auth
-        await account.create(ID.unique(), clientData.email, clientData.pass, clientData.prenom + ' ' + clientData.nom);
-        // 2. Connexion
-        await account.createEmailPasswordSession(clientData.email, clientData.pass);
-        // 3. Document CLIENT en BDD
-        await databases.createDocument(DB_ID, COL_CLIENT, ID.unique(), {
-            nom: clientData.nom,
-            prenom: clientData.prenom,
-            email: clientData.email,
-            telephone: clientData.tel,
-            ville: clientData.ville,
-            adresseRue: clientData.rue,
-            statut: 'actif'
-        });
-        location.reload();
-    } catch (err) {
-        document.getElementById('authError').innerText = "Erreur : " + err.message;
-        btn.innerText = "CRÉER MON PROFIL CLIENT";
-    }
-};
+    // Étape 2 : Simulation Approbation Admin (MCD Logic) (5s)
+    await new Promise(r => setTimeout(r, 5000));
+    document.getElementById('step2').style.display = 'none';
+    document.getElementById('step3').style.display = 'block';
 
-// Connexion (Correction createEmailPasswordSession)
-document.getElementById('formLogin').onsubmit = async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('logEmail').value;
-    const pass = document.getElementById('logPass').value;
-
-    try {
-        // Nettoyer les sessions existantes avant de se connecter
-        try { await account.deleteSession('current'); } catch(e) {}
-        
-        await account.createEmailPasswordSession(email, pass);
-        location.reload();
-    } catch (err) {
-        document.getElementById('authError').innerText = "Identifiant incorrect ou erreur réseau.";
-    }
-};
-
-async function checkUser() {
-    try {
-        const user = await account.get();
-        document.getElementById('userName').innerText = user.name;
-        document.getElementById('userName').style.color = 'var(--accent)';
-    } catch (e) {
-        document.getElementById('userName').innerText = "Connexion";
-    }
-}
-
-/**
- * SIMULATION COMMANDE & PAIEMENT (MCD : COMMANDE, PAIEMENT, TICKET)
- */
-async function processOrder(pid, prix) {
-    // 1. Vérification session
-    try { await account.get(); } catch(e) { return openAuth(); }
-
-    // 2. Simulation GPS (Table COMMANDE latitude/longitude)
-    alert("📍 Initialisation du tracking GPS pour le livreur...");
+    // Étape 3 : Message de l'Administrateur & Ticket
+    const ticketCode = "TKT-" + Math.floor(Math.random() * 900000 + 100000);
+    document.getElementById('finalMsg').innerText = "Merci pour votre achat !";
+    document.getElementById('subFinalMsg').innerHTML = `
+        L'administrateur a validé votre commande.<br><br>
+        <strong>Message de l'admin :</strong><br>
+        "Nous allons vous assigner un livreur à votre adresse immédiatement. Merci de garder votre téléphone allumé."
+    `;
     
-    // 3. Simulation Paiement Mobile Money
-    const phone = prompt("Entrez votre numéro Mobile Money pour valider les " + prix.toLocaleString() + " FCFA :");
-    if(!phone) return;
-
-    // 4. Génération Ticket (Table TICKET)
-    const ref = 'TK-' + new Date().getFullYear() + '-' + Math.floor(Math.random()*99999);
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${ref}&color=EAB308&bgcolor=0F0F0F`;
-
-    document.getElementById('tkRef').innerText = ref;
-    document.getElementById('qrImg').src = qrUrl;
-    document.getElementById('ticketOverlay').style.display = 'flex';
+    // Génération du QR Code pour le Ticket (MCD: Table TICKET)
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${ticketCode}&color=EAB308&bgcolor=0F0F0F`;
+    document.getElementById('qrPlaceholder').innerHTML = `<img src="${qrUrl}" alt="Ticket QR"> <br> <small style="color:#000">${ticketCode}</small>`;
 }
+
+// Lancement initial
+renderProducts();
 </script>
 
 </body>
