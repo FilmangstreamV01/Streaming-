@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ELECTRO-GOLD | Plateforme Officielle</title>
+    <title>ELECTRO-GOLD | E-Commerce Premium</title>
     
     <link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -24,277 +24,411 @@
     --radius-md: 12px;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; }
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+body { background: var(--bg); color: var(--text); overflow-x: hidden; }
 
-/* === ÉCRAN DE VERROUILLAGE (AUTH) === */
-#gatekeeper {
-    position: fixed; inset: 0; background: var(--bg); z-index: 9999;
-    display: flex; align-items: center; justify-content: center; padding: 20px;
-}
-.auth-container {
-    background: var(--card); border: 1px solid var(--border);
-    width: 100%; max-width: 450px; padding: 2.5rem; border-radius: var(--radius-lg);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-}
-
-/* === INTERFACE PRINCIPALE (Masquée par défaut) === */
-#mainSite { display: none; height: 100vh; overflow-y: auto; }
-
+/* === NAVIGATION === */
 nav {
     position: fixed; top: 0; width: 100%; z-index: 1000;
     background: rgba(5, 5, 5, 0.9); backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border); padding: 1rem 5%;
     display: flex; align-items: center; justify-content: space-between; gap: 20px;
 }
-.logo { font-family: 'Clash Display'; font-size: 1.4rem; color: var(--accent); letter-spacing: 1px; }
+.logo { font-family: 'Clash Display'; font-size: 1.4rem; color: var(--accent); }
 
-.search-bar {
-    flex: 1; max-width: 500px; position: relative;
-}
+.search-bar { flex: 1; max-width: 500px; position: relative; }
 .search-bar input {
     width: 100%; background: var(--glass); border: 1px solid var(--border);
     padding: 0.7rem 1rem 0.7rem 2.5rem; border-radius: 30px; color: #fff; outline: none;
 }
 .search-bar i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-dim); }
 
-/* === CATALOGUE & PRODUITS === */
-.hero { padding: 8rem 5% 2rem; text-align: center; }
-.hero h1 { font-family: 'Clash Display'; font-size: clamp(1.8rem, 4vw, 3rem); }
-.hero span { color: var(--accent); }
+.nav-actions { display: flex; gap: 20px; align-items: center; }
+.cart-icon { position: relative; cursor: pointer; font-size: 1.2rem; transition: 0.3s; }
+.cart-icon:hover { color: var(--accent); }
+.badge {
+    position: absolute; top: -8px; right: -10px; background: var(--accent); color: #000;
+    font-size: 0.7rem; font-weight: 800; width: 18px; height: 18px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+}
 
-.product-grid { 
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-    gap: 2rem; padding: 2rem 5%; 
-}
-.p-card {
-    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg);
-    padding: 1.5rem; position: relative; transition: 0.3s;
-}
+/* === GRID PRODUITS === */
+.container { padding: 8rem 5% 4rem; }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
+.p-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; position: relative; transition: 0.3s; cursor: pointer; }
 .p-card:hover { border-color: var(--accent); transform: translateY(-5px); }
-.promo-badge {
-    position: absolute; top: 1rem; right: 1rem; background: #EF4444; color: #fff;
-    padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 800;
-}
-.p-img { width: 100%; height: 180px; object-fit: contain; margin-bottom: 1rem; }
-.rating { color: var(--accent); font-size: 0.8rem; margin-bottom: 0.5rem; }
-.current-price { color: var(--accent); font-size: 1.3rem; font-weight: 800; }
-.old-price { text-decoration: line-through; color: var(--text-dim); font-size: 0.9rem; margin-right: 8px; }
+.p-img { width: 100%; height: 180px; object-fit: contain; margin-bottom: 1rem; border-radius: 10px; background: #fff; padding: 10px; }
+.stock-badge { position: absolute; top: 1rem; left: 1rem; padding: 4px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 800; }
+.in-stock { background: #22C55E; color: #000; }
+.out-stock { background: #EF4444; color: #fff; }
 
-/* === FORMULAIRES & BOUTONS === */
-.input-group { margin-bottom: 1rem; }
-.input-group label { display: block; font-size: 0.7rem; color: var(--text-dim); margin-bottom: 5px; text-transform: uppercase; }
-.input-group input {
-    width: 100%; background: var(--glass); border: 1px solid var(--border);
-    padding: 0.8rem; border-radius: 10px; color: #fff; outline: none;
-}
-.btn-gold { 
-    width: 100%; padding: 1rem; background: var(--accent); color: #000; 
-    border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s;
-}
-.btn-gold:hover { opacity: 0.9; transform: scale(0.98); }
+.btn-gold { width: 100%; padding: 1rem; background: var(--accent); color: #000; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+.btn-gold:disabled { background: #333; color: #777; cursor: not-allowed; }
 
-/* === MODAL DE TRAITEMENT (ADMIN SIMULATION) === */
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px; }
-.modal { background: var(--card); border: 1px solid var(--border); padding: 2.5rem; border-radius: var(--radius-lg); text-align: center; max-width: 400px; }
-.loader { width: 40px; height: 40px; border: 4px solid var(--glass); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; margin-bottom: 1rem; }
+/* === OVERLAYS & MODALS === */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
+.modal { background: var(--card); border: 1px solid var(--border); padding: 2rem; border-radius: var(--radius-lg); width: 100%; max-width: 500px; position: relative; }
+.close-btn { position: absolute; top: 1rem; right: 1.5rem; font-size: 1.5rem; cursor: pointer; color: var(--text-dim); }
+.close-btn:hover { color: var(--accent); }
+
+/* === PANIER (SIDEBAR) === */
+.sidebar { position: fixed; top: 0; right: -100%; width: 400px; max-width: 100%; height: 100vh; background: var(--bg); z-index: 3000; border-left: 1px solid var(--border); transition: right 0.4s ease; display: flex; flex-direction: column; }
+.sidebar.open { right: 0; }
+.sb-header { padding: 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.sb-body { flex: 1; overflow-y: auto; padding: 1.5rem; }
+.sb-footer { padding: 1.5rem; border-top: 1px solid var(--border); background: var(--card); }
+
+.cart-item { display: flex; gap: 15px; margin-bottom: 15px; background: var(--card); padding: 10px; border-radius: 12px; border: 1px solid var(--border); }
+.cart-item img { width: 60px; height: 60px; object-fit: contain; background: #fff; border-radius: 8px; }
+
+/* === PAIEMENT === */
+.op-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
+.op-card { border: 1px solid var(--border); padding: 15px; text-align: center; border-radius: 12px; cursor: pointer; transition: 0.3s; }
+.op-card.selected { border-color: var(--accent); background: rgba(234, 179, 8, 0.1); }
+.input-control { width: 100%; background: var(--glass); border: 1px solid var(--border); padding: 1rem; border-radius: 10px; color: #fff; margin-bottom: 1rem; outline: none; }
+
+/* === COMMENTAIRES === */
+.review-box { background: var(--glass); padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid var(--border); }
+.stars i { color: var(--accent); }
+.stars-input i { color: var(--text-dim); font-size: 1.5rem; cursor: pointer; transition: 0.2s; }
+.stars-input i.active { color: var(--accent); }
+
+/* Loader */
+.loader { width: 40px; height: 40px; border: 4px solid var(--glass); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; margin-bottom: 15px; }
 @keyframes spin { to { transform: rotate(360deg); } }
-
 </style>
 </head>
 <body>
 
-<div id="gatekeeper">
-    <div class="auth-container">
-        <h2 style="font-family:'Clash Display'; margin-bottom: 1.5rem; text-align: center;" id="authTitle">Bienvenue</h2>
-        
-        <div style="display:flex; gap:20px; margin-bottom:1.5rem; border-bottom:1px solid var(--border)">
-            <p id="tabLogin" onclick="toggleAuth('login')" style="cursor:pointer; padding-bottom:10px; color:var(--accent); border-bottom:2px solid var(--accent)">Connexion</p>
-            <p id="tabReg" onclick="toggleAuth('reg')" style="cursor:pointer; padding-bottom:10px; color:var(--text-dim)">Inscription</p>
+<div class="overlay" id="gatekeeper" style="display:flex; z-index:9999;">
+    <div class="modal">
+        <h2 style="font-family:'Clash Display'; text-align:center; margin-bottom:20px;">Accès ELECTRO-GOLD</h2>
+        <div style="display:flex; gap:20px; border-bottom:1px solid var(--border); margin-bottom:20px;">
+            <p id="tabLog" onclick="switchAuth('log')" style="cursor:pointer; padding-bottom:10px; color:var(--accent); border-bottom:2px solid var(--accent)">Connexion</p>
+            <p id="tabReg" onclick="switchAuth('reg')" style="cursor:pointer; padding-bottom:10px; color:var(--text-dim)">Inscription</p>
         </div>
 
-        <form id="loginForm">
-            <div class="input-group">
-                <label>Email</label>
-                <input type="email" id="logEmail" placeholder="votre@email.com" required>
-            </div>
-            <div class="input-group">
-                <label>Mot de passe</label>
-                <input type="password" id="logPass" placeholder="••••••••" required>
-            </div>
-            <button type="submit" class="btn-gold">SE CONNECTER</button>
+        <form id="formLog">
+            <input type="email" id="logEmail" class="input-control" placeholder="Email" required>
+            <input type="password" id="logPass" class="input-control" placeholder="Mot de passe" required>
+            <button type="button" class="btn-gold" onclick="login()">Se Connecter</button>
         </form>
 
-        <form id="regForm" style="display:none;">
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
-                <div class="input-group"><label>Nom</label><input type="text" id="regNom" required></div>
-                <div class="input-group"><label>Prénom</label><input type="text" id="regPrenom" required></div>
+        <form id="formReg" style="display:none;">
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="regNom" class="input-control" placeholder="Nom" required>
+                <input type="text" id="regPrenom" class="input-control" placeholder="Prénom" required>
             </div>
-            <div class="input-group"><label>Email</label><input type="email" id="regEmail" required></div>
-            <div class="input-group"><label>Téléphone Mobile Money</label><input type="tel" id="regTel" required></div>
-            <div class="input-group"><label>Ville</label><input type="text" id="regVille" required></div>
-            <div class="input-group"><label>Rue / Quartier</label><input type="text" id="regRue" required></div>
-            <div class="input-group"><label>Mot de passe (8+ car.)</label><input type="password" id="regPass" required></div>
-            <button type="submit" class="btn-gold">CRÉER MON COMPTE</button>
+            <input type="email" id="regEmail" class="input-control" placeholder="Email" required>
+            <input type="password" id="regPass" class="input-control" placeholder="Mot de passe" required>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px; background:var(--glass); padding:10px; border-radius:10px; border:1px solid var(--border);">
+                <i class="fas fa-map-marker-alt" style="color:#EF4444;"></i>
+                <input type="text" id="regGPS" placeholder="Coordonnées GPS (Ex: 6.36, 2.42)" style="background:transparent; border:none; color:#fff; width:100%; outline:none;" required>
+            </div>
+            <button type="button" class="btn-gold" onclick="register()">Créer mon compte Client</button>
         </form>
-        <p id="authMsg" style="color:#EF4444; font-size:0.8rem; margin-top:10px; text-align:center"></p>
     </div>
 </div>
 
-<div id="mainSite">
+<div id="mainSite" style="display:none;">
     <nav>
         <div class="logo">ELECTRO-GOLD</div>
         <div class="search-bar">
             <i class="fa fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Rechercher un produit..." onkeyup="search()">
+            <input type="text" id="searchInput" placeholder="Rechercher un produit, catégorie..." onkeyup="filterProducts()">
         </div>
-        <div style="display:flex; gap:15px; align-items:center">
-            <span id="uName" style="color:var(--accent); font-weight:700; font-size:0.8rem"></span>
-            <i class="fas fa-sign-out-alt" style="cursor:pointer" onclick="logout()"></i>
+        <div class="nav-actions">
+            <span id="userNameDisplay" style="font-size:0.8rem; font-weight:bold;"></span>
+            <div class="cart-icon" onclick="toggleCart()">
+                <i class="fas fa-shopping-cart"></i>
+                <div class="badge" id="cartBadge">0</div>
+            </div>
         </div>
     </nav>
 
-    <section class="hero">
-        <h1>L'Élite de <span>l'Électroménager</span></h1>
-        <p style="color:var(--text-dim); margin-top:10px">Accès exclusif aux membres connectés.</p>
-    </section>
-
-    <div class="product-grid" id="grid"></div>
+    <div class="container">
+        <h2 style="margin-bottom:20px; font-family:'Clash Display'">Catalogue Électroménager</h2>
+        <div class="product-grid" id="grid"></div>
+    </div>
 </div>
 
-<div class="overlay" id="orderOverlay">
-    <div class="modal">
-        <div id="proc-step1">
+<div class="overlay" id="productModal">
+    <div class="modal" style="max-width:600px;">
+        <i class="fas fa-times close-btn" onclick="closeModal('productModal')"></i>
+        <div id="productDetails"></div>
+        
+        <h3 style="margin:20px 0 10px; border-top:1px solid var(--border); padding-top:20px;">Avis & Commentaires</h3>
+        <div id="reviewsContainer" style="max-height:200px; overflow-y:auto; margin-bottom:15px;"></div>
+        
+        <div style="background:var(--card); padding:15px; border-radius:12px; border:1px solid var(--border);">
+            <p style="font-size:0.8rem; margin-bottom:10px; color:var(--text-dim);">Laisser un avis :</p>
+            <div class="stars-input" id="starRating" style="margin-bottom:10px;">
+                <i class="fas fa-star" onclick="setRating(1)"></i><i class="fas fa-star" onclick="setRating(2)"></i>
+                <i class="fas fa-star" onclick="setRating(3)"></i><i class="fas fa-star" onclick="setRating(4)"></i>
+                <i class="fas fa-star" onclick="setRating(5)"></i>
+            </div>
+            <textarea id="reviewText" class="input-control" placeholder="Votre commentaire..." rows="2"></textarea>
+            <button class="btn-gold" style="padding:0.8rem;" onclick="submitReview()">Publier l'avis</button>
+        </div>
+    </div>
+</div>
+
+<div class="sidebar" id="cartSidebar">
+    <div class="sb-header">
+        <h3>Mon Panier</h3>
+        <i class="fas fa-times" style="cursor:pointer; font-size:1.2rem;" onclick="toggleCart()"></i>
+    </div>
+    <div class="sb-body" id="cartBody"></div>
+    <div class="sb-footer">
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:1.2rem; font-weight:bold;">
+            <span>Total:</span> <span id="cartTotal" style="color:var(--accent);">0 FCFA</span>
+        </div>
+        <button class="btn-gold" onclick="openCheckout()">Passer la Commande</button>
+    </div>
+</div>
+
+<div class="overlay" id="checkoutModal">
+    <div class="modal" style="text-align:center;">
+        
+        <div id="step-pay">
+            <i class="fas fa-times close-btn" onclick="closeModal('checkoutModal')"></i>
+            <h3 style="margin-bottom:20px;">Paiement Mobile Money</h3>
+            <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:15px;">Choisissez votre opérateur pour régler <span id="payAmount" style="color:var(--accent); font-weight:bold;"></span></p>
+            <div class="op-grid">
+                <div class="op-card selected" onclick="selectOp(this)">MTN MoMo</div>
+                <div class="op-card" onclick="selectOp(this)">Moov Money</div>
+                <div class="op-card" onclick="selectOp(this)">Orange Money</div>
+                <div class="op-card" onclick="selectOp(this)">Wave</div>
+            </div>
+            <input type="tel" id="momoNum" class="input-control" placeholder="Numéro de téléphone" required>
+            <button class="btn-gold" onclick="processPayment()">Confirmer le paiement</button>
+        </div>
+
+        <div id="step-admin" style="display:none;">
             <span class="loader"></span>
-            <h3>Traitement du paiement...</h3>
-            <p style="color:var(--text-dim); font-size:0.8rem">Vérifiez votre téléphone pour la confirmation Mobile Money.</p>
+            <h3 style="margin-top:15px;">Validation Administrateur</h3>
+            <p style="font-size:0.8rem; color:var(--text-dim); margin-top:10px;">L'administrateur vérifie la réception des fonds et génère votre ticket (Règle de gestion MCD)...</p>
         </div>
-        <div id="proc-step2" style="display:none">
-            <i class="fas fa-user-shield" style="font-size:2.5rem; color:var(--accent); margin-bottom:1rem"></i>
-            <h3>Attente Administrateur</h3>
-            <p>Veuillez patienter, l'administrateur approuve votre commande...</p>
-        </div>
-        <div id="proc-step3" style="display:none">
-            <i class="fas fa-check-circle" style="font-size:2.5rem; color:#22C55E; margin-bottom:1rem"></i>
-            <h3 id="adminTitle">Merci pour votre achat !</h3>
-            <p id="adminMsg" style="font-size:0.85rem; margin:1rem 0"></p>
-            <div id="qrPlace" style="background:#fff; padding:10px; display:inline-block; border-radius:8px"></div>
-            <button class="btn-gold" style="margin-top:1.5rem" onclick="location.reload()">FERMER</button>
+
+        <div id="step-ticket" style="display:none; background:#fff; color:#000; padding:20px; border-radius:15px;">
+            <h3 style="color:var(--accent); font-family:'Clash Display'">TICKET DE LIVRAISON</h3>
+            <p style="font-size:0.7rem; margin-bottom:10px;">Valable 7 jours - Usage unique</p>
+            <div style="border:1px dashed #ccc; padding:15px; margin-bottom:15px;">
+                <img id="qrImg" src="" alt="QR Code Ticket">
+                <p style="font-weight:bold; font-size:1.2rem; margin-top:10px;" id="tkRef"></p>
+            </div>
+            <div style="background:#f8f9fa; padding:10px; border-radius:8px; text-align:left; font-size:0.8rem;">
+                <p><strong><i class="fas fa-truck"></i> Livreur assigné :</strong> Ibrahim (Moto)</p>
+                <p style="margin-top:5px; color:#22C55E;"><strong>Action :</strong> L'adresse GPS a été envoyée au livreur via Google Maps. Veuillez lui présenter ce ticket QR à son arrivée.</p>
+            </div>
+            <button class="btn-gold" style="margin-top:15px; background:#000; color:#fff;" onclick="finishOrder()">Clôturer la commande</button>
         </div>
     </div>
 </div>
 
 <script>
-// CONFIG APPWRITE
-const { Client, Account, ID, Databases } = Appwrite;
-const client = new Client().setEndpoint('https://cloud.appwrite.io/v1').setProject('698f97e3001c4c48d6d7');
-const account = new Account(client);
-const db = new Databases(client);
+// --- DONNÉES SIMULÉES ---
+let currentUser = null;
+let cart = [];
+let currentRating = 0;
+let activeProductId = null;
 
-// DONNÉES
 const products = [
-    { id:1, nom:"Réfrigérateur LG InstaView", marque:"LG", prix:950000, promo:890000, note:4.9, img:"https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=400" },
-    { id:2, nom:"Split Inverter 2CV Luxe", marque:"Midea", prix:320000, promo:285000, note:4.7, img:"https://images.unsplash.com/photo-1658213645070-50346387d833?q=80&w=400" },
-    { id:3, nom:"Smart TV Samsung 65' QLED", marque:"Samsung", prix:750000, promo:null, note:4.8, img:"https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?q=80&w=400" },
-    { id:4, nom:"Machine à laver EcoBubble 9kg", marque:"Samsung", prix:410000, promo:380000, note:4.5, img:"https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?q=80&w=400" }
+    { id: 1, nom: "Smart TV LG OLED 55'", cat: "Téléviseurs", prix: 650000, stock: 5, img: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?q=80&w=400", 
+      avis: [{ user: "Marc", note: 5, text: "Image incroyable !" }, { user: "Sophie", note: 4, text: "Bon son, mais un peu chère." }] },
+    { id: 2, nom: "Réfrigérateur Américain BEKO", cat: "Réfrigérateurs", prix: 890000, stock: 0, img: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=400", 
+      avis: [] }, // STOCK 0 -> BLOQUÉ
+    { id: 3, nom: "Split Inverter Midea 1.5 CV", cat: "Climatiseurs", prix: 285000, stock: 12, img: "https://images.unsplash.com/photo-1658213645070-50346387d833?q=80&w=400", 
+      avis: [{ user: "Ali", note: 5, text: "Refroidit très vite." }] },
+    { id: 4, nom: "Lave-linge Samsung 9kg", cat: "Machines à Laver", prix: 375000, stock: 3, img: "https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?q=80&w=400", 
+      avis: [] }
 ];
 
-// INITIALISATION
-window.onload = async () => {
-    try {
-        const user = await account.get();
-        showSite(user.name);
-    } catch (e) {
-        document.getElementById('gatekeeper').style.display = 'flex';
-    }
-};
+// --- AUTHENTIFICATION ---
+function switchAuth(mode) {
+    document.getElementById('formLog').style.display = mode === 'log' ? 'block' : 'none';
+    document.getElementById('formReg').style.display = mode === 'reg' ? 'block' : 'none';
+    document.getElementById('tabLog').style.borderBottom = mode === 'log' ? '2px solid var(--accent)' : 'none';
+    document.getElementById('tabReg').style.borderBottom = mode === 'reg' ? '2px solid var(--accent)' : 'none';
+    document.getElementById('tabLog').style.color = mode === 'log' ? 'var(--accent)' : 'var(--text-dim)';
+    document.getElementById('tabReg').style.color = mode === 'reg' ? 'var(--accent)' : 'var(--text-dim)';
+}
 
-function showSite(name) {
+function login() {
+    // Simulation Appwrite Login
+    currentUser = { name: "Client Connecté", email: document.getElementById('logEmail').value };
+    unlockSite();
+}
+
+function register() {
+    // Simulation Appwrite Register
+    const nom = document.getElementById('regNom').value;
+    const gps = document.getElementById('regGPS').value;
+    if(!gps) return alert("L'adresse GPS est obligatoire pour la livraison.");
+    currentUser = { name: nom, gps: gps };
+    unlockSite();
+}
+
+function unlockSite() {
     document.getElementById('gatekeeper').style.display = 'none';
     document.getElementById('mainSite').style.display = 'block';
-    document.getElementById('uName').innerText = name;
-    render(products);
+    document.getElementById('userNameDisplay').innerText = "Salut, " + currentUser.name;
+    renderGrid(products);
 }
 
-function render(list) {
-    document.getElementById('grid').innerHTML = list.map(p => `
+// --- AFFICHAGE PRODUITS ---
+function renderGrid(list) {
+    const grid = document.getElementById('grid');
+    grid.innerHTML = list.map(p => {
+        const isOut = p.stock === 0;
+        const avgNote = p.avis.length > 0 ? (p.avis.reduce((a,b)=>a+b.note,0) / p.avis.length).toFixed(1) : 'N/A';
+        
+        return `
         <div class="p-card">
-            ${p.promo ? `<div class="promo-badge">PROMO</div>` : ''}
-            <img src="${p.img}" class="p-img">
-            <div class="rating">
-                ${Array(5).fill().map((_, i) => `<i class="fa${i < Math.floor(p.note) ? 's' : 'r'} fa-star"></i>`).join('')}
-                <span style="color:var(--text-dim)">(${p.note})</span>
+            <div class="stock-badge ${isOut ? 'out-stock' : 'in-stock'}">
+                ${isOut ? 'RUPTURE DE STOCK' : 'EN STOCK: ' + p.stock}
             </div>
-            <h3 style="font-size:1rem; margin-bottom:5px">${p.nom}</h3>
-            <div style="margin-bottom:1rem">
-                ${p.promo ? `<span class="old-price">${p.prix.toLocaleString()} F</span>` : ''}
-                <span class="current-price">${(p.promo || p.prix).toLocaleString()} FCFA</span>
+            <img src="${p.img}" class="p-img" onclick="openProduct(${p.id})">
+            <div style="color:var(--accent); font-size:0.8rem; margin-bottom:5px;">
+                <i class="fas fa-star"></i> ${avgNote} (${p.avis.length} avis)
             </div>
-            <button class="btn-gold" onclick="order(${p.id})">COMMANDER</button>
-        </div>
-    `).join('');
+            <p style="font-size:0.7rem; color:var(--text-dim)">${p.cat}</p>
+            <h3 style="font-size:1.1rem; margin:5px 0;" onclick="openProduct(${p.id})">${p.nom}</h3>
+            <p style="color:var(--accent); font-weight:800; font-size:1.2rem;">${p.prix.toLocaleString()} FCFA</p>
+            
+            <button class="btn-gold" ${isOut ? 'disabled' : ''} onclick="addToCart(${p.id})">
+                <i class="fas fa-cart-plus"></i> ${isOut ? 'BLOQUÉ' : 'AJOUTER AU PANIER'}
+            </button>
+        </div>`;
+    }).join('');
 }
 
-// AUTH LOGIC
-function toggleAuth(mode) {
-    const isLog = mode === 'login';
-    document.getElementById('loginForm').style.display = isLog ? 'block' : 'none';
-    document.getElementById('regForm').style.display = isLog ? 'none' : 'block';
-    document.getElementById('tabLogin').style.color = isLog ? 'var(--accent)' : 'var(--text-dim)';
-    document.getElementById('tabLogin').style.borderBottom = isLog ? '2px solid var(--accent)' : 'none';
-    document.getElementById('tabReg').style.color = !isLog ? 'var(--accent)' : 'var(--text-dim)';
-    document.getElementById('tabReg').style.borderBottom = !isLog ? '2px solid var(--accent)' : 'none';
+function filterProducts() {
+    const val = document.getElementById('searchInput').value.toLowerCase();
+    renderGrid(products.filter(p => p.nom.toLowerCase().includes(val) || p.cat.toLowerCase().includes(val)));
 }
 
-document.getElementById('loginForm').onsubmit = async (e) => {
-    e.preventDefault();
-    try {
-        await account.createEmailPasswordSession(document.getElementById('logEmail').value, document.getElementById('logPass').value);
-        location.reload();
-    } catch (err) { document.getElementById('authMsg').innerText = "Erreur: Identifiants invalides."; }
-};
-
-document.getElementById('regForm').onsubmit = async (e) => {
-    e.preventDefault();
-    const d = { 
-        n: document.getElementById('regNom').value, 
-        p: document.getElementById('regPrenom').value, 
-        e: document.getElementById('regEmail').value, 
-        pass: document.getElementById('regPass').value 
-    };
-    try {
-        await account.create(ID.unique(), d.e, d.pass, d.p + " " + d.n);
-        await account.createEmailPasswordSession(d.e, d.pass);
-        location.reload();
-    } catch (err) { document.getElementById('authMsg').innerText = "Erreur: " + err.message; }
-};
-
-async function logout() { await account.deleteSession('current'); location.reload(); }
-
-// SEARCH
-function search() {
-    const v = document.getElementById('searchInput').value.toLowerCase();
-    render(products.filter(p => p.nom.toLowerCase().includes(v) || p.marque.toLowerCase().includes(v)));
-}
-
-// ORDER FLOW (MCD)
-async function order(pid) {
-    document.getElementById('orderOverlay').style.display = 'flex';
+// --- AVIS ET DÉTAILS PRODUIT ---
+function openProduct(id) {
+    activeProductId = id;
+    const p = products.find(x => x.id === id);
     
-    // 1. Paiement (2s)
-    await new Promise(r => setTimeout(r, 2000));
-    document.getElementById('proc-step1').style.display = 'none';
-    document.getElementById('proc-step2').style.display = 'block';
+    document.getElementById('productDetails').innerHTML = `
+        <div style="display:flex; gap:20px; align-items:center;">
+            <img src="${p.img}" style="width:100px; height:100px; object-fit:contain; background:#fff; border-radius:10px;">
+            <div>
+                <h2>${p.nom}</h2>
+                <p style="color:var(--accent); font-size:1.2rem; font-weight:bold;">${p.prix.toLocaleString()} FCFA</p>
+            </div>
+        </div>
+    `;
+    
+    const revBox = document.getElementById('reviewsContainer');
+    if(p.avis.length === 0) {
+        revBox.innerHTML = "<p style='color:var(--text-dim); font-size:0.8rem;'>Aucun avis pour l'instant. Soyez le premier !</p>";
+    } else {
+        revBox.innerHTML = p.avis.map(a => `
+            <div class="review-box">
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <strong style="font-size:0.9rem;">${a.user}</strong>
+                    <div class="stars">${Array(a.note).fill('<i class="fas fa-star"></i>').join('')}</div>
+                </div>
+                <p style="font-size:0.85rem; color:var(--text-dim);">${a.text}</p>
+            </div>
+        `).join('');
+    }
+    
+    document.getElementById('productModal').style.display = 'flex';
+}
 
-    // 2. Validation Admin (5s)
-    await new Promise(r => setTimeout(r, 5000));
-    document.getElementById('proc-step2').style.display = 'none';
-    document.getElementById('proc-step3').style.display = 'block';
+function setRating(val) {
+    currentRating = val;
+    const stars = document.getElementById('starRating').children;
+    for(let i=0; i<5; i++) {
+        stars[i].className = i < val ? 'fas fa-star active' : 'fas fa-star';
+    }
+}
 
-    // 3. Ticket & Message
-    const tkt = "TKT-" + Math.floor(Math.random()*899999 + 100000);
-    document.getElementById('adminMsg').innerHTML = `L'administrateur a validé votre commande.<br><br><b>Message officiel :</b><br>"Merci pour votre achat ! Nous allons vous assigner un livreur à votre adresse immédiatement. Merci."`;
-    document.getElementById('qrPlace').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${tkt}&color=EAB308&bgcolor=0F0F0F"><br><small style="color:#000">${tkt}</small>`;
+// --- PANIER (Un ou plusieurs produits) ---
+function toggleCart() { document.getElementById('cartSidebar').classList.toggle('open'); }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+function addToCart(id) {
+    const p = products.find(x => x.id === id);
+    const item = cart.find(x => x.id === id);
+    if(item) {
+        if(item.qty < p.stock) item.qty++;
+        else alert("Stock maximum atteint pour ce produit.");
+    } else {
+        cart.push({ id: p.id, nom: p.nom, prix: p.prix, img: p.img, qty: 1 });
+    }
+    updateCartUI();
+}
+
+function updateCartUI() {
+    const body = document.getElementById('cartBody');
+    let total = 0;
+    document.getElementById('cartBadge').innerText = cart.reduce((a,b)=>a+b.qty, 0);
+    
+    body.innerHTML = cart.map((c, index) => {
+        total += c.prix * c.qty;
+        return `
+        <div class="cart-item">
+            <img src="${c.img}">
+            <div style="flex:1;">
+                <h4 style="font-size:0.9rem;">${c.nom}</h4>
+                <p style="color:var(--accent); font-weight:bold;">${c.prix.toLocaleString()} FCFA</p>
+                <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                    <span style="font-size:0.8rem;">Qté: ${c.qty}</span>
+                    <i class="fas fa-trash" style="color:#EF4444; cursor:pointer;" onclick="cart.splice(${index},1); updateCartUI();"></i>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+    
+    document.getElementById('cartTotal').innerText = total.toLocaleString() + " FCFA";
+}
+
+// --- PROCESSUS DE COMMANDE ---
+function openCheckout() {
+    if(cart.length === 0) return alert("Votre panier est vide.");
+    toggleCart();
+    document.getElementById('checkoutModal').style.display = 'flex';
+    document.getElementById('payAmount').innerText = document.getElementById('cartTotal').innerText;
+}
+
+function selectOp(el) {
+    document.querySelectorAll('.op-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+}
+
+async function processPayment() {
+    if(!document.getElementById('momoNum').value) return alert("Entrez votre numéro de téléphone.");
+    
+    // 1. Cacher Formulaire, Afficher Loading (Validation Admin)
+    document.getElementById('step-pay').style.display = 'none';
+    document.getElementById('step-admin').style.display = 'block';
+
+    // 2. Attente de confirmation (5s - Simulation MCD Admin)
+    await new Promise(r => setTimeout(r, 4000));
+
+    // 3. Génération Ticket
+    const codeTkt = "TK-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*90000+10000);
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${codeTkt}&color=000000&bgcolor=FFFFFF`;
+    
+    document.getElementById('tkRef').innerText = codeTkt;
+    document.getElementById('qrImg').src = qrUrl;
+    
+    document.getElementById('step-admin').style.display = 'none';
+    document.getElementById('step-ticket').style.display = 'block';
+    
+    // Vider panier
+    cart = [];
+    updateCartUI();
+}
+
+function finishOrder() {
+    location.reload();
 }
 </script>
 
