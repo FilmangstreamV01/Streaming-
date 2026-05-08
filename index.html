@@ -55,14 +55,14 @@ nav {
 /* === GRID PRODUITS === */
 .container { padding: 8rem 5% 4rem; }
 .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
-.p-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; position: relative; transition: 0.3s; cursor: pointer; }
+.p-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; position: relative; transition: 0.3s; display: flex; flex-direction: column;}
 .p-card:hover { border-color: var(--accent); transform: translateY(-5px); }
-.p-img { width: 100%; height: 180px; object-fit: contain; margin-bottom: 1rem; border-radius: 10px; background: #fff; padding: 10px; }
-.stock-badge { position: absolute; top: 1rem; left: 1rem; padding: 4px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 800; }
+.p-img { width: 100%; height: 180px; object-fit: contain; margin-bottom: 1rem; border-radius: 10px; background: #fff; padding: 10px; cursor: pointer;}
+.stock-badge { position: absolute; top: 1rem; left: 1rem; padding: 4px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 800; z-index: 2;}
 .in-stock { background: #22C55E; color: #000; }
 .out-stock { background: #EF4444; color: #fff; }
 
-.btn-gold { width: 100%; padding: 1rem; background: var(--accent); color: #000; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+.btn-gold { width: 100%; padding: 1rem; background: var(--accent); color: #000; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: auto; }
 .btn-gold:disabled { background: #333; color: #777; cursor: not-allowed; }
 
 /* === OVERLAYS & MODALS === */
@@ -78,13 +78,13 @@ nav {
 .sb-body { flex: 1; overflow-y: auto; padding: 1.5rem; }
 .sb-footer { padding: 1.5rem; border-top: 1px solid var(--border); background: var(--card); }
 
-.cart-item { display: flex; gap: 15px; margin-bottom: 15px; background: var(--card); padding: 10px; border-radius: 12px; border: 1px solid var(--border); }
+.cart-item { display: flex; gap: 15px; margin-bottom: 15px; background: var(--glass); padding: 10px; border-radius: 12px; border: 1px solid var(--border); }
 .cart-item img { width: 60px; height: 60px; object-fit: contain; background: #fff; border-radius: 8px; }
 
 /* === PAIEMENT === */
 .op-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
-.op-card { border: 1px solid var(--border); padding: 15px; text-align: center; border-radius: 12px; cursor: pointer; transition: 0.3s; }
-.op-card.selected { border-color: var(--accent); background: rgba(234, 179, 8, 0.1); }
+.op-card { border: 1px solid var(--border); padding: 15px; text-align: center; border-radius: 12px; cursor: pointer; transition: 0.3s; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px;}
+.op-card.selected { border-color: var(--accent); background: rgba(234, 179, 8, 0.1); color: var(--accent);}
 .input-control { width: 100%; background: var(--glass); border: 1px solid var(--border); padding: 1rem; border-radius: 10px; color: #fff; margin-bottom: 1rem; outline: none; }
 
 /* === COMMENTAIRES === */
@@ -123,7 +123,7 @@ nav {
             <input type="password" id="regPass" class="input-control" placeholder="Mot de passe" required>
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px; background:var(--glass); padding:10px; border-radius:10px; border:1px solid var(--border);">
                 <i class="fas fa-map-marker-alt" style="color:#EF4444;"></i>
-                <input type="text" id="regGPS" placeholder="Coordonnées GPS (Ex: 6.36, 2.42)" style="background:transparent; border:none; color:#fff; width:100%; outline:none;" required>
+                <input type="text" id="regGPS" placeholder="Coordonnées GPS (Ex: Cotonou, Cadjehoun)" style="background:transparent; border:none; color:#fff; width:100%; outline:none;" required>
             </div>
             <button type="button" class="btn-gold" onclick="register()">Créer mon compte Client</button>
         </form>
@@ -138,7 +138,7 @@ nav {
             <input type="text" id="searchInput" placeholder="Rechercher un produit, catégorie..." onkeyup="filterProducts()">
         </div>
         <div class="nav-actions">
-            <span id="userNameDisplay" style="font-size:0.8rem; font-weight:bold;"></span>
+            <span id="userNameDisplay" style="font-size:0.8rem; font-weight:bold; color:var(--accent)"></span>
             <div class="cart-icon" onclick="toggleCart()">
                 <i class="fas fa-shopping-cart"></i>
                 <div class="badge" id="cartBadge">0</div>
@@ -147,7 +147,9 @@ nav {
     </nav>
 
     <div class="container">
-        <h2 style="margin-bottom:20px; font-family:'Clash Display'">Catalogue Électroménager</h2>
+        <div style="display:flex; justify-content:space-between; align-items:end; margin-bottom:20px;">
+            <h2 style="font-family:'Clash Display'">Catalogue Électroménager</h2>
+        </div>
         <div class="product-grid" id="grid"></div>
     </div>
 </div>
@@ -158,16 +160,16 @@ nav {
         <div id="productDetails"></div>
         
         <h3 style="margin:20px 0 10px; border-top:1px solid var(--border); padding-top:20px;">Avis & Commentaires</h3>
-        <div id="reviewsContainer" style="max-height:200px; overflow-y:auto; margin-bottom:15px;"></div>
+        <div id="reviewsContainer" style="max-height:200px; overflow-y:auto; margin-bottom:15px; padding-right:10px;"></div>
         
         <div style="background:var(--card); padding:15px; border-radius:12px; border:1px solid var(--border);">
-            <p style="font-size:0.8rem; margin-bottom:10px; color:var(--text-dim);">Laisser un avis :</p>
+            <p style="font-size:0.8rem; margin-bottom:10px; color:var(--text-dim);">Laisser un avis (Connecté en tant que <span id="reviewAuthor" style="color:var(--accent)"></span>) :</p>
             <div class="stars-input" id="starRating" style="margin-bottom:10px;">
                 <i class="fas fa-star" onclick="setRating(1)"></i><i class="fas fa-star" onclick="setRating(2)"></i>
                 <i class="fas fa-star" onclick="setRating(3)"></i><i class="fas fa-star" onclick="setRating(4)"></i>
                 <i class="fas fa-star" onclick="setRating(5)"></i>
             </div>
-            <textarea id="reviewText" class="input-control" placeholder="Votre commentaire..." rows="2"></textarea>
+            <textarea id="reviewText" class="input-control" placeholder="Votre commentaire sur le produit..." rows="2"></textarea>
             <button class="btn-gold" style="padding:0.8rem;" onclick="submitReview()">Publier l'avis</button>
         </div>
     </div>
@@ -192,59 +194,64 @@ nav {
         
         <div id="step-pay">
             <i class="fas fa-times close-btn" onclick="closeModal('checkoutModal')"></i>
-            <h3 style="margin-bottom:20px;">Paiement Mobile Money</h3>
-            <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:15px;">Choisissez votre opérateur pour régler <span id="payAmount" style="color:var(--accent); font-weight:bold;"></span></p>
+            <h3 style="margin-bottom:10px;">Moyen de Paiement</h3>
+            <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:20px;">Veuillez choisir un opérateur pour régler <strong id="payAmount" style="color:var(--accent); font-size:1rem;"></strong></p>
+            
             <div class="op-grid">
-                <div class="op-card selected" onclick="selectOp(this)">MTN MoMo</div>
-                <div class="op-card" onclick="selectOp(this)">Moov Money</div>
-                <div class="op-card" onclick="selectOp(this)">Orange Money</div>
-                <div class="op-card" onclick="selectOp(this)">Wave</div>
+                <div class="op-card" onclick="selectOp(this, 'MTN')">🟡 MTN MoMo</div>
+                <div class="op-card" onclick="selectOp(this, 'Moov')">🔵 Moov Money</div>
+                <div class="op-card" onclick="selectOp(this, 'Orange')">🟠 Orange Money</div>
+                <div class="op-card" onclick="selectOp(this, 'Wave')">🌊 Wave</div>
             </div>
-            <input type="tel" id="momoNum" class="input-control" placeholder="Numéro de téléphone" required>
-            <button class="btn-gold" onclick="processPayment()">Confirmer le paiement</button>
+            
+            <input type="tel" id="momoNum" class="input-control" placeholder="Numéro du compte à débiter" required>
+            <button class="btn-gold" onclick="processPayment()">Payer ma commande</button>
         </div>
 
         <div id="step-admin" style="display:none;">
             <span class="loader"></span>
             <h3 style="margin-top:15px;">Validation Administrateur</h3>
-            <p style="font-size:0.8rem; color:var(--text-dim); margin-top:10px;">L'administrateur vérifie la réception des fonds et génère votre ticket (Règle de gestion MCD)...</p>
+            <p style="font-size:0.8rem; color:var(--text-dim); margin-top:10px;">L'administrateur vérifie le paiement Mobile Money et génère votre ticket logistique...</p>
         </div>
 
         <div id="step-ticket" style="display:none; background:#fff; color:#000; padding:20px; border-radius:15px;">
             <h3 style="color:var(--accent); font-family:'Clash Display'">TICKET DE LIVRAISON</h3>
-            <p style="font-size:0.7rem; margin-bottom:10px;">Valable 7 jours - Usage unique</p>
+            <p style="font-size:0.7rem; margin-bottom:10px;">Valable 7 jours - Présentez ce QR Code au livreur</p>
             <div style="border:1px dashed #ccc; padding:15px; margin-bottom:15px;">
-                <img id="qrImg" src="" alt="QR Code Ticket">
+                <img id="qrImg" src="" alt="QR Code Ticket" style="width: 150px; height: 150px;">
                 <p style="font-weight:bold; font-size:1.2rem; margin-top:10px;" id="tkRef"></p>
             </div>
             <div style="background:#f8f9fa; padding:10px; border-radius:8px; text-align:left; font-size:0.8rem;">
-                <p><strong><i class="fas fa-truck"></i> Livreur assigné :</strong> Ibrahim (Moto)</p>
-                <p style="margin-top:5px; color:#22C55E;"><strong>Action :</strong> L'adresse GPS a été envoyée au livreur via Google Maps. Veuillez lui présenter ce ticket QR à son arrivée.</p>
+                <p><strong><i class="fas fa-truck"></i> Livreur assigné :</strong> En route vers votre adresse</p>
+                <p style="margin-top:5px; color:#22C55E;"><strong>Statut :</strong> Commande clôturée et payée.</p>
             </div>
-            <button class="btn-gold" style="margin-top:15px; background:#000; color:#fff;" onclick="finishOrder()">Clôturer la commande</button>
+            <button class="btn-gold" style="margin-top:15px; background:#000; color:#fff;" onclick="finishOrder()">Fermer et retourner au catalogue</button>
         </div>
     </div>
 </div>
 
 <script>
-// --- DONNÉES SIMULÉES ---
+// --- DONNÉES SIMULÉES (MCD) ---
 let currentUser = null;
 let cart = [];
 let currentRating = 0;
 let activeProductId = null;
+let selectedOperator = null;
 
 const products = [
     { id: 1, nom: "Smart TV LG OLED 55'", cat: "Téléviseurs", prix: 650000, stock: 5, img: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?q=80&w=400", 
-      avis: [{ user: "Marc", note: 5, text: "Image incroyable !" }, { user: "Sophie", note: 4, text: "Bon son, mais un peu chère." }] },
+      avis: [{ user: "Marc", note: 5, text: "Qualité d'image exceptionnelle." }] },
     { id: 2, nom: "Réfrigérateur Américain BEKO", cat: "Réfrigérateurs", prix: 890000, stock: 0, img: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=400", 
-      avis: [] }, // STOCK 0 -> BLOQUÉ
+      avis: [] }, // STOCK 0 -> BLOQUÉ SELON MCD
     { id: 3, nom: "Split Inverter Midea 1.5 CV", cat: "Climatiseurs", prix: 285000, stock: 12, img: "https://images.unsplash.com/photo-1658213645070-50346387d833?q=80&w=400", 
-      avis: [{ user: "Ali", note: 5, text: "Refroidit très vite." }] },
+      avis: [{ user: "Rubis", note: 4, text: "Très silencieux et refroidit vite." }] },
     { id: 4, nom: "Lave-linge Samsung 9kg", cat: "Machines à Laver", prix: 375000, stock: 3, img: "https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?q=80&w=400", 
-      avis: [] }
+      avis: [] },
+    { id: 5, nom: "Micro-ondes Grill Samsung", cat: "Petit Électroménager", prix: 75000, stock: 25, img: "https://images.unsplash.com/photo-1585515320310-259814833e62?q=80&w=400", 
+      avis: [{ user: "Jean", note: 5, text: "Parfait pour réchauffer rapidement." }] }
 ];
 
-// --- AUTHENTIFICATION ---
+// --- AUTHENTIFICATION (GATEKEEPER) ---
 function switchAuth(mode) {
     document.getElementById('formLog').style.display = mode === 'log' ? 'block' : 'none';
     document.getElementById('formReg').style.display = mode === 'reg' ? 'block' : 'none';
@@ -255,16 +262,16 @@ function switchAuth(mode) {
 }
 
 function login() {
-    // Simulation Appwrite Login
-    currentUser = { name: "Client Connecté", email: document.getElementById('logEmail').value };
+    const email = document.getElementById('logEmail').value;
+    if(!email) return alert("Veuillez entrer votre email.");
+    currentUser = { name: email.split('@')[0], email: email };
     unlockSite();
 }
 
 function register() {
-    // Simulation Appwrite Register
     const nom = document.getElementById('regNom').value;
     const gps = document.getElementById('regGPS').value;
-    if(!gps) return alert("L'adresse GPS est obligatoire pour la livraison.");
+    if(!nom || !gps) return alert("Nom et adresse GPS sont obligatoires.");
     currentUser = { name: nom, gps: gps };
     unlockSite();
 }
@@ -272,7 +279,8 @@ function register() {
 function unlockSite() {
     document.getElementById('gatekeeper').style.display = 'none';
     document.getElementById('mainSite').style.display = 'block';
-    document.getElementById('userNameDisplay').innerText = "Salut, " + currentUser.name;
+    document.getElementById('userNameDisplay').innerText = "👤 " + currentUser.name;
+    document.getElementById('reviewAuthor').innerText = currentUser.name;
     renderGrid(products);
 }
 
@@ -281,7 +289,7 @@ function renderGrid(list) {
     const grid = document.getElementById('grid');
     grid.innerHTML = list.map(p => {
         const isOut = p.stock === 0;
-        const avgNote = p.avis.length > 0 ? (p.avis.reduce((a,b)=>a+b.note,0) / p.avis.length).toFixed(1) : 'N/A';
+        const avgNote = p.avis.length > 0 ? (p.avis.reduce((a,b)=>a+b.note,0) / p.avis.length).toFixed(1) : '0.0';
         
         return `
         <div class="p-card">
@@ -297,7 +305,7 @@ function renderGrid(list) {
             <p style="color:var(--accent); font-weight:800; font-size:1.2rem;">${p.prix.toLocaleString()} FCFA</p>
             
             <button class="btn-gold" ${isOut ? 'disabled' : ''} onclick="addToCart(${p.id})">
-                <i class="fas fa-cart-plus"></i> ${isOut ? 'BLOQUÉ' : 'AJOUTER AU PANIER'}
+                <i class="fas fa-cart-plus"></i> ${isOut ? 'PRODUIT BLOQUÉ' : 'AJOUTER AU PANIER'}
             </button>
         </div>`;
     }).join('');
@@ -319,13 +327,14 @@ function openProduct(id) {
             <div>
                 <h2>${p.nom}</h2>
                 <p style="color:var(--accent); font-size:1.2rem; font-weight:bold;">${p.prix.toLocaleString()} FCFA</p>
+                <p style="font-size:0.8rem; color:var(--text-dim); margin-top:5px;">Catégorie: ${p.cat}</p>
             </div>
         </div>
     `;
     
     const revBox = document.getElementById('reviewsContainer');
     if(p.avis.length === 0) {
-        revBox.innerHTML = "<p style='color:var(--text-dim); font-size:0.8rem;'>Aucun avis pour l'instant. Soyez le premier !</p>";
+        revBox.innerHTML = "<p style='color:var(--text-dim); font-size:0.8rem;'>Aucun avis pour l'instant.</p>";
     } else {
         revBox.innerHTML = p.avis.map(a => `
             <div class="review-box">
@@ -349,7 +358,19 @@ function setRating(val) {
     }
 }
 
-// --- PANIER (Un ou plusieurs produits) ---
+function submitReview() {
+    if(currentRating === 0) return alert("Veuillez donner une note avec les étoiles.");
+    const text = document.getElementById('reviewText').value;
+    const p = products.find(x => x.id === activeProductId);
+    
+    p.avis.unshift({ user: currentUser.name, note: currentRating, text: text });
+    document.getElementById('reviewText').value = '';
+    setRating(0);
+    openProduct(activeProductId); 
+    renderGrid(products); 
+}
+
+// --- PANIER (MCD : Une commande contient un/plusieurs produits) ---
 function toggleCart() { document.getElementById('cartSidebar').classList.toggle('open'); }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
@@ -358,7 +379,7 @@ function addToCart(id) {
     const item = cart.find(x => x.id === id);
     if(item) {
         if(item.qty < p.stock) item.qty++;
-        else alert("Stock maximum atteint pour ce produit.");
+        else alert("Stock maximum atteint.");
     } else {
         cart.push({ id: p.id, nom: p.nom, prix: p.prix, img: p.img, qty: 1 });
     }
@@ -370,49 +391,56 @@ function updateCartUI() {
     let total = 0;
     document.getElementById('cartBadge').innerText = cart.reduce((a,b)=>a+b.qty, 0);
     
-    body.innerHTML = cart.map((c, index) => {
-        total += c.prix * c.qty;
-        return `
-        <div class="cart-item">
-            <img src="${c.img}">
-            <div style="flex:1;">
-                <h4 style="font-size:0.9rem;">${c.nom}</h4>
-                <p style="color:var(--accent); font-weight:bold;">${c.prix.toLocaleString()} FCFA</p>
-                <div style="display:flex; justify-content:space-between; margin-top:10px;">
-                    <span style="font-size:0.8rem;">Qté: ${c.qty}</span>
-                    <i class="fas fa-trash" style="color:#EF4444; cursor:pointer;" onclick="cart.splice(${index},1); updateCartUI();"></i>
+    if(cart.length === 0) {
+        body.innerHTML = "<p style='color:var(--text-dim); text-align:center; margin-top:20px;'>Votre panier est vide.</p>";
+    } else {
+        body.innerHTML = cart.map((c, index) => {
+            total += c.prix * c.qty;
+            return `
+            <div class="cart-item">
+                <img src="${c.img}">
+                <div style="flex:1;">
+                    <h4 style="font-size:0.9rem;">${c.nom}</h4>
+                    <p style="color:var(--accent); font-weight:bold;">${c.prix.toLocaleString()} FCFA</p>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                        <span style="font-size:0.8rem; background:var(--bg); padding:2px 8px; border-radius:5px;">Qté: ${c.qty}</span>
+                        <i class="fas fa-trash" style="color:#EF4444; cursor:pointer;" onclick="cart.splice(${index},1); updateCartUI();"></i>
+                    </div>
                 </div>
-            </div>
-        </div>`;
-    }).join('');
-    
+            </div>`;
+        }).join('');
+    }
     document.getElementById('cartTotal').innerText = total.toLocaleString() + " FCFA";
 }
 
-// --- PROCESSUS DE COMMANDE ---
+// --- PROCESSUS DE COMMANDE (Paiement & Ticket) ---
 function openCheckout() {
-    if(cart.length === 0) return alert("Votre panier est vide.");
+    if(cart.length === 0) return alert("Votre panier est vide. Ajoutez des produits d'abord.");
     toggleCart();
     document.getElementById('checkoutModal').style.display = 'flex';
     document.getElementById('payAmount').innerText = document.getElementById('cartTotal').innerText;
+    selectedOperator = null; // Reset
+    document.querySelectorAll('.op-card').forEach(c => c.classList.remove('selected'));
 }
 
-function selectOp(el) {
+function selectOp(el, opName) {
     document.querySelectorAll('.op-card').forEach(c => c.classList.remove('selected'));
     el.classList.add('selected');
+    selectedOperator = opName;
 }
 
 async function processPayment() {
-    if(!document.getElementById('momoNum').value) return alert("Entrez votre numéro de téléphone.");
+    if(!selectedOperator) return alert("Veuillez sélectionner un opérateur Mobile Money (MTN, Moov...).");
+    if(!document.getElementById('momoNum').value) return alert("Entrez votre numéro de compte Mobile Money.");
     
-    // 1. Cacher Formulaire, Afficher Loading (Validation Admin)
+    // 1. Cacher Paiement, Afficher Attente Admin
     document.getElementById('step-pay').style.display = 'none';
     document.getElementById('step-admin').style.display = 'block';
 
-    // 2. Attente de confirmation (5s - Simulation MCD Admin)
-    await new Promise(r => setTimeout(r, 4000));
+    // 2. Simulation Validation (5 secondes)
+    await new Promise(r => setTimeout(r, 4500));
 
-    // 3. Génération Ticket
+    // 3. Génération du Ticket Numérique (MCD)
     const codeTkt = "TK-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*90000+10000);
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${codeTkt}&color=000000&bgcolor=FFFFFF`;
     
@@ -422,13 +450,17 @@ async function processPayment() {
     document.getElementById('step-admin').style.display = 'none';
     document.getElementById('step-ticket').style.display = 'block';
     
-    // Vider panier
+    // Vider le panier après paiement réussi
     cart = [];
     updateCartUI();
 }
 
 function finishOrder() {
-    location.reload();
+    document.getElementById('checkoutModal').style.display = 'none';
+    // Reset modal state for future orders
+    document.getElementById('step-ticket').style.display = 'none';
+    document.getElementById('step-pay').style.display = 'block';
+    document.getElementById('momoNum').value = '';
 }
 </script>
 
