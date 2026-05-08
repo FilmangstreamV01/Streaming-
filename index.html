@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ELECTRO-GOLD | Premium Électroménager</title>
-    
+    <title>ELECTRO-PRO | E-Commerce Électroménager</title>
+    <meta name="description" content="Achetez votre électroménager en ligne. Livraison avec suivi GPS et paiement Mobile Money.">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.1"></script>
 
 <style>
 :root {
@@ -30,7 +33,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
 body { background: var(--bg-deep); color: var(--text-main); overflow-x: hidden; }
 
-/* === HEADER === */
+/* ===== HEADER ===== */
 header {
     position: fixed; top: 0; width: 100%; z-index: 1000;
     background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(15px);
@@ -38,6 +41,7 @@ header {
     display: flex; justify-content: space-between; align-items: center;
 }
 .logo { font-family: 'Clash Display', sans-serif; font-size: 1.5rem; color: var(--primary); font-weight: 700; letter-spacing: 1px; }
+.header-actions { display: flex; gap: 15px; align-items: center; }
 .cart-btn { position: relative; cursor: pointer; font-size: 1.2rem; }
 .cart-badge {
     position: absolute; top: -8px; right: -10px; background: var(--primary);
@@ -45,254 +49,426 @@ header {
     border-radius: 50%; display: flex; align-items: center; justify-content: center;
 }
 
-/* === HERO === */
+/* ===== HERO ===== */
 .hero {
-    margin-top: 70px; padding: 60px 20px; text-align: center;
+    margin-top: 70px; padding: 40px 20px; text-align: center;
     background: linear-gradient(180deg, rgba(255,107,0,0.1) 0%, transparent 100%);
 }
 .hero h1 { font-family: 'Clash Display', sans-serif; font-size: 2.5rem; margin-bottom: 15px; }
+.hero p { color: var(--text-dim); max-width: 600px; margin: 0 auto; line-height: 1.6; }
 
-/* === GRID === */
+/* ===== PRODUCT GRID ===== */
 .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.section-title { font-size: 1.3rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+.section-title i { color: var(--primary); }
+
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
 .card {
     background: var(--dark-2); border: 1px solid var(--border);
     border-radius: var(--radius); padding: 15px; transition: var(--transition);
-    display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
 }
-.card:hover { transform: translateY(-5px); border-color: var(--primary); }
-.card-img { width: 100%; height: 180px; object-fit: contain; background: white; border-radius: 12px; padding: 10px; margin-bottom: 15px; }
-.card-price { font-size: 1.2rem; font-weight: 800; color: var(--primary); margin: 10px 0; }
-
+.card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 10px 30px rgba(255,107,0,0.15); }
+.card-img { width: 100%; height: 200px; object-fit: contain; background: white; border-radius: 12px; padding: 10px; margin-bottom: 15px; }
+.badge-stock { position: absolute; top: 25px; left: 25px; padding: 5px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: bold; color: black; }
+.badge-ok { background: var(--green); }
+.badge-rupture { background: var(--red); color: white; }
+.card-brand { font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+.card-title { font-size: 1.1rem; font-weight: 600; margin: 5px 0 10px; }
+.card-price { font-size: 1.3rem; font-weight: 800; color: var(--primary); margin-bottom: 15px; }
 .btn-add {
     width: 100%; padding: 12px; background: rgba(255,107,0,0.1); border: 1px solid var(--primary);
-    color: var(--primary); border-radius: 10px; font-weight: bold; cursor: pointer; transition: var(--transition); margin-top: auto;
+    color: var(--primary); border-radius: 10px; font-weight: bold; cursor: pointer; transition: var(--transition);
 }
-.btn-add:hover { background: var(--primary); color: white; }
+.btn-add:hover:not(:disabled) { background: var(--primary); color: white; }
+.btn-add:disabled { border-color: var(--border); color: var(--text-dim); cursor: not-allowed; }
 
-/* === SIDEBAR PANIER === */
+/* ===== SIDEBARS ===== */
 .sidebar {
     position: fixed; top: 0; right: -100%; width: 400px; max-width: 100%; height: 100vh;
-    background: var(--dark-3); z-index: 2000; transition: 0.4s ease; display: flex; flex-direction: column;
+    background: var(--dark-3); z-index: 2000; box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+    transition: 0.4s ease-in-out; display: flex; flex-direction: column;
 }
 .sidebar.open { right: 0; }
-.sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
+.sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
 .sidebar-body { padding: 20px; flex: 1; overflow-y: auto; }
 .sidebar-footer { padding: 20px; border-top: 1px solid var(--border); background: var(--dark-2); }
 
-.cart-item { display: flex; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
-.cart-item img { width: 50px; height: 50px; object-fit: contain; background: white; border-radius: 8px; }
+/* Formulaire Auth dans Sidebar */
+.auth-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+.auth-tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; border-bottom: 2px solid transparent; color: var(--text-dim); }
+.auth-tab.active { border-color: var(--primary); color: var(--primary); font-weight: bold; }
 
-/* === MODAL CHECKOUT === */
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; }
-.modal { background: var(--dark-2); border: 1px solid var(--border); border-radius: 24px; padding: 2rem; width: 100%; max-width: 500px; position: relative; }
+.cart-item { display: flex; gap: 15px; margin-bottom: 15px; background: var(--dark-2); padding: 10px; border-radius: 12px; }
+.cart-item img { width: 60px; height: 60px; object-fit: contain; background: white; border-radius: 8px; }
 
-.pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
-.op-card {
-    border: 1px solid var(--border); padding: 15px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s;
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 8px; }
+.form-control {
+    width: 100%; padding: 12px; background: var(--bg-deep); border: 1px solid var(--border);
+    border-radius: 8px; color: white; outline: none;
 }
-.op-card.active { border-color: var(--primary); background: rgba(255,107,0,0.1); }
-.op-card i { font-size: 1.5rem; display: block; margin-bottom: 5px; }
+.form-control:focus { border-color: var(--primary); }
 
-.input-field { width: 100%; padding: 12px; background: var(--bg-deep); border: 1px solid var(--border); border-radius: 8px; color: white; margin-bottom: 15px; outline: none; }
-.input-field:focus { border-color: var(--primary); }
+.gps-btn {
+    background: rgba(0,230,118,0.1); border: 1px solid var(--green); color: var(--green);
+    padding: 10px; border-radius: 8px; cursor: pointer; width: 100%; display: flex; justify-content: center; gap: 10px;
+}
+.operator-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+.op-card { border: 1px solid var(--border); padding: 15px; border-radius: 10px; text-align: center; cursor: pointer; transition: 0.2s; }
+.op-card.selected { border-color: var(--primary); background: rgba(255,107,0,0.1); }
 
-.loader { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.btn-primary {
+    width: 100%; padding: 15px; background: var(--primary); border: none;
+    color: white; border-radius: 10px; font-weight: bold; font-size: 1.1rem; cursor: pointer;
+}
 
-.ticket-box { background: white; color: black; padding: 20px; border-radius: 15px; text-align: center; }
-
-/* Couleurs Opérateurs */
-.orange { color: #FF6600; } .mtn { color: #FFCC00; } .visa { color: #1A1F71; } .mastercard { color: #EB001B; }
+#ticketOverlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 3000;
+    display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.ticket-card {
+    background: white; color: black; padding: 30px; border-radius: 20px;
+    width: 100%; max-width: 350px; text-align: center;
+}
+.ticket-dashed { border-top: 2px dashed #ccc; margin: 20px 0; }
+.qr-container img { margin: 0 auto; border: 10px solid white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
 </style>
 </head>
 <body>
 
 <header>
-    <div class="logo">ELECTRO-GOLD</div>
-    <div class="cart-btn" onclick="toggleSidebar()">
-        <i class="fas fa-shopping-bag"></i>
-        <div class="cart-badge" id="cartCount">0</div>
+    <div class="logo">ELECTRO-PRO</div>
+    <div class="header-actions">
+        <div class="cart-btn" onclick="toggleSidebar('cartSidebar')">
+            <i class="fas fa-shopping-cart"></i>
+            <div class="cart-badge" id="cartCount">0</div>
+        </div>
+        <div class="cart-btn" id="userBtn" onclick="toggleSidebar('authSidebar')">
+            <i class="fas fa-user-circle"></i>
+        </div>
     </div>
 </header>
 
 <section class="hero">
-    <h1>L'Électroménager <span style="color:var(--primary)">Haut de Gamme</span></h1>
-    <p style="color:var(--text-dim)">Paiement sécurisé par Mobile Money & Carte. Livraison GPS incluse.</p>
+    <h1>Votre Électroménager, <span style="color:var(--primary)">Livré Chez Vous.</span></h1>
+    <p>Achetez en ligne, payez via Mobile Money en toute sécurité, et suivez votre livraison en temps réel grâce à notre système de tracking GPS.</p>
 </section>
 
 <div class="container">
-    <div class="grid" id="productGrid"></div>
+    <h2 class="section-title"><i class="fas fa-bolt"></i> En vedette aujourd'hui</h2>
+    <div class="grid" id="productGrid">
+        <div style="text-align:center; grid-column: 1/-1; padding: 50px;">
+            <i class="fas fa-spinner fa-spin fa-2x"></i> Connexion à la base de données...
+        </div>
+    </div>
+</div>
+
+<div class="sidebar" id="authSidebar">
+    <div class="sidebar-header">
+        <h3 id="authTitle">Espace Client</h3>
+        <i class="fas fa-times" style="cursor:pointer" onclick="toggleSidebar('')"></i>
+    </div>
+    <div class="sidebar-body">
+        <div id="authContent">
+            <div id="loggedOutUI">
+                <div class="auth-tabs">
+                    <div class="auth-tab active" onclick="switchAuthMode('login')">Connexion</div>
+                    <div class="auth-tab" onclick="switchAuthMode('register')">Inscription</div>
+                </div>
+                <div id="authFormContainer">
+                    <div class="form-group" id="nameGroup" style="display:none">
+                        <label>Nom complet</label>
+                        <input type="text" id="authName" class="form-control" placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="authEmail" class="form-control" placeholder="votre@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Mot de passe</label>
+                        <input type="password" id="authPassword" class="form-control" placeholder="••••••••">
+                    </div>
+                    <button class="btn-primary" id="authSubmit" onclick="handleAuth()">Se connecter</button>
+                </div>
+            </div>
+            <div id="loggedInUI" style="display:none">
+                <div style="text-align:center; padding: 20px;">
+                    <i class="fas fa-user-check fa-3x" style="color:var(--green); margin-bottom:15px"></i>
+                    <h2 id="userNameDisplay">Bienvenue !</h2>
+                    <p id="userEmailDisplay" style="color:var(--text-dim); margin-bottom:20px"></p>
+                    <button class="btn-add" onclick="handleLogout()" style="border-color:var(--red); color:var(--red)">
+                        <i class="fas fa-sign-out-alt"></i> Déconnexion
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="sidebar" id="cartSidebar">
     <div class="sidebar-header">
-        <h3>Mon Panier</h3>
-        <i class="fas fa-times" onclick="toggleSidebar()" style="cursor:pointer"></i>
+        <h3><i class="fas fa-shopping-cart"></i> Mon Panier</h3>
+        <i class="fas fa-times" style="cursor:pointer" onclick="toggleSidebar('')"></i>
     </div>
     <div class="sidebar-body" id="cartBody"></div>
     <div class="sidebar-footer">
         <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:bold; font-size:1.2rem;">
-            <span>Total :</span>
-            <span id="cartTotal" style="color:var(--primary)">0 FCFA</span>
+            <span>Total:</span>
+            <span id="cartTotal">0 FCFA</span>
         </div>
-        <button class="btn-add" style="background:var(--primary); color:white; padding:15px;" onclick="openCheckout()">VALIDER LA COMMANDE</button>
+        <button class="btn-primary" onclick="proceedToCheckout()">Passer à la caisse <i class="fas fa-arrow-right"></i></button>
     </div>
 </div>
 
-<div class="overlay" id="checkoutOverlay">
-    <div class="modal">
-        <i class="fas fa-times" onclick="closeCheckout()" style="position:absolute; top:1.5rem; right:1.5rem; cursor:pointer"></i>
-        
-        <div id="step-pay">
-            <h3 style="margin-bottom:10px">Moyen de Paiement</h3>
-            <p style="font-size:0.8rem; color:var(--text-dim)">Choisissez votre mode de dépôt</p>
-            
-            <div class="pay-grid">
-                <div class="op-card" onclick="setMethod('momo', 'Orange')"><i class="fas fa-mobile-alt orange"></i>Orange</div>
-                <div class="op-card" onclick="setMethod('momo', 'MTN')"><i class="fas fa-mobile-alt mtn"></i>MTN MoMo</div>
-                <div class="op-card" onclick="setMethod('card', 'Visa')"><i class="fab fa-cc-visa visa"></i>Visa</div>
-                <div class="op-card" onclick="setMethod('card', 'Mastercard')"><i class="fab fa-cc-mastercard mastercard"></i>Master</div>
-            </div>
-
-            <div id="form-container" style="display:none">
-                <div id="momo-fields">
-                    <input type="tel" id="payPhone" class="input-field" placeholder="Numéro Mobile Money (07...)">
-                </div>
-                <div id="card-fields" style="display:none">
-                    <input type="text" class="input-field" placeholder="Numéro de la carte">
-                    <div style="display:flex; gap:10px">
-                        <input type="text" class="input-field" placeholder="MM/YY">
-                        <input type="text" class="input-field" placeholder="CVC">
-                    </div>
-                </div>
-                <button class="btn-add" style="background:var(--primary); color:white" onclick="startProcessing()">PAYER <span id="finalTotal"></span></button>
-            </div>
+<div class="sidebar" id="checkoutSidebar">
+    <div class="sidebar-header">
+        <h3><i class="fas fa-lock"></i> Paiement Sécurisé</h3>
+        <i class="fas fa-arrow-left" style="cursor:pointer" onclick="toggleSidebar('cartSidebar')"></i>
+    </div>
+    <div class="sidebar-body">
+        <div class="form-group">
+            <label>1. Localisation GPS (Pour le Livreur)</label>
+            <button class="gps-btn" onclick="getLocation()"><i class="fas fa-map-marker-alt"></i> Obtenir ma position</button>
+            <input type="text" id="gpsCoords" class="form-control" style="margin-top:10px" placeholder="Lat, Long" readonly>
         </div>
-
-        <div id="step-loader" style="display:none; text-align:center">
-            <div class="loader"></div>
-            <h3>Validation Administrateur</h3>
-            <p style="color:var(--text-dim); font-size:0.8rem">Vérification de la transaction en cours...</p>
-        </div>
-
-        <div id="step-ticket" style="display:none">
-            <div class="ticket-box">
-                <h2 style="color:var(--primary)">TICKET VALIDÉ</h2>
-                <div style="margin:20px 0;">
-                    <img id="qrCode" src="" style="width:150px;">
-                    <p id="orderRef" style="font-weight:bold; letter-spacing:2px; margin-top:10px"></p>
-                </div>
-                <p style="font-size:0.8rem">Présentez ce code au livreur.</p>
-                <button class="btn-add" style="background:black; color:white; margin-top:15px" onclick="location.reload()">TERMINER</button>
+        <div class="form-group">
+            <label>2. Opérateur Mobile Money</label>
+            <div class="operator-grid">
+                <div class="op-card selected" onclick="selectOp(this, 'Orange')">Orange</div>
+                <div class="op-card" onclick="selectOp(this, 'MTN')">MTN MoMo</div>
+                <div class="op-card" onclick="selectOp(this, 'Wave')">Wave</div>
+                <div class="op-card" onclick="selectOp(this, 'Moov')">Moov</div>
             </div>
+            <input type="text" id="momoNumber" class="form-control" placeholder="Numéro Mobile Money">
         </div>
+    </div>
+    <div class="sidebar-footer">
+        <button class="btn-primary" onclick="processPayment()"><i class="fas fa-check-circle"></i> Payer <span id="payAmount"></span></button>
+    </div>
+</div>
+
+<div id="ticketOverlay">
+    <div class="ticket-card">
+        <h2>ELECTRO-PRO</h2>
+        <div class="ticket-dashed"></div>
+        <h3 id="ticketCode">TK-XXXXX</h3>
+        <div class="qr-container"><img id="qrImage" src=""></div>
+        <div class="ticket-dashed"></div>
+        <p style="color:var(--green); font-weight:bold"><i class="fas fa-check-circle"></i> Paiement Confirmé</p>
+        <button class="btn-add" style="margin-top:20px" onclick="document.getElementById('ticketOverlay').style.display='none'">Fermer</button>
     </div>
 </div>
 
 <script>
-// CATALOGUE DE 15 PRODUITS
-const products = [
-    { id:1, n:"Réfrigérateur LG 350L", p:285000, img:"https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=300" },
-    { id:2, n:"Machine à Laver LG 7kg", p:235000, img:"https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?w=300" },
-    { id:3, n:"Split Midea 1.5 CV", p:275000, img:"https://images.unsplash.com/photo-1658213645070-50346387d833?w=300" },
-    { id:4, n:"Micro-ondes Samsung", p:85000, img:"https://images.unsplash.com/photo-1585515320310-259814833e62?w=300" },
-    { id:5, n:"Cuisinière 4 Feux Gaz", p:145000, img:"https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=300" },
-    { id:6, n:"Smart TV Samsung 55'", p:420000, img:"https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=300" },
-    { id:7, n:"Blender Philips 600W", p:35000, img:"https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=300" },
-    { id:8, n:"Fer à repasser vapeur", p:22000, img:"https://images.unsplash.com/photo-1583941709142-b06c11d23b37?w=300" },
-    { id:9, n:"Congélateur Coffre 200L", p:195000, img:"https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?w=300" },
-    { id:10, n:"Ventilateur sur pied", p:28000, img:"https://images.unsplash.com/photo-1618944847823-38094675f752?w=300" },
-    { id:11, n:"Air Fryer XL 5L", p:115000, img:"https://images.unsplash.com/photo-1626074353765-517a681e40be?w=300" },
-    { id:12, n:"Aspirateur Robot", p:210000, img:"https://images.unsplash.com/photo-1518314916381-77a37c2a49ae?w=300" },
-    { id:13, n:"Machine à Café Espresso", p:130000, img:"https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=300" },
-    { id:14, n:"Mixeur Plongeant", p:45000, img:"https://images.unsplash.com/photo-1550989460-0adf9ea622e2?w=300" },
-    { id:15, n:"Distributeur d'eau", p:95000, img:"https://images.unsplash.com/photo-1523456083838-8c017df8549f?w=300" }
+// ===== CONFIGURATION APPWRITE =====
+const { Client, Account, Databases, ID } = Appwrite;
+const client = new Client()
+    .setEndpoint('https://cloud.appwrite.io/v1')
+    .setProject('698f97e3001c4c48d6d7');
+
+const account = new Account(client);
+const databases = new Databases(client);
+
+let currentUser = null;
+let authMode = 'login'; // login ou register
+
+// ===== LOGIQUE AUTHENTIFICATION =====
+
+async function checkUserSession() {
+    try {
+        currentUser = await account.get();
+        updateUserUI(true);
+    } catch (e) {
+        currentUser = null;
+        updateUserUI(false);
+    }
+}
+
+function updateUserUI(loggedIn) {
+    const loggedOutUI = document.getElementById('loggedOutUI');
+    const loggedInUI = document.getElementById('loggedInUI');
+    const userBtn = document.getElementById('userBtn');
+
+    if (loggedIn) {
+        loggedOutUI.style.display = 'none';
+        loggedInUI.style.display = 'block';
+        document.getElementById('userNameDisplay').innerText = `Salut, ${currentUser.name}`;
+        document.getElementById('userEmailDisplay').innerText = currentUser.email;
+        userBtn.style.color = 'var(--green)';
+    } else {
+        loggedOutUI.style.display = 'block';
+        loggedInUI.style.display = 'none';
+        userBtn.style.color = 'white';
+    }
+}
+
+function switchAuthMode(mode) {
+    authMode = mode;
+    const tabs = document.querySelectorAll('.auth-tab');
+    const nameGroup = document.getElementById('nameGroup');
+    const submitBtn = document.getElementById('authSubmit');
+
+    tabs.forEach(t => t.classList.remove('active'));
+    if(mode === 'login') {
+        tabs[0].classList.add('active');
+        nameGroup.style.display = 'none';
+        submitBtn.innerText = 'Se connecter';
+    } else {
+        tabs[1].classList.add('active');
+        nameGroup.style.display = 'block';
+        submitBtn.innerText = "Créer mon compte";
+    }
+}
+
+async function handleAuth() {
+    const email = document.getElementById('authEmail').value;
+    const password = document.getElementById('authPassword').value;
+    const name = document.getElementById('authName').value;
+    const btn = document.getElementById('authSubmit');
+
+    if(!email || !password) return alert("Veuillez remplir les champs.");
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
+
+    try {
+        if (authMode === 'register') {
+            await account.create(ID.unique(), email, password, name);
+            // Connexion auto après inscription
+            await account.createEmailPasswordSession(email, password);
+        } else {
+            await account.createEmailPasswordSession(email, password);
+        }
+        await checkUserSession();
+        toggleSidebar(''); // Fermer la sidebar
+    } catch (e) {
+        alert("Erreur : " + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = authMode === 'login' ? 'Se connecter' : 'Créer mon compte';
+    }
+}
+
+async function handleLogout() {
+    try {
+        await account.deleteSession('current');
+        currentUser = null;
+        updateUserUI(false);
+    } catch (e) {
+        alert("Erreur lors de la déconnexion");
+    }
+}
+
+// ===== GESTION BOUTIQUE (EXISTANT) =====
+const dbSimulation = [
+    { id: 'p1', cat: 'Réfrigérateurs', nom: 'Réfrigérateur No Frost 350L', marque: 'Samsung', prix: 285000, stock: 12, img: 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?auto=format&fit=crop&q=80&w=400' },
+    { id: 'p2', cat: 'Machines à Laver', nom: 'Machine à Laver 7kg Automatique', marque: 'LG', prix: 235000, stock: 15, img: 'https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?auto=format&fit=crop&q=80&w=400' },
+    { id: 'p3', cat: 'Climatiseurs', nom: 'Climatiseur Inverter 18000 BTU', marque: 'LG', prix: 450000, stock: 4, img: 'https://cdn.pixabay.com/photo/2021/08/23/08/28/air-conditioner-6567113_960_720.jpg' },
+    { id: 'p4', cat: 'Petit Électroménager', nom: 'Mixeur Blender 1.5L 600W', prix: 35000, stock: 50, img: 'https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&q=80&w=400' }
 ];
 
 let cart = [];
+let totalAmount = 0;
 
-function init() {
+window.onload = () => {
+    checkUserSession();
+    renderProducts(dbSimulation);
+};
+
+function renderProducts(products) {
     const grid = document.getElementById('productGrid');
     grid.innerHTML = products.map(p => `
         <div class="card">
+            <div class="badge-stock ${p.stock > 0 ? 'badge-ok' : 'badge-rupture'}">${p.stock > 0 ? 'EN STOCK' : 'RUPTURE'}</div>
             <img src="${p.img}" class="card-img">
-            <div style="font-weight:600; font-size:0.9rem">${p.n}</div>
-            <div class="card-price">${p.p.toLocaleString()} FCFA</div>
-            <button class="btn-add" onclick="addToCart(${p.id})"><i class="fas fa-plus"></i> Ajouter</button>
+            <div class="card-brand">${p.marque || 'ELECTRO'}</div>
+            <div class="card-title">${p.nom}</div>
+            <div class="card-price">${p.prix.toLocaleString()} FCFA</div>
+            <button class="btn-add" onclick="addToCart('${p.id}', '${p.nom}', ${p.prix}, '${p.img}')" ${p.stock === 0 ? 'disabled' : ''}>
+                <i class="fas fa-cart-plus"></i> Ajouter
+            </button>
         </div>
     `).join('');
 }
 
-function addToCart(id) {
-    const prod = products.find(x => x.id === id);
-    const inCart = cart.find(x => x.id === id);
-    if(inCart) inCart.q++;
-    else cart.push({...prod, q:1});
-    updateUI();
+function addToCart(id, nom, prix, img) {
+    const existing = cart.find(item => item.id === id);
+    if (existing) existing.qty++; else cart.push({ id, nom, prix, img, qty: 1 });
+    updateCartUI();
 }
 
-function updateUI() {
+function updateCartUI() {
     const body = document.getElementById('cartBody');
-    let total = 0;
-    body.innerHTML = cart.map((item, idx) => {
-        total += item.p * item.q;
-        return `
-            <div class="cart-item">
-                <img src="${item.img}">
-                <div style="flex:1">
-                    <div style="font-size:0.8rem; font-weight:700">${item.n}</div>
-                    <div style="color:var(--primary); font-size:0.8rem">${item.p.toLocaleString()} x ${item.q}</div>
+    totalAmount = cart.reduce((sum, item) => sum + (item.prix * item.qty), 0);
+    body.innerHTML = cart.map((item, index) => `
+        <div class="cart-item">
+            <img src="${item.img}">
+            <div style="flex:1">
+                <div style="font-size:0.9rem; font-weight:bold">${item.nom}</div>
+                <div style="color:var(--primary)">${item.prix.toLocaleString()} FCFA</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px">
+                    <small>Qté: ${item.qty}</small>
+                    <i class="fas fa-trash" style="color:var(--red); cursor:pointer" onclick="removeFromCart(${index})"></i>
                 </div>
-                <i class="fas fa-trash" style="color:var(--red); cursor:pointer" onclick="cart.splice(${idx},1);updateUI()"></i>
             </div>
-        `;
-    }).join('');
-    document.getElementById('cartTotal').innerText = total.toLocaleString() + " FCFA";
-    document.getElementById('cartCount').innerText = cart.length;
-}
-
-function toggleSidebar() { document.getElementById('cartSidebar').classList.toggle('open'); }
-
-function openCheckout() {
-    if(cart.length === 0) return alert("Panier vide");
-    toggleSidebar();
-    document.getElementById('checkoutOverlay').style.display = 'flex';
-    document.getElementById('finalTotal').innerText = document.getElementById('cartTotal').innerText;
-}
-
-function setMethod(type, op) {
-    document.querySelectorAll('.op-card').forEach(c => c.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-    document.getElementById('form-container').style.display = 'block';
+        </div>
+    `).join('') || '<p style="text-align:center; color:gray; margin-top:50px">Panier vide.</p>';
     
-    if(type === 'momo') {
-        document.getElementById('momo-fields').style.display = 'block';
-        document.getElementById('card-fields').style.display = 'none';
-    } else {
-        document.getElementById('momo-fields').style.display = 'none';
-        document.getElementById('card-fields').style.display = 'block';
+    document.getElementById('cartTotal').innerText = totalAmount.toLocaleString() + ' FCFA';
+    document.getElementById('payAmount').innerText = totalAmount.toLocaleString() + ' FCFA';
+    document.getElementById('cartCount').innerText = cart.reduce((a, b) => a + b.qty, 0);
+}
+
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCartUI();
+}
+
+function toggleSidebar(id) {
+    document.querySelectorAll('.sidebar').forEach(s => s.classList.remove('open'));
+    if(id) document.getElementById(id).classList.add('open');
+}
+
+function proceedToCheckout() {
+    if (!currentUser) {
+        alert("Veuillez vous connecter pour commander.");
+        return toggleSidebar('authSidebar');
+    }
+    if (cart.length === 0) return alert("Votre panier est vide.");
+    toggleSidebar('checkoutSidebar');
+}
+
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(p => {
+            document.getElementById('gpsCoords').value = `${p.coords.latitude}, ${p.coords.longitude}`;
+        });
     }
 }
 
-async function startProcessing() {
-    document.getElementById('step-pay').style.display = 'none';
-    document.getElementById('step-loader').style.display = 'block';
-
-    // Simulation validation admin (4 secondes)
-    await new Promise(r => setTimeout(r, 4000));
-
-    const ref = "GOLD-" + Math.floor(Math.random()*900000 + 100000);
-    document.getElementById('orderRef').innerText = ref;
-    document.getElementById('qrCode').src = `https://api.qrserver.com/v1/create-qr-code/?data=${ref}&size=150x150&color=FF6B00`;
-
-    document.getElementById('step-loader').style.display = 'none';
-    document.getElementById('step-ticket').style.display = 'block';
+function selectOp(el) {
+    document.querySelectorAll('.op-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
 }
 
-function closeCheckout() { document.getElementById('checkoutOverlay').style.display = 'none'; }
+async function processPayment() {
+    const gps = document.getElementById('gpsCoords').value;
+    const num = document.getElementById('momoNumber').value;
+    if(!gps || !num) return alert("Position GPS et numéro requis.");
 
-init();
+    const btn = document.querySelector('#checkoutSidebar .btn-primary');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Paiement...';
+
+    setTimeout(() => {
+        const code = `TK-${new Date().getFullYear()}-${Math.floor(Math.random()*99999)}`;
+        document.getElementById('ticketCode').innerText = code;
+        document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${code}&color=FF6B00`;
+        document.getElementById('ticketOverlay').style.display = 'flex';
+        cart = []; updateCartUI(); toggleSidebar('');
+        btn.innerHTML = 'Payer';
+    }, 2000);
+}
 </script>
 
 </body>
