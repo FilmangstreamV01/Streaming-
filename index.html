@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FILMANGSTREAM | Streaming Premium</title>
+    <meta name="description" content="FILMANGSTREAM - La plateforme de streaming premium">
+    <meta name="theme-color" content="#FF0022">
+
+    <!-- Préchargement critique -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://api.themoviedb.org">
+    
+    <!-- Fonts -->
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Appwrite SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.1"></script>
+
+    <!-- Font Awesome async -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+
+    <!-- Google reCAPTCHA (Keeping this from your reference file) -->
+    <script src="https://www.google.com/recaptcha/api.js?render=6Lf1CVYsAAAAAJV-_MtXBBUBGfwCIRkE2x75adLl" async defer></script>
+
+    <style>
+        /* ===== DESIGN SYSTEM (From index Rubis.html reference) ===== */
+        :root {
+            --primary: #FF0022;
+            --primary-glow: rgba(255, 0, 34, 0.45);
+            --primary-dark: #c2001b;
+            --primary-light: #ff4d64;
+            --bg-deep: #050505;
+            --dark: #0a0a0a;
+            --dark-2: #111111;
+            --dark-3: #181818;
+            --dark-4: #222222;
+            --glass: rgba(12, 12, 12, 0.72);
+            --glass-border: rgba(255, 255, 255, 0.07);
+            --glass-border-hover: rgba(255, 255, 255, 0.18);
+            --gray: #2a2a2a;
+            --gray-light: #3a3a3a;
+            --text-main: #FFFFFF;
+            --text-gray: #a0a0a0;
+            --text-dim: #666666;
+            --input-bg: rgba(255, 255, 255, 0.04);
+            --accent: #00d4ff;
+            --gold: #ffd700;
+            --green: #00e676;
+            --radius: 18px;
+            --radius-sm: 10px;
+            --shadow-card: 0 8px 32px rgba(0,0,0,0.6);
+            --shadow-glow: 0 0 30px var(--primary-glow);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --header-h: 110px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .grecaptcha-badge {
+            opacity: 0.2;
+            transform: scale(0.65);
+            transform-origin: bottom right;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--gray); border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* ===== TOAST NOTIFICATIONS ===== */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+        .toast {
+            background: var(--dark-3);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            backdrop-filter: blur(20px);
+            animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 340px;
+            pointer-events: all;
+        }
+        .toast.success { border-left: 3px solid var(--green); }
+        .toast.error { border-left: 3px solid var(--primary); }
+        .toast.info { border-left: 3px solid var(--accent); }
+        .toast i { font-size: 1rem; }
+        .toast.success i { color: var(--green); }
+        .toast.error i { color: var(--primary); }
+        .toast.info i { color: var(--accent); }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes toastOut {
+            to { opacity: 0; transform: translateX(100px); }
+        }
+
+        /* ===== AUTH PAGE ===== */
+        #auth-page {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        #bg-container {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+        }
+
+        .bg-layer {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transform: scale(1.08);
+            transition: opacity 1.8s ease, transform 12s linear;
+        }
+        .bg-layer.active { opacity: 1; transform: scale(1); }
+
+        .vignette {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.88) 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(8, 8, 8, 0.78);
+            backdrop-filter: blur(24px) saturate(200%);
+            -webkit-backdrop-filter: blur(24px) saturate(200%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 44px 38px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.03);
+            position: relative;
+            z-index: 10;
+            animation: cardIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .auth-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,0,34,0.4), transparent);
+            border-radius: 24px 24px 0 0;
+        }
+
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .logo-text {
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 700;
+            font-size: clamp(1.4rem, 5vw, 2rem);
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 30px var(--primary-glow);
+            display: block;
+        }
+
+        .logo-sub {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 6px;
+        }
+
+        .view-section {
+            display: none;
+        }
+        .view-section.active {
+            display: block;
+            animation: viewIn 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes viewIn {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Auth title */
+        .auth-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: white;
+        }
+        .auth-subtitle {
+            font-size: 0.83rem;
+            color: var(--text-dim);
+            margin-bottom: 26px;
+        }
+
+        /* ===== INPUT SYSTEM ===== */
+        .field-wrap {
+            position: relative;
+            margin-bottom: 14px;
+        }
+        .field-input {
+            width: 100%;
+            padding: 15px 18px 15px 46px;
+            background: var(--input-bg);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            font-family: inherit;
+            font-size: 0.92rem;
+            font-weight: 500;
+            transition: var(--transition);
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        .field-input::placeholder { color: rgba(255,255,255,0.25); }
+        .field-input:focus {
+            background: rgba(255,255,255,0.07);
+            border-color: rgba(255,255,255,0.25);
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
+        }
+        .field-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+            font-size: 1rem;
+            pointer-events: none;
+            transition: color 0.3s;
+        }
+        .field-input:focus ~ .field-icon { color: rgba(255,255,255,0.6); }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #ff1f3d 0%, #cc0018 100%);
+            color: white;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 8px;
+            box-shadow: 0 8px 24px rgba(200, 0, 28, 0.35);
+            transition: var(--transition);
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+            border-radius: inherit;
+        }
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 35px rgba(200, 0, 28, 0.5);
+        }
+        .btn-primary:active:not(:disabled) { transform: scale(0.98); }
+        .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; }
+
+        .auth-links {
+            margin-top: 22px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.87rem;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .link-dim { color: var(--text-dim); cursor: pointer; transition: color 0.25s; text-decoration: none; }
+        .link-dim:hover { color: var(--text-gray); }
+        .link-bright { color: white; font-weight: 600; cursor: pointer; transition: color 0.25s; }
+        .link-bright:hover { color: var(--primary); }
+
+        /* ===== APP LAYOUT ===== */
+        .app-container { display: none; padding-top: 100px; min-height: 100vh; }
+        
+        header { position: fixed; top: 0; width: 100%; background: linear-gradient(180deg, rgba(5,5,5,1) 0%, rgba(5,5,5,0.97) 70%, rgba(5,5,5,0.9) 100%); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.04); z-index: 1000; box-shadow: 0 4px 24px rgba(0,0,0,0.6); }
+        .header-inner { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; }
+        .header-logo { font-family: 'Clash Display'; font-size: 1.2rem; background: linear-gradient(135deg, var(--primary) 0%, #ff6060 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
+        .header-actions { display: flex; align-items: center; gap: 20px; }
+        
+        .user-info { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: 600; }
+        .logout-btn { background: rgba(255,0,34,0.15); color: var(--primary); border: 1px solid rgba(255,0,34,0.3); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: var(--transition); }
+        .logout-btn:hover { background: var(--primary); color: white; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; text-align: center; }
+        
+        .welcome-msg { font-size: 2rem; font-weight: 700; margin-bottom: 20px; }
+        
+        /* Loading Overlay */
+        #loading-overlay { position: fixed; inset: 0; background: var(--bg-deep); z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
+        .spinner { width: 50px; height: 50px; border: 4px solid rgba(255, 0, 34, 0.2); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+    </style>
+</head>
+<body>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div class="logo-text" style="font-size: 1.2rem;">FILMANGSTREAM</div>
+    </div>
+
+    <!-- Background for Auth Page (Optional if you want to keep the style from reference) -->
+    <div id="bg-container">
+        <div class="bg-layer active" style="background-image: url('https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=2070&auto=format&fit=crop');"></div>
+        <div class="vignette"></div>
+    </div>
+
+    <!-- ================== AUTHENTIFICATION ================== -->
+    <div id="auth-page">
+        <div class="auth-card">
+            <div class="logo-container">
+                <span class="logo-text">FILMANGSTREAM</span>
+                <div class="logo-sub">Streaming Premium</div>
+                <div id="appwrite-status-tag" style="margin-top:12px; font-size:0.75rem; padding:4px 12px; border-radius:12px; display:inline-block; font-weight:600; background:rgba(46, 204, 113, 0.15); color:#2ecc71; border:1px solid rgba(46, 204, 113, 0.4);">
+                    <i class="fa-solid fa-cloud-check"></i> Connecté à Appwrite
+                </div>
+            </div>
+
+            <!-- LOGIN VIEW -->
+            <div id="v-login" class="view-section active">
+                <div class="auth-title">Bon retour !</div>
+                <div class="auth-subtitle">Connectez-vous pour continuer</div>
+
+                <div class="field-wrap">
+                    <input type="email" id="login-email" class="field-input" placeholder="Adresse Email">
+                    <i class="fa-solid fa-envelope field-icon"></i>
+                </div>
+                <div class="field-wrap">
+                    <input type="password" id="login-pass" class="field-input" placeholder="Mot de passe">
+                    <i class="fa-solid fa-lock field-icon"></i>
+                </div>
+                <button class="btn-primary" onclick="login()">
+                    <i class="fa-solid fa-right-to-bracket"></i> Se Connecter
+                </button>
+                <div class="auth-links">
+                    <span class="link-dim">Pas encore de compte ?</span>
+                    <span class="link-bright" onclick="goAuth('v-register')">S'inscrire</span>
+                </div>
+            </div>
+
+            <!-- REGISTER VIEW -->
+            <div id="v-register" class="view-section">
+                <div class="auth-title">Créer un compte</div>
+                <div class="auth-subtitle">Rejoignez la communauté</div>
+
+                <div class="field-wrap">
+                    <input type="text" id="reg-name" class="field-input" placeholder="Nom d'utilisateur">
+                    <i class="fa-solid fa-user field-icon"></i>
+                </div>
+                <div class="field-wrap">
+                    <input type="email" id="reg-email" class="field-input" placeholder="Adresse Email">
+                    <i class="fa-solid fa-envelope field-icon"></i>
+                </div>
+                <div class="field-wrap">
+                    <input type="password" id="reg-pass" class="field-input" placeholder="Mot de passe (Min 8 car.)" minlength="8">
+                    <i class="fa-solid fa-lock field-icon"></i>
+                </div>
+                <button class="btn-primary" onclick="register()">
+                    <i class="fa-solid fa-user-plus"></i> S'inscrire
+                </button>
+                <div class="auth-links">
+                    <span class="link-dim">Déjà un compte ?</span>
+                    <span class="link-bright" onclick="goAuth('v-login')">Se connecter</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================== MAIN APP CONTENT ================== -->
+    <div id="main-app" class="app-container">
+        <header>
+            <div class="header-inner">
+                <div class="header-logo">FILMANGSTREAM</div>
+                <div class="header-actions">
+                    <div class="user-info">
+                        <i class="fa-solid fa-user-circle"></i> <span id="user-display-name">Utilisateur</span>
+                    </div>
+                    <button class="logout-btn" onclick="logout()" title="Déconnexion">
+                        <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <h1 class="welcome-msg">Bienvenue sur FILMANGSTREAM, <span id="welcome-name" style="color:var(--primary);"></span> !</h1>
+            <p style="color: var(--text-gray); margin-bottom: 30px;">Vous êtes connecté avec succès grâce à Appwrite Auth.</p>
+            
+            <div style="background: var(--dark-3); padding: 30px; border-radius: var(--radius); border: 1px solid var(--glass-border); display: inline-block; text-align: left;">
+                <h3 style="margin-bottom: 15px; color: white;">Informations du profil (Tirées d'Appwrite)</h3>
+                <p><strong>ID Compte :</strong> <span id="profile-id" style="color:var(--text-gray);">...</span></p>
+                <p><strong>Nom :</strong> <span id="profile-name" style="color:var(--text-gray);">...</span></p>
+                <p><strong>Email :</strong> <span id="profile-email" style="color:var(--text-gray);">...</span></p>
+                <p><strong>Date d'inscription :</strong> <span id="profile-date" style="color:var(--text-gray);">...</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================== SCRIPT JAVASCRIPT ================== -->
+    <script>
+        // --- CONFIGURATION APPWRITE (From requested reference/context) ---
+        // REPLACE THESE WITH YOUR ACTUAL APPWRITE PROJECT DETAILS IF DIFFERENT
+        const APPWRITE_CONFIG = {
+            endpoint: 'https://cloud.appwrite.io/v1',
+            projectId: '67c2ce4d001da66eb307', // Replace with actual project ID if needed
+            // Database and collections not strictly needed just for auth, but good to have prepared
+            databaseId: 'VOTRE_DATABASE_ID', 
+            colUsers: 'COLLECTION_USERS_ID'
+        };
+
+        // Initialize Appwrite SDK
+        const client = new Appwrite.Client()
+            .setEndpoint(APPWRITE_CONFIG.endpoint)
+            .setProject(APPWRITE_CONFIG.projectId);
+
+        const account = new Appwrite.Account(client);
+        const databases = new Appwrite.Databases(client);
+        const ID = Appwrite.ID;
+
+        // --- UTILS ---
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let icon = 'fa-info-circle';
+            if (type === 'success') icon = 'fa-check-circle';
+            if (type === 'error') icon = 'fa-exclamation-circle';
+
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'toastOut 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
+        function goAuth(viewId) {
+            document.querySelectorAll('#auth-page .view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        function setLoading(isLoading) {
+            const btns = document.querySelectorAll('.btn-primary');
+            btns.forEach(btn => {
+                btn.disabled = isLoading;
+                if(isLoading) {
+                    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Chargement...';
+                }
+            });
+        }
+
+        function resetBtn(id, text, icon) {
+             const btn = document.querySelector(`#${id} .btn-primary`);
+             if(btn) {
+                 btn.disabled = false;
+                 btn.innerHTML = `<i class="fa-solid ${icon}"></i> ${text}`;
+             }
+        }
+
+        // --- APPWRITE AUTH LOGIC ---
+
+        // 1. Inscription
+        async function register() {
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const pass = document.getElementById('reg-pass').value.trim();
+
+            if (!name || !email || !pass) return showToast("Veuillez remplir tous les champs.", "error");
+            if (pass.length < 8) return showToast("Le mot de passe doit comporter au moins 8 caractères.", "error");
+
+            setLoading(true);
+            try {
+                // Create user account in Appwrite
+                await account.create(ID.unique(), email, pass, name);
+                
+                showToast("Inscription réussie ! Connexion en cours...", "success");
+                
+                // Automatically log them in after registration
+                await account.createEmailPasswordSession(email, pass);
+                
+                checkSession(); // Load app
+            } catch (error) {
+                console.error("Erreur Inscription:", error);
+                showToast(error.message || "Erreur lors de l'inscription.", "error");
+            } finally {
+                resetBtn('v-register', "S'inscrire", 'fa-user-plus');
+            }
+        }
+
+        // 2. Connexion
+        async function login() {
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-pass').value.trim();
+
+            if (!email || !pass) return showToast("Veuillez saisir votre email et mot de passe.", "error");
+
+            setLoading(true);
+            try {
+                // Delete current session if one exists just in case (optional but safe)
+                try { await account.deleteSession('current'); } catch(e) {}
+
+                // Create new session
+                await account.createEmailPasswordSession(email, pass);
+                
+                showToast("Connexion réussie !", "success");
+                checkSession(); // Load app
+            } catch (error) {
+                console.error("Erreur Connexion:", error);
+                showToast("Identifiants incorrects ou erreur réseau.", "error");
+            } finally {
+                resetBtn('v-login', "Se Connecter", 'fa-right-to-bracket');
+            }
+        }
+
+        // 3. Déconnexion
+        async function logout() {
+            try {
+                await account.deleteSession('current');
+                showToast("Déconnecté avec succès.", "info");
+                
+                // Hide App, Show Auth
+                document.getElementById('main-app').style.display = 'none';
+                document.getElementById('auth-page').style.display = 'flex';
+                document.getElementById('bg-container').style.display = 'block';
+                
+                // Clear inputs
+                document.getElementById('login-pass').value = '';
+                
+            } catch (error) {
+                console.error("Erreur Déconnexion:", error);
+                showToast("Erreur lors de la déconnexion.", "error");
+            }
+        }
+
+        // 4. Vérifier la session active au chargement
+        async function checkSession() {
+            try {
+                // Try to get current user details. If it succeeds, they are logged in.
+                const user = await account.get();
+                
+                // Hide Auth, Show App
+                document.getElementById('auth-page').style.display = 'none';
+                document.getElementById('bg-container').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+
+                // Populate UI with Appwrite user data
+                const userName = user.name || user.email.split('@')[0];
+                document.getElementById('user-display-name').innerText = userName;
+                document.getElementById('welcome-name').innerText = userName;
+                
+                document.getElementById('profile-id').innerText = user.$id;
+                document.getElementById('profile-name').innerText = user.name || "Non spécifié";
+                document.getElementById('profile-email').innerText = user.email;
+                
+                const date = new Date(user.$createdAt);
+                document.getElementById('profile-date').innerText = date.toLocaleDateString('fr-FR');
+
+            } catch (error) {
+                // User is not logged in or session expired
+                console.log("Aucune session active.");
+                document.getElementById('main-app').style.display = 'none';
+                document.getElementById('auth-page').style.display = 'flex';
+                document.getElementById('bg-container').style.display = 'block';
+            } finally {
+                // Hide loading overlay once check is complete
+                setTimeout(() => {
+                    const loader = document.getElementById('loading-overlay');
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 500);
+                }, 800);
+            }
+        }
+
+        // Run check when page loads
+        window.addEventListener('load', () => {
+            checkSession();
+        });
+
+    </script>
+</body>
+</html>
